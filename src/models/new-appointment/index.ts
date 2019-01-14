@@ -4,10 +4,10 @@ import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 import { SettingsReducer } from '@/redux/reducers/settings';
 import { FormulasAndNotesReducer } from '@/redux/reducers/formulasAndNotes';
 import { NavigationScreenProp } from 'react-navigation';
-import { Service, PureProvider, ClientPhoneType } from '../common';
+import { Service, PureProvider, ClientPhoneType, StoreResource } from '../common';
 import { Maybe } from '../core';
 import { NewApptActions } from '@/redux/actions/newAppointment';
-import { Room } from '../appointment-book';
+import { Resource, Room } from '../appointment-book';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { FormulasAndNotesActions } from '@/redux/actions/formulasAndNotes';
 import { ServicesActions } from '@/redux/actions/service';
@@ -56,6 +56,8 @@ export type ServiceItem = {
   parentId?: string;
   type?: string;
   guestId?: string;
+  hasSelectedRoom?: boolean;
+  hasSelectedResource?: boolean;
   service: {
     service: Service;
     employee: PureProvider;
@@ -66,6 +68,8 @@ export type ServiceItem = {
     gapTime: moment.Duration;
     afterTime: moment.Duration;
     room: Maybe<Room>;
-    roomOrdinal: number;
+    roomOrdinal: Maybe<number>;
+    resource: Maybe<StoreResource>;
+    resourceOrdinal: Maybe<number>;
   };
 };

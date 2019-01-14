@@ -707,7 +707,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
   checkConflicts = () => {
     if (
-      !this.shouldSelectRooms() ||
       !this.shouldSelectResources()
     ) {
       this.props.newAppointmentActions.getConflicts(() => {
@@ -1453,7 +1452,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         </SwipeableComponent>
         {toast
           ? <SalonToast
-            timeout={5000}
             timeout={5000}
             type={toast.type}
             description={toast.text}

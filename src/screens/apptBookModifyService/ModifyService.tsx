@@ -66,6 +66,7 @@ interface ModifyApptServiceScreenState {
   room: Maybe<StoreRoom>;
   roomOrdinal: Maybe<number>;
   resource: Maybe<StoreResource>;
+  resourceOrdinal: Maybe<number>;
   serviceId: string;
   initialConflicts: NewAppointmentReducer['conflicts'];
 }
@@ -194,6 +195,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
       ...roomAndResource,
     };
+    alert('daslsk' + JSON.stringify(serviceItem.service));
     state.length = moment.duration(state.endTime.diff(state.startTime));
     state.initialConflicts = this.props.newAppointmentState.conflicts;
 
@@ -321,6 +323,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       resource,
       length,
       id,
+      roomOrdinal,
     } = this.state;
 
     if (canSave) {
@@ -340,6 +343,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
         gapTime,
         afterTime,
         room,
+        roomOrdinal,
         resource,
         length,
       };
@@ -361,9 +365,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     this.setState(
       {
         selectedProvider,
-      },
-      this.checkConflicts,
-    );
+      }, this.checkConflicts);
   };
 
   handleRequested = requested => {
@@ -504,15 +506,13 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     this.props.navigation.navigate('SelectRoom', {
       serviceItem: this.props.navigation.getParam('serviceItem', undefined),
       onChange: ({ room, roomOrdinal }) => this.setState({ room, roomOrdinal }, this.checkConflicts),
-      supportedRooms: this.state.supportedRooms,
     });
   }
 
   selectResource = () => {
     this.props.navigation.navigate('SelectResource', {
-      onSelect: selectedResource =>
-        this.setState({ resource: selectedResource }, this.checkConflicts),
-      supportedResource: this.state.supportedResource,
+      serviceItem: this.props.navigation.getParam('serviceItem', undefined),
+      onChange: ({ resource, resourceOrdinal }) => this.setState({ resource, resourceOrdinal }, this.checkConflicts),
     });
   }
 
@@ -533,10 +533,11 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       resource,
       toast,
       date,
-      supportedRooms,
-      supportedResource,
       roomOrdinal,
+      resourceOrdinal,
     } = this.state;
+    const supportsRooms = get(selectedService, 'supportedRooms.length', false);
+    const supportsResource = get(selectedService, 'supportedResource', false);
     return (
       <ScrollView style={styles.container}>
         {this.props.newAppointmentState.isLoading ? <LoadingOverlay /> : null}
@@ -637,23 +638,35 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
             </View>
           }
         </InputGroup>
-        { supportedRooms || supportedResource &&
-          <React.Fragment>
-        <SectionTitle value="Room & Resource" />
-        <InputGroup>
-          <InputButton
-            onPress={this.selectRoom}
-            label="Assigned Room"
-            value={room ? room.name : 'None'}
-          />
-          <InputDivider />
-          <InputButton
-            onPress={this.selectResource}
-            label="Assigned Resource"
-            value={resource ? resource.name : 'None'}
-          />
-        </InputGroup>
-          </React.Fragment>
+        {
+          (supportsResource || supportsRooms) &&
+          (
+            <React.Fragment>
+              <SectionTitle value="Room & Resource" />
+              <InputGroup>
+                {
+                  supportsRooms && (
+                    <React.Fragment>
+                      <InputButton
+                        onPress={this.selectRoom}
+                        label="Assigned Room"
+                        value={room ? `${room.name} #${roomOrdinal}` : 'None'}
+                      />
+                      <InputDivider />
+                    </React.Fragment>
+                  )
+                }
+                {
+                  supportsResource &&
+                  <InputButton
+                    onPress={this.selectResource}
+                    label="Assigned Resource"
+                    value={resource ? `${resource.name} #${resourceOrdinal}` : 'None'}
+                  />
+                }
+              </InputGroup>
+            </React.Fragment>
+          )
         }
         {this.renderConflictsBox()}
         {canRemove &&
@@ -674,3 +687,4 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     );
   }
 }
+export default ModifyApptServiceScreen;
