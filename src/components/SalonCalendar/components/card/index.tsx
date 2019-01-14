@@ -433,7 +433,6 @@ class Card extends React.Component<any, any> {
                       <View style={[styles.header, { backgroundColor: borderColor }]} />
                       <View style={styles.cardContent}>
                         {this.renderBadges()}
-                        {/* New text be here:  */}
                         <View style={styles.textContainer}>
                           {
                             times(usedBlocks).map(blockIndex => (
@@ -449,13 +448,13 @@ class Card extends React.Component<any, any> {
                                 </Text>
                               </View>
                           ))}
-                          { (selectedFilter === 'rooms' || selectedFilter === 'resources') ?
+                          { (selectedFilter === 'rooms' || selectedFilter === 'resources') &&
                             <Text
                               numberOfLines={1}
                               style={styles.providerName}
                             >
                               {`w/ ${employee.name} ${employee.lastName.slice(0, 1).toUpperCase()}.`}
-                            </Text> : null
+                            </Text>
                           }
                           { !isMultiBlock && height > 30 && (
                             <Text
