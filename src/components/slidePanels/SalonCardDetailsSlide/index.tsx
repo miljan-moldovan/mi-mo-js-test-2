@@ -153,6 +153,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   handleCheckout = () => {
     this.props.handleCheckout(this.state.appointment.id);
+    this.props.onHide();
   };
 
   handleModify = () => {
