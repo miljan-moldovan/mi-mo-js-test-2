@@ -17,7 +17,7 @@ import {
 import headerStyles from '../../constants/headerStyles';
 import SalonHeader from '../../components/SalonHeader';
 
-export default class SelectRoomScreen extends React.Component {
+export default class SelectResourceScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     header: (
       <SalonHeader
@@ -53,10 +53,10 @@ export default class SelectRoomScreen extends React.Component {
   };
 
   componentDidMount() {
+    if (!this.state.supportedResource) { return; }
     this.setState({ isLoading: true }, () => {
       Store.getResources()
         .then(resources => {
-          if (!this.state.supportedResource) { return; }
           const finalResourcesArray = [];
           const resource = resources.find(res => res.id === this.state.supportedResource.id);
           for (let i = 1; i <= resource.resourceCount; i++) {
