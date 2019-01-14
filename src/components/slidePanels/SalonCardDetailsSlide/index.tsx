@@ -238,7 +238,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   modifyIsDisabled = (appointment) => {
     const isStarted = moment(appointment.fromTime, 'HH:mm').isBefore(moment());
-    if (isStarted) { return true; }
+    const dateDiff = moment().diff(appointment.date);
+    if (isStarted && dateDiff >= 0) { return true; }
     if (appointment && appointment.badgeData) {
       return appointment.badgeData.isNoShow || appointment.badgeData.isCashedOut || false;
     }
