@@ -93,16 +93,11 @@ const setGridAllViewSuccess = (
   blockTimes,
   rooms,
 ) => {
-  const step = 15;
-  const apptGridSettings = {
-    step,
-  };
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
     data: {
       employees,
       appointments,
-      apptGridSettings,
       availability,
       blockTimes,
       rooms,
