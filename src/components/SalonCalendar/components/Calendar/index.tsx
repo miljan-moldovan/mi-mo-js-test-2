@@ -1834,6 +1834,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           goToAppointmentId={goToAppointmentId}
           provider={provider}
           panResponder={panResponder}
+          step={apptGridSettings.step}
           onPress={this.handleCardPressed}
           isResizeing={this.state.isResizeing}
           isMultiBlock={filterOptions.showMultiBlock}
@@ -2046,6 +2047,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               onCellPressed={this.handleCellPressed}
               columns={headerData}
               rooms={rooms}
+              step={apptGridSettings.step}
               startTime={startTime}
               apptGridSettings={apptGridSettings}
               showAvailability={showAvailability}
