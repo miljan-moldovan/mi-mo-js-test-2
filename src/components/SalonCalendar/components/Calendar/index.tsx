@@ -54,8 +54,8 @@ import {
   TYPE_FILTER_PROVIDERS,
   TYPE_FILTER_DESK_STAFF,
   TYPE_PROVIDER,
-  GROUP_BY_DATE
-} from '../../../../constants/filterTypes';
+  GROUP_BY_DATE,
+} from '@/constants/filterTypes';
 
 import { findOverlappingAppointments } from './helpers';
 

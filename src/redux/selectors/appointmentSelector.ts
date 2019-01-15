@@ -3,8 +3,14 @@ import moment from 'moment';
 import { groupBy, filter, flatten } from 'lodash';
 import filterOptionsSelector from './filterOptionsSelector';
 import DateTime from '../../constants/DateTime';
-
 import groupedAvailableProvidersSelector from './providersSelector';
+import {
+  TYPE_FILTER_PROVIDERS,
+  TYPE_FILTER_DESK_STAFF,
+  TYPE_PROVIDER,
+  PICKER_MODE_WEEK,
+  TYPE_FILTTER_RESOURCES,
+} from '@/constants/filterTypes';
 
 const appointmentSelector = state => state.appointmentBookReducer.appointments;
 
@@ -32,63 +38,84 @@ export const getVisibleAppointmentsDataSource = createSelector(
     getGridView,
   ],
   (groupedAppts, groupedAvailableProviders, filterOptions, gridView) => {
-    const isCanBeOnlyUser = gridView.selectedFilter === 'providers' || gridView.selectedFilter === 'deskStaff';
-    if (isCanBeOnlyUser && gridView.selectedProvider !== 'all') {
-      if (gridView.pickerMode === 'week') {
-        return filter(
-          flatten(groupedAppts[gridView.selectedProvider.id]),
-          appt => {
-            if (!filterOptions.showFirstAvailable) {
-              return !appt.isFirstAvailable ? appt : null;
-            }
-            return appt;
-          },
-        );
-      }
-      return filter(
-        flatten(groupedAppts[gridView.selectedProvider.id]),
-        appt => {
-          if (
-            moment(appt.date, DateTime.date).isSame(gridView.startDate, 'day')
-          ) {
-            if (!filterOptions.showFirstAvailable) {
-              return !appt.isFirstAvailable ? appt : null;
-            }
-            return appt;
-          }
-          return null;
-        },
-      );
+    if (isCanBeUserAndTypeIsNotProvide(gridView)) {
+      return checkPickerMode(gridView, groupedAppts, filterOptions);
     }
-    if (gridView.selectedFilter === 'resources') {
-      return filter(
-        flatten(
-          filter(
-            groupedAppts,
-            (appts, index) => (groupedAvailableProviders[index] ? appts : null),
-          ),
-        ),
-        appt => {
-          return appt;
-        },
-      );
+
+    if (gridView.selectedFilter === TYPE_FILTTER_RESOURCES) {
+      return fiterForFilterEquivalentResources(gridView, groupedAppts, groupedAvailableProviders);
     }
-    return filter(
-      flatten(
-        filter(
-          groupedAppts,
-          (appts, index) => (groupedAvailableProviders[index] ? appts : null),
-        ),
-      ),
-      appt => {
-        if (!filterOptions.showFirstAvailable) {
-          return !appt.isFirstAvailable ? appt : null;
-        }
-        return appt;
-      },
-    );
+
+    return filterForOtherCase(groupedAppts, groupedAvailableProviders, filterOptions);
   },
 );
+
+const isCanBeUserAndTypeIsNotProvide = (gridView) => {
+  const isCanBeOnlyUser = gridView.selectedFilter === TYPE_FILTER_PROVIDERS
+    || gridView.selectedFilter === TYPE_FILTER_DESK_STAFF;
+
+  return isCanBeOnlyUser && gridView.selectedProvider !== TYPE_PROVIDER;
+};
+
+const checkPickerMode = (gridView, groupedAppts, filterOptions) => {
+  if (gridView.pickerMode === PICKER_MODE_WEEK) {
+    return filterForPickerModeEquivalentWeek(gridView, groupedAppts, filterOptions);
+  }
+
+  return filterForPickerModeNotEquivalentWeek(gridView, groupedAppts, filterOptions);
+};
+
+const filterForPickerModeEquivalentWeek = (gridView, groupedAppts, filterOptions) => {
+  return filter(
+    flatten(groupedAppts[gridView.selectedProvider.id]),
+    appt => apptIsFirstAvailable(filterOptions, appt),
+  );
+};
+
+const filterForPickerModeNotEquivalentWeek = (gridView, groupedAppts, filterOptions) => {
+  return filter(
+    flatten(groupedAppts[gridView.selectedProvider.id]),
+    appt => {
+      if (moment(appt.date, DateTime.date).isSame(gridView.startDate, 'day')) {
+        return apptIsFirstAvailable(filterOptions, appt);
+      }
+      return null;
+    },
+  );
+};
+
+const fiterForFilterEquivalentResources = (gridView, groupedAppts, groupedAvailableProviders) => {
+  return filter(
+    flatten(
+      filter(
+        groupedAppts,
+        (appts, index) => (groupedAvailableProviders[index] ? appts : null),
+      ),
+    ),
+    appt => {
+      return appt;
+    },
+  );
+};
+
+const filterForOtherCase = (groupedAppts, groupedAvailableProviders, filterOptions) => {
+  return filter(
+    flatten(
+      filter(
+        groupedAppts,
+        (appts, index) => (groupedAvailableProviders[index] ? appts : null),
+      ),
+    ),
+    appt => apptIsFirstAvailable(filterOptions, appt),
+  );
+};
+
+const apptIsFirstAvailable = (filterOptions, appt) => {
+  if (!filterOptions.showFirstAvailable) {
+    return !appt.isFirstAvailable ? appt : null;
+  }
+  return appt;
+};
 
 export const getSelectedAppt = createSelector(
   [appointmentSelector, blockTimeSelector, getProps],
