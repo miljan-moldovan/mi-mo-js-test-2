@@ -27,7 +27,6 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 import { NavigationScreenProp } from 'react-navigation';
 import { Maybe, Client, ServiceItem, Provider, Service, PureProvider, StoreRoom, StoreResource } from '@/models';
 import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
-import { shouldSelectRoom } from '../newAppointmentScreen/helpers';
 
 interface ModifyApptServiceScreenNavigationParams {
   date: Maybe<moment.Moment>;
@@ -195,7 +194,6 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
       ...roomAndResource,
     };
-    alert('daslsk' + JSON.stringify(serviceItem.service));
     state.length = moment.duration(state.endTime.diff(state.startTime));
     state.initialConflicts = this.props.newAppointmentState.conflicts;
 
@@ -229,12 +227,12 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     if (requireResource) {
       resourceToSet = {
         ...supportedResource,
-        name: `${supportedResource.name}#1`,
+        name: supportedResource ? `${supportedResource.name}#1` : 'None',
       };
     }
     roomToSet = {
       ...roomToSet,
-      name: `${roomToSet.name}#1`,
+      name: roomToSet ? `${roomToSet.name}#1` : 'None',
     };
     return {
       resource: resourceToSet,

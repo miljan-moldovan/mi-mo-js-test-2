@@ -1,60 +1,54 @@
 import * as React from 'react';
-import {
-  Text,
-} from 'react-native';
-import { times, flatten, chain, includes } from 'lodash';
+import { Text } from 'react-native';
+import { chain, flatten, includes, times } from 'lodash';
 import SalonFlatList from '@/components/common/SalonFlatList';
 import { Store } from '@/utilities/apiWrapper';
-import { Room, StoreRoom, ServiceItem, Maybe } from '@/models';
+import { ServiceItem, StoreResource } from '@/models';
 import { NavigationScreenProp } from 'react-navigation';
 import SalonListItem from '@/components/common/SalonListItem';
 import SalonHeader from '@/components/SalonHeader';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 import styles from './styles';
 import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
-import { NewApptActions } from '@/redux/actions/newAppointment';
-import { shouldSelectRoom } from '../newAppointmentScreen/helpers';
+import { shouldSelectResource } from '../newAppointmentScreen/helpers';
 import SalonIcon from '@/components/SalonIcon';
 import Colors from '@/constants/Colors';
 import { getServiceName } from './helpers';
 
-interface SelectRoomScreenNavigationParams {
+interface SelectResourceScreenNavigationParams {
   serviceItem?: ServiceItem;
   onChange?: ({
-    room: StoreRoom,
-    roomOrdinal: number,
-  }) => void;
+                resource: StoreResource,
+                resourceOrdinal: number,
+              }) => void;
 }
 
-interface SelectRoomScreenProps {
-  navigation: NavigationScreenProp<SelectRoomScreenNavigationParams>;
+interface SelectResourceScreenProps {
+  navigation: NavigationScreenProp<SelectResourceScreenNavigationParams>;
   newApptState: NewAppointmentReducer;
   updateServiceItems: (serviceItems: ServiceItem[]) => any;
 }
 
-interface SelectRoomScreenState {
+interface SelectResourceScreenState {
   isLoading: boolean;
-  rooms: StoreRoom[];
-  services: RoomServiceItem[];
+  services: ResourceServiceItem[];
+  allResources: StoreResource[];
   currentOpenService: string;
 }
 
-export interface RoomServiceItem {
-  availableRooms: number[];
+export interface ResourceServiceItem {
+  supportedResource: StoreResource;
   serviceItem: ServiceItem;
 }
 
-const convertServiceItem = (itm: ServiceItem) => {
-  const availableRooms = itm.service.service.supportedRooms.map(room => room.id);
-  return {
-    availableRooms,
-    serviceItem: itm,
-    selectedRoom: null,
-    selectedRoomOrdinal: null,
-  };
-};
+const convertServiceItem = (itm: ServiceItem) => ({
+  supportedResource: itm.service.service.supportedResource,
+  serviceItem: itm,
+  selectedResource: null,
+  selectedResourceOrdinal: null,
+});
 
-class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoomScreenState> {
+class SelectResourceScreen extends React.Component<SelectResourceScreenProps, SelectResourceScreenState> {
   static navigationOptions = ({ navigation }) => {
     const defaultLeftButton = (
       <SalonTouchableOpacity
@@ -70,14 +64,14 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     return {
       header: (
         <SalonHeader
-          title="Select Room"
+          title="Select Resource"
           subTitle={serviceName}
           headerLeft={leftButton}
           headerRight={rightButton}
         />
       ),
     };
-  }
+  };
 
   leftButton = (
     <SalonTouchableOpacity
@@ -92,19 +86,25 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     </SalonTouchableOpacity>
   );
 
-  constructor(props: SelectRoomScreenProps) {
+  goBack = () => {
+    const { onNavigateBack } = this.props.navigation.state.params;
+    onNavigateBack && onNavigateBack();
+    this.props.navigation.goBack();
+  };
+
+  constructor(props: SelectResourceScreenProps) {
     super(props);
     const {
       newApptState: { serviceItems },
     } = props;
-    let services: RoomServiceItem[] = [];
+    let services: ResourceServiceItem[] = [];
     let serviceName = '';
     let currentService = null;
     if (this.params.serviceItem) {
       serviceName = getServiceName(this.params.serviceItem);
     } else {
       services = chain(serviceItems)
-        .filter(itm => shouldSelectRoom(itm))
+        .filter(itm => shouldSelectResource(itm))
         .map(convertServiceItem)
         .value();
       [currentService] = services;
@@ -113,46 +113,40 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     props.navigation.setParams({ serviceName });
     this.state = {
       services,
-      rooms: [],
       isLoading: false,
+      allResources: [],
       currentOpenService: currentService ? currentService.serviceItem.itemId : '',
     };
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.setState({ isLoading: true }, () => {
-      Store.getRooms()
-        .then(rooms => this.setState({ rooms, isLoading: false }));
+      Store.getResources()
+        .then(resources => this.setState({ allResources: resources, isLoading: false }));
     });
   }
 
   get data() {
-    const { rooms, currentOpenService, services } = this.state;
+    const { allResources, currentOpenService, services } = this.state;
     const currentService = this.params.serviceItem
       ? convertServiceItem(this.params.serviceItem)
       : services.find(itm => itm.serviceItem.itemId === currentOpenService);
-    const availableRooms = currentService
-      ? rooms.filter(room => includes(currentService.availableRooms, room.id))
-      : rooms;
-    const roomOptions = flatten(
-      availableRooms.map(room => {
-        return times(room.roomCount, i => {
-          const roomNumber = i + 1;
-          return {
-            room,
-            name: `${room.name} #${roomNumber}`,
-            roomOrdinal: roomNumber,
-          };
-        });
-      }),
-    );
-    return this.params.serviceItem
-      ? [{
-        name: 'None',
-        room: null,
-        roomOrdinal: null,
-      }, ...roomOptions]
-      : roomOptions;
+    if (!currentService) { return; }
+    const resourcesArray = [];
+    const supportedResourceId = currentService.supportedResource.id;
+    const supportedResource = allResources.find(res => res.id === supportedResourceId);
+    if (!supportedResource) { return []; }
+    for (let i = 1; i < supportedResource.resourceCount + 1; i++) {
+      resourcesArray.push({
+        resource: supportedResource,
+        id: supportedResource.id,
+        name: `${supportedResource.name} #${i}`,
+        resourceOrdinal: i,
+      });
+    }
+    return this.params.serviceItem ?
+      [{ name: 'None', id: null, resourceOrdinal: null }, ...resourcesArray]
+      : resourcesArray;
   }
 
   get params() {
@@ -160,13 +154,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     return {
       serviceItem: getParam('serviceItem'),
       onChange: getParam('onChange'),
-    } as SelectRoomScreenNavigationParams;
-  }
-
-  goBack = () => {
-    const { onNavigateBack } = this.props.navigation.state.params;
-    onNavigateBack && onNavigateBack();
-    this.props.navigation.goBack();
+    } as SelectResourceScreenNavigationParams;
   }
 
   previousService = () => {
@@ -183,22 +171,24 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     } else {
       this.props.navigation.setParams({ leftButton: undefined });
     }
-  }
+  };
 
-  onPressItem = (item: { room: StoreRoom, roomOrdinal: number, name: string }) => {
+  onPressItem = (item: { resource: StoreResource, resourceOrdinal: number, name: string }) => {
     const { currentOpenService } = this.state;
     if (this.params.onChange) {
       this.params.onChange({
-        room: item.room,
-        roomOrdinal: item.roomOrdinal,
+        resource: item.resource,
+        resourceOrdinal: item.resourceOrdinal,
       });
       return this.goBack();
     }
     const services = [...this.state.services];
     const currentIndex = services.findIndex(itm => itm.serviceItem.itemId === currentOpenService);
     const nextService = services[currentIndex + 1];
-    services[currentIndex].serviceItem.service.room = item.room;
-    services[currentIndex].serviceItem.service.roomOrdinal = item.roomOrdinal;
+    services[currentIndex].serviceItem.hasSelectedResource = true;
+    services[currentIndex].serviceItem.service.resource = item.resource;
+    services[currentIndex].serviceItem.service.resourceOrdinal = item.resourceOrdinal;
+
     this.setState({
       services,
       currentOpenService: nextService ? nextService.serviceItem.itemId : null,
@@ -214,7 +204,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         this.goBack();
       }
     });
-  }
+  };
 
   renderItem = ({ item }) => {
     const onPress = () => this.onPressItem(item);
@@ -224,7 +214,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         onPress={onPress}
       />
     );
-  }
+  };
 
   render() {
     return (
@@ -235,4 +225,5 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     );
   }
 }
-export default SelectRoomScreen;
+
+export default SelectResourceScreen;

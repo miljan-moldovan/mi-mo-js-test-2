@@ -706,13 +706,13 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     this.props.navigation.navigate('ChangeNewApptDateTime');
 
   checkConflicts = () => {
-    if (
-      !this.shouldSelectResources()
-    ) {
-      this.props.newAppointmentActions.getConflicts(() => {
-        this.validate();
-        this.shouldUpdateClientInfo();
-      });
+    if (!this.shouldSelectRooms()) {
+      if (!this.shouldSelectResources()) {
+        this.props.newAppointmentActions.getConflicts(() => {
+          this.validate();
+          this.shouldUpdateClientInfo();
+        });
+      }
     }
   }
 
