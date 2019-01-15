@@ -38,6 +38,7 @@ export const ADD_GUEST = 'newAppointment/ADD_GUEST';
 export const SET_GUEST_CLIENT = 'newAppointment/SET_GUEST_CLIENT';
 export const REMOVE_GUEST = 'newAppointment/REMOVE_GUEST';
 
+export const CHANGE_DATE_TIME = 'newAppointment/CHANGE_DATE_TIME';
 export const SET_DATE = 'newAppointment/SET_DATE';
 export const SET_START_TIME = 'newAppointment/SET_START_TIME';
 export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
@@ -112,19 +113,24 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
   });
 };
 
-const resetTimeForServices = (items: any, index: Maybe<number>,
-  initialFromTime: Maybe<string | moment.Moment>): any => {
+const resetTimeForServices = (
+  items: ServiceItem[],
+  index: Maybe<number>,
+  initialFromTime: Maybe<string | moment.Moment>,
+): any => {
   return items.map((item, i) => {
     if (i > index) {
-      const prevItem = items[i - 1];
-      let fromTime = initialFromTime;
+      const prevItem: ServiceItem = items[i - 1];
+      let fromTime = moment(initialFromTime);
       if (prevItem) {
-        fromTime = get(prevItem.service, 'toTime', initialFromTime);
+        fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
       }
       return {
         ...item,
         service: {
-          ...item.service, fromTime, toTime: moment(item.service.fromTime).add(
+          ...item.service,
+          fromTime,
+          toTime: moment(fromTime).add(
             item.service.length,
           ),
         },
@@ -435,6 +441,19 @@ export function serializeNewApptItem(appointment, service) {
 
   return itemData;
 }
+
+const changeDateTime = (date: moment.Moment, startTime: moment.Moment) => (dispatch, getState: () => AppStore) => {
+  const serviceItems = resetTimeForServices(
+    getState().newAppointmentReducer.serviceItems,
+    -1,
+    startTime,
+  );
+  dispatch({
+    type: CHANGE_DATE_TIME,
+    data: { serviceItems, date, startTime },
+  });
+  setTimeout(() => dispatch(getConflicts()));
+};
 
 const getConflicts = (callback?: Maybe<Function>): any => (dispatch, getState) => {
   const {
@@ -963,6 +982,7 @@ const newAppointmentActions = {
   getConflictsForService,
   checkIsBookedByFieldEnabled,
   updateServiceItems,
+  changeDateTime,
 };
 
 export interface NewApptActions {
@@ -995,6 +1015,7 @@ export interface NewApptActions {
   getConflictsForService: typeof newAppointmentActions.getConflictsForService;
   checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
   updateServiceItems: (serviceItems: ServiceItem[]) => any;
+  changeDateTime: (date: moment.Moment, startTime: moment.Moment) => any;
 }
 
 export default newAppointmentActions;

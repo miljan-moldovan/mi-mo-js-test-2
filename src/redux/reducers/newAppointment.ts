@@ -30,6 +30,7 @@ import {
   SET_MAIN_EMPLOYEE,
   IS_BOOKED_BY_FIELD_ENABLED,
   UPDATE_SERVICE_ITEMS,
+  CHANGE_DATE_TIME,
 } from '../actions/newAppointment';
 import { Maybe, Client, PureProvider, Conflict, PureAppointment, AppointmentCard } from '@/models';
 import { ServiceItem } from '@/models/new-appointment';
@@ -210,6 +211,13 @@ export default function newAppointmentReducer(
             client: item.guestId ? item.service.clients : data.client,
           },
         })),
+      };
+    case CHANGE_DATE_TIME:
+      return {
+        ...state,
+        date: data.date,
+        startTime: data.startTime,
+        serviceItems: data.serviceItems,
       };
     case SET_DATE:
       return {
