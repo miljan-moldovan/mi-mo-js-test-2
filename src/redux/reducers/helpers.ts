@@ -17,12 +17,12 @@ export const COLORS = [
   '#3A5674',
 ];
 
-export function getLabelColor (item) {
+export function getLabelColor(item) {
   let background = '#4a4a4a';
-  const now = new Date ().getTime ();
+  const now = new Date().getTime();
 
   if (item.status === 0) {
-    const enteredTime = new Date ().setHours (0, 0, item.enteredTime);
+    const enteredTime = new Date().setHours(0, 0, item.enteredTime);
     const elapsed = (now - enteredTime) / 1000;
     if (elapsed < 15 * 60) {
       background = '#00CF48';
@@ -34,8 +34,8 @@ export function getLabelColor (item) {
   } else if (item.status === 1) {
     background = '#00CF48';
   } else if (item.serviced) {
-    const servicedTime = new Date ().setHours (0, 0, +item.servicedTime);
-    const finishService = new Date ().setHours (0, 0, item.finishService);
+    const servicedTime = new Date().setHours(0, 0, +item.servicedTime);
+    const finishService = new Date().setHours(0, 0, item.finishService);
     const elapsed = item.status === 7
       ? (finishService - servicedTime) / 1000
       : (now - servicedTime) / 1000;
@@ -52,22 +52,22 @@ export function getLabelColor (item) {
   return background;
 }
 
-export function getWorkingTime (item) {
+export function getWorkingTime(item) {
   //   const time = new Date().setHours(0, 0, +item.servicedTimeAt);
   //   const workingTime = ((new Date().getTime() - time) / 60000);
 
   // let minutes = moment(item.servicedTimeAt).minutes();
   //   return Math.ceil(minutes);
-  let time = moment (item.processTime, 'hh:mm:ss');
+  let time = moment(item.processTime, 'hh:mm:ss');
 
-  return time.add (1, 'minutes').format ('hh:mm:ss');
+  return time.add(1, 'minutes').format('hh:mm:ss');
 }
 
-export function getWaitTime (item) {
+export function getWaitTime(item) {
   if (item.status === 0) {
-    let time = moment (item.processTime, 'hh:mm:ss');
+    let time = moment(item.processTime, 'hh:mm:ss');
 
-    return time.add (1, 'minutes').format ('hh:mm:ss');
+    return time.add(1, 'minutes').format('hh:mm:ss');
 
     // const enteredTime = new Date().setHours(0, 0, +item.enteredTimeAt);
     // const now = new Date().getTime();
@@ -77,33 +77,33 @@ export function getWaitTime (item) {
   return 0;
 }
 
-export function getEstimatedServiceTime (item) {
+export function getEstimatedServiceTime(item) {
   return +item.length / 60;
 }
 
-export function getEstimatedWaitTime (item) {
-  const time = item.startTime.match (/(\d+)(?::(\d\d))?\s*(p?)/i);
-  const startTime = new Date ().setHours (
-    parseInt (time[1], 10) + (time[3] ? 12 : 0),
-    parseInt (time[2], 10) || 0,
-    0
+export function getEstimatedWaitTime(item) {
+  const time = item.startTime.match(/(\d+)(?::(\d\d))?\s*(p?)/i);
+  const startTime = new Date().setHours(
+    parseInt(time[1], 10) + (time[3] ? 12 : 0),
+    parseInt(time[2], 10) || 0,
+    0,
   );
-  const tmpTime = new Date ().setHours (0, 0, item.enteredTime);
+  const tmpTime = new Date().setHours(0, 0, item.enteredTime);
   const estimatedTime = (startTime - tmpTime) / 60000;
-  return Math.round (estimatedTime);
+  return Math.round(estimatedTime);
 }
 
-export function getProcentCompleted (item) {
+export function getProcentCompleted(item) {
   if (item.completed === 100) {
     return item.completed;
   }
 
   let progressMaxTime =
-    moment (item.progressMaxTime, 'hh:mm:ss').minutes () +
-    moment (item.progressMaxTime, 'hh:mm:ss').hours () * 60;
+    moment(item.progressMaxTime, 'hh:mm:ss').minutes() +
+    moment(item.progressMaxTime, 'hh:mm:ss').hours() * 60;
   let processTime =
-    moment (item.processTime, 'hh:mm:ss').minutes () +
-    moment (item.processTime, 'hh:mm:ss').hours () * 60;
+    moment(item.processTime, 'hh:mm:ss').minutes() +
+    moment(item.processTime, 'hh:mm:ss').hours() * 60;
   let time = processTime / progressMaxTime * 100;
 
   if (time < 0 || time >= 100) {
@@ -128,20 +128,20 @@ export function getProcentCompleted (item) {
 //   return getEstimatedWaitTime(item) - getWaitTime(item);
 // }
 
-export function formatServiceStartTime (seconds: string) {
+export function formatServiceStartTime(seconds: string) {
   //   const time = new Date().setHours(0, 0, +seconds);
-  return moment (seconds).format ('hh:mm A');
+  return moment(seconds).format('hh:mm A');
 }
 
-export function getSecondsPassedSinceMidnight () {
-  const now = new Date ().getTime ();
-  const midnight = new Date ().setHours (0, 0, 0, 0);
+export function getSecondsPassedSinceMidnight() {
+  const now = new Date().getTime();
+  const midnight = new Date().setHours(0, 0, 0, 0);
   const time = (now - midnight) / 1000;
   return time;
 }
 
-export function getCoords (elem: any) {
-  var box = elem.getBoundingClientRect ();
+export function getCoords(elem: any) {
+  var box = elem.getBoundingClientRect();
   return {
     top: box.top + window.pageYOffset,
     left: box.left + window.pageXOffset,
@@ -152,12 +152,13 @@ export function getCoords (elem: any) {
   };
 }
 
-export function getWidthHeightDocs () {
+export function getWidthHeightDocs() {
   return {
     height: document.documentElement.clientHeight,
     width: document.documentElement.clientWidth,
   };
 }
+
 const colors = [
   {
     id: 1,
@@ -173,23 +174,23 @@ const colors = [
   },
 ];
 
-export function getBadgeColor (colorsId: number[]) {
-  const unusedColors = colors.filter (
-    _color => colorsId.indexOf (_color.id) === -1
+export function getBadgeColor(colorsId: number[]) {
+  const unusedColors = colors.filter(
+    _color => colorsId.indexOf(_color.id) === -1,
   );
 
   if (unusedColors.length) {
-    return colors.find (_color => _color.id === unusedColors[0].id);
+    return colors.find(_color => _color.id === unusedColors[0].id);
   }
 
   let color = '#';
-  const letters = '0123456789ABCDEF'.split ('');
+  const letters = '0123456789ABCDEF'.split('');
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.round (Math.random () * 15)];
+    color += letters[Math.round(Math.random() * 15)];
   }
   let opacity = '';
   for (let i = 0; i < 2; i++) {
-    opacity += letters[Math.round (Math.random () * 15)];
+    opacity += letters[Math.round(Math.random() * 15)];
   }
 
   const newColor = {
@@ -199,13 +200,13 @@ export function getBadgeColor (colorsId: number[]) {
     borderColor: color,
   };
 
-  colors.push (newColor);
+  colors.push(newColor);
 
   return newColor;
 }
 
-export function generateColorsForGroups (groups: any) {
-  const groupIds = Object.keys (groups);
+export function generateColorsForGroups(groups: any) {
+  const groupIds = Object.keys(groups);
 
   for (let i = 0; i < groupIds.length; i++) {
     const color = COLORS[i] || '#ddd';
@@ -218,7 +219,7 @@ export function generateColorsForGroups (groups: any) {
   }
 }
 
-export function generateColorForNewGroup (colorNum: number) {
+export function generateColorForNewGroup(colorNum: number) {
   const color = COLORS[colorNum] || '#ddd';
 
   return {
