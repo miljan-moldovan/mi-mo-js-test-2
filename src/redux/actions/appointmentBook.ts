@@ -364,28 +364,15 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ],
           ) => {
-            const newAppoinments = appointments.map(item => {
-              if (!item.resource) {
-                const index = resourceAppointments.findIndex(element => {
-                  console.log(element.appointmentId, item.id)
-                  return element && element.appointmentId === item.id
-                });
-                item.resource = index !== -1 ? newAppoinments[index].resource : null;
-              }
-
-              return item;
-            });
-
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
               StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),
             );
-
             dispatch(
               setGridResourceViewSuccess(
                 resources,
                 resourceAppointments,
-                newAppoinments,
+                appointments,
                 availability.timeSlots,
               ),
             );

@@ -276,7 +276,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         groupByCondition = groupByCondition[displayMode];
       }
     }
-
     const groupedAppointments = groupBy(
       appointments,
       groupByCondition !== 'date'

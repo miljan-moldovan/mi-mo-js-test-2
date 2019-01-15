@@ -896,7 +896,6 @@ class AppointmentScreen extends React.Component<any, any> {
     } = this.state;
 
     const { rebookAppointment } = this.props.rebookState.rebookData;
-
     const { appointmentCalendarActions, appointmentActions } = this.props;
     const isLoading =
       this.props.appointmentScreenState.isLoading ||

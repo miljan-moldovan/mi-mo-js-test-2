@@ -1,6 +1,6 @@
-import {createSelector} from 'reselect';
+import { createSelector } from 'reselect';
 import moment from 'moment';
-import {groupBy, filter, flatten} from 'lodash';
+import { groupBy, filter, flatten } from 'lodash';
 import filterOptionsSelector from './filterOptionsSelector';
 import DateTime from '../../constants/DateTime';
 
@@ -12,9 +12,9 @@ const blockTimeSelector = state => state.appointmentBookReducer.blockTimes;
 
 const getProps = (state, props) => props;
 
-const appoinmentGroupedByProvider = createSelector (
+const appoinmentGroupedByProvider = createSelector(
   appointmentSelector,
-  appts => groupBy (appts, appt => (appt.employee ? appt.employee.id : 0))
+  appts => groupBy(appts, appt => (appt.employee ? appt.employee.id : 0))
 );
 
 const getGridView = state => ({
@@ -24,7 +24,7 @@ const getGridView = state => ({
   startDate: state.appointmentBookReducer.startDate,
 });
 
-export const getVisibleAppointmentsDataSource = createSelector (
+export const getVisibleAppointmentsDataSource = createSelector(
   [
     appoinmentGroupedByProvider,
     groupedAvailableProvidersSelector,
@@ -60,6 +60,19 @@ export const getVisibleAppointmentsDataSource = createSelector (
         },
       );
     }
+    if (gridView.selectedFilter === 'resources') {
+      return filter(
+        flatten(
+          filter(
+            groupedAppts,
+            (appts, index) => (groupedAvailableProviders[index] ? appts : null),
+          ),
+        ),
+        appt => {
+          return appt;
+        },
+      );
+    }
     return filter(
       flatten(
         filter(
@@ -77,12 +90,12 @@ export const getVisibleAppointmentsDataSource = createSelector (
   },
 );
 
-export const getSelectedAppt = createSelector (
+export const getSelectedAppt = createSelector(
   [appointmentSelector, blockTimeSelector, getProps],
   (appointments, blockTimes, props) =>
     props.isBlockTime
-      ? blockTimes.find (appt => appt.id === props.appointmentId)
-      : appointments.find (appt => appt.id === props.appointmentId)
+      ? blockTimes.find(appt => appt.id === props.appointmentId)
+      : appointments.find(appt => appt.id === props.appointmentId),
 );
 
-export default {getVisibleAppointmentsDataSource, getSelectedAppt};
+export default { getVisibleAppointmentsDataSource, getSelectedAppt };
