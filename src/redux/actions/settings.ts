@@ -58,11 +58,15 @@ const getSettingsByName = (name: string, callback?: (...args: any) => any) => (
   Settings.getSettingsByName(name)
     .then(response => {
       dispatch(getSettingsByNameSuccess(response));
-      callback(true, response);
+      if (callback && typeof callback === 'function') {
+        callback(true, response);
+      }
     })
     .catch(error => {
       dispatch(getSettingsByNameFailed(error));
-      callback(false, error.message);
+      if (callback && typeof callback === 'function') {
+        callback(false, error.message);
+      }
     });
 };
 
