@@ -50,6 +50,12 @@ import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 import styles from './styles';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import {
+  TYPE_FILTER_PROVIDERS,
+  TYPE_FILTER_DESK_STAFF,
+  TYPE_PROVIDER,
+  GROUP_BY_DATE
+} from '../../../../constants/filterTypes';
 
 import { findOverlappingAppointments } from './helpers';
 
@@ -260,35 +266,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
 // group appoitnments and block time by filterOption
-  setGroupedAppointments = ({
-                              blockTimes,
-                              appointments,
-                              selectedFilter,
-                              selectedProvider,
-                              displayMode,
-                            }) => {
-    let groupByCondition = ViewTypes[selectedFilter];
-    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
-    if (isCanBeOnlyUser) {
-      if (selectedProvider === 'all') {
-        groupByCondition = groupByCondition[selectedProvider];
-      } else {
-        groupByCondition = groupByCondition[displayMode];
-      }
-    }
-    const groupedAppointments = groupBy(
-      appointments,
-      groupByCondition !== 'date'
-        ? groupByCondition
-        : item => moment(item.date).format(DateTime.date),
-    );
-
-    const groupedBlocks = groupBy(
-      blockTimes,
-      groupByCondition !== 'date'
-        ? groupByCondition
-        : item => moment(item.date).format(DateTime.date),
-    );
+  setGroupedAppointments = (data) => {
+    const { groupedAppointments, groupedBlocks } = this.prepareDataForUpdate(data);
 
     const cardsArray = mergeWith(
       { ...groupedAppointments },
@@ -298,12 +277,63 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     );
 
     const overlappingCardsMap = this.setCardsOverlappingMap(cardsArray);
+
     this.setState({
       groupedAppointments,
       groupedBlocks,
       overlappingCardsMap,
       cardsArray,
     });
+  };
+
+  prepareDataForUpdate = (data) => {
+    const {
+      blockTimes,
+      appointments,
+      selectedFilter,
+      selectedProvider,
+      displayMode,
+    } = data;
+
+    const groupByCondition = this.getGroupByCondition(selectedFilter, selectedProvider, displayMode);
+
+    return this.groupBy(groupByCondition, blockTimes, appointments);
+  };
+
+  getGroupByCondition = (selectedFilter, selectedProvider, displayMode) => {
+
+    const isCanBeOnlyUser = selectedFilter === TYPE_FILTER_PROVIDERS || selectedFilter === TYPE_FILTER_DESK_STAFF;
+
+    if (isCanBeOnlyUser) {
+      if (selectedProvider === TYPE_PROVIDER) {
+        return ViewTypes[selectedFilter][selectedProvider];
+      } else {
+        return ViewTypes[selectedFilter][displayMode];
+      }
+    }
+
+    return ViewTypes[selectedFilter];
+  };
+
+  groupBy = (groupByCondition, blockTimes, appointments) => {
+    const groupedAppointments = groupBy(
+      appointments,
+      groupByCondition !== GROUP_BY_DATE
+        ? groupByCondition
+        : item => moment(item.date).format(DateTime.date),
+    );
+
+    const groupedBlocks = groupBy(
+      blockTimes,
+      groupByCondition !== GROUP_BY_DATE
+        ? groupByCondition
+        : item => moment(item.date).format(DateTime.date),
+    );
+
+    return {
+      groupedAppointments,
+      groupedBlocks,
+    };
   };
 
   setCardsOverlappingMap = (groupedCards = null) => {
