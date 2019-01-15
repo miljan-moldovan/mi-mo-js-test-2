@@ -95,10 +95,10 @@ export const getBadges = (
     badgeParty,
     badgeR,
     badgeW,
+    users,
     badgeS,
     badgeF,
     badgeAddons,
-    users,
     checkCircle,
   ];
 

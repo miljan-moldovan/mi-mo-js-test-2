@@ -28,6 +28,7 @@ export default class InputPicker extends React.Component {
   }
 
   componentDidMount() {
+    
     if (this.props.required) {
       this.validate(this.state.selectedOption, true);
     }
@@ -35,6 +36,10 @@ export default class InputPicker extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({ selectedOption: nextProps.value ? nextProps.value : null, options: nextProps.options });
+
+    if(nextProps.tooglePicker){
+      this.pickerToogle();
+    }
   }
 
 
@@ -49,6 +54,7 @@ export default class InputPicker extends React.Component {
   }
 
   validate = (selectedOption, isFirstValidation = false) => {
+    
     const isValid = selectedOption !== null && selectedOption !== undefined;
     this.props.onValidated(isValid, isFirstValidation);
   };

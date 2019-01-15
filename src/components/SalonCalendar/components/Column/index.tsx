@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
-import styles from './styles'
+import styles from './styles';
 
 enum AlertTypes {
   BookingPast = 1,
@@ -86,6 +86,7 @@ export default class Column extends React.Component<ColumnProps, any> {
       providerSchedule,
       displayMode,
       startDate,
+      step,
       storeScheduleExceptions,
     } = this.props;
     const { weeklySchedule } = apptGridSettings;
@@ -136,7 +137,7 @@ export default class Column extends React.Component<ColumnProps, any> {
     }
     // o'clock times go bold and dosent show minutes
     let styleOclock = '';
-    const timeSplit = moment(cell).add(15, 'm').format('h:mm').split(':');
+    const timeSplit = moment(cell).add(step, 'm').format('h:mm').split(':');
     const minutesSplit = timeSplit[1];
     if (minutesSplit === '00') {
       styleOclock = styles.oClockBorder;

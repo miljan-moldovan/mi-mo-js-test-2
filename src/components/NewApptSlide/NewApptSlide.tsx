@@ -141,8 +141,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   isNeedSetUpAvailableProvider = (previousVisibleProps, nextVisibleProps) => {
-    return this.props.selectedFilter === 'rooms'
-      && !this.props.newApptState.mainEmployee
+    return (this.props.selectedFilter === 'rooms' || this.props.selectedFilter === 'resources')
+      && (!this.props.newApptState.mainEmployee
+        || (this.props.newApptState.mainEmployee && this.props.newApptState.mainEmployee.id === 0))
       && !previousVisibleProps && nextVisibleProps;
   };
 

@@ -46,7 +46,7 @@ export default class ServiceInput extends React.Component<any, any> {
       onChange = srv => srv,
     } = this.props;
     onChange(service);
-  }
+  };
 
   handlePress = () => {
     const {
@@ -62,7 +62,9 @@ export default class ServiceInput extends React.Component<any, any> {
       walkin = false,
     } = this.props;
     const screenService = walkin ? 'ModalServices' : 'Services';
-    if (isFunction(onPress)) { onPress(); }
+    if (isFunction(onPress)) {
+      onPress();
+    }
     const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookService' : screenService, {
       actionType,
@@ -72,9 +74,10 @@ export default class ServiceInput extends React.Component<any, any> {
       // filterByProvider: !!selectedProvider,
       clientId: get(selectedClient, 'id', null),
       employeeId: get(selectedProvider, 'id', null),
+      selectedProvider,
       onChangeService: service => this.handleServiceSelection(service),
     });
-  }
+  };
 
   selectExtraServices = () => {
     const {
@@ -87,7 +90,7 @@ export default class ServiceInput extends React.Component<any, any> {
     this.showRecommended().then(services => onChangeRecommended(services)).catch(() => onChangeRecommended([]));
     this.showRequired().then(services => onChangeRequired(services)).catch(() => onChangeRequired([]));
     afterDone();
-  }
+  };
 
   showRequired = () => new Promise((resolve, reject) => {
     try {
@@ -117,7 +120,7 @@ export default class ServiceInput extends React.Component<any, any> {
     } catch (err) {
       reject(err);
     }
-  })
+  });
 
   showAddons = () => new Promise((resolve, reject) => {
     try {
@@ -142,7 +145,7 @@ export default class ServiceInput extends React.Component<any, any> {
     } catch (err) {
       reject(err);
     }
-  })
+  });
 
   showRecommended = () => new Promise((resolve, reject) => {
     try {
@@ -167,7 +170,7 @@ export default class ServiceInput extends React.Component<any, any> {
     } catch (err) {
       reject(err);
     }
-  })
+  });
 
   render() {
     const {

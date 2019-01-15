@@ -4124,9 +4124,9 @@ mkdirp@0.x, mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-"mkp-react-native-picker@git+https://github.com/aprados/react-native-picker.git#master":
+"mkp-react-native-picker@https://github.com/aprados/react-native-picker.git":
   version "1.0.7"
-  resolved "git+https://github.com/aprados/react-native-picker.git#7f75376361b6587e46ddddde58a7a075b658e830"
+  resolved "https://github.com/aprados/react-native-picker.git#d06e66668c0eb537bf3378f78bc44b0ab525f24b"
 
 mock-async-storage@^2.0.4:
   version "2.0.4"
