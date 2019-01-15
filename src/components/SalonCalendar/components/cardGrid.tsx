@@ -44,7 +44,6 @@ export default class CardGrid extends React.Component {
       if (isCanBeOnlyUser && selectedProvider !== 'all') {
         headerId = item.format(DateTime.date);
       }
-      console.log(cardsArray)
       return this.renderCards(
         chain(cardsArray[headerId])
           .orderBy(
