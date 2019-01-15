@@ -90,4 +90,10 @@ export default StyleSheet.create({
     marginTop: 2,
     marginRight: 2,
   },
+  providerName: {
+    fontSize: 10,
+    marginTop: 1,
+    paddingHorizontal: 8,
+    color: 'rgba(28, 30, 40, 0.6)',
+  },
 });
