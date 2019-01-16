@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(220, 213, 95)',
     right: 0,
     borderRadius: 3,
-    zIndex: 9999,
+    zIndex: 10001,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

@@ -277,9 +277,21 @@ export default class Column extends React.Component<ColumnProps, any> {
     });
   }
 
+  getAssistantFromProviderSchedule = () => {
+    const { colData, providerSchedule } = this.props;
+    const columnDate = moment(colData).format('YYYY-MM-DD').toString();
+    const scheduleAtDay = providerSchedule[columnDate];
+    if (scheduleAtDay && scheduleAtDay.length) {
+      return scheduleAtDay[0].assistantAssignment;
+    }
+    return null;
+  };
+
   renderAssistants = () => {
-    const { colData, apptGridSettings, selectedFilter } = this.props;
-    const assistant = colData.assistantAssignment ? colData.assistantAssignment : null;
+    const { colData, apptGridSettings } = this.props;
+    const assistant = colData.assistantAssignment ?
+      colData.assistantAssignment :
+      this.getAssistantFromProviderSchedule();
     if (assistant === null) { return null; }
 
     const startTime = apptGridSettings.minStartTime;
@@ -321,7 +333,7 @@ export default class Column extends React.Component<ColumnProps, any> {
   };
 
   render() {
-    const { apptGridSettings, showRoomAssignments, showAssistantAssignments } = this.props;
+    const { apptGridSettings, showRoomAssignments, showAssistantAssignments, providerSchedule } = this.props;
     const rooms = showRoomAssignments ? this.renderRooms() : null;
     const assistants = showAssistantAssignments ? this.renderAssistants() : null;
     return (
