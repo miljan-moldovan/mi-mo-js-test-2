@@ -277,13 +277,58 @@ export default class Column extends React.Component<ColumnProps, any> {
     });
   }
 
+  renderAssistants = () => {
+    const { colData, apptGridSettings, selectedFilter } = this.props;
+    const assistant = colData.assistantAssignment ? colData.assistantAssignment : null;
+    if (assistant === null) { return null; }
+
+    const startTime = apptGridSettings.minStartTime;
+    const startTimeMoment = this.convertFromTimeToMoment(startTime);
+    return assistant.timeIntervals.map(timeInterval => {
+      const startTimeDifference = this.convertFromTimeToMoment(
+        timeInterval.start,
+      ).diff(startTimeMoment, 'minutes');
+      const endTimeDifference = this.convertFromTimeToMoment(
+        timeInterval.end,
+      ).diff(startTimeMoment, 'minutes');
+      const startPos = startTimeDifference / apptGridSettings.step * 30;
+      const endPos = endTimeDifference / apptGridSettings.step * 30;
+      const height = endPos - startPos;
+      const containerStyle = [
+        styles.assistantContainer,
+        {
+          height,
+          top: startPos,
+        },
+      ];
+      const textStyle = [
+        styles.assistantText,
+        {
+          maxHeight: height,
+          minWidth: height,
+          maxWidth: height,
+        },
+      ];
+      return (
+        <View
+          key={assistant.id}
+          style={containerStyle}
+        >
+          <Text style={textStyle} numberOfLines={1}>{assistant.name}</Text>
+        </View>
+      );
+    });
+  };
+
   render() {
-    const { apptGridSettings, showRoomAssignments } = this.props;
+    const { apptGridSettings, showRoomAssignments, showAssistantAssignments } = this.props;
     const rooms = showRoomAssignments ? this.renderRooms() : null;
+    const assistants = showAssistantAssignments ? this.renderAssistants() : null;
     return (
       <View style={styles.colContainer}>
         {apptGridSettings.schedule.map(this.renderCell)}
         {rooms}
+        {assistants}
       </View>
     );
   }

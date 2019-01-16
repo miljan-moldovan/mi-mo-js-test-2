@@ -1412,7 +1412,6 @@ class NewAppointmentScreen extends React.Component<any, any> {
         {toast
           ? <SalonToast
             timeout={5000}
-            timeout={5000}
             type={toast.type}
             description={toast.text}
             hide={this.hideToast}

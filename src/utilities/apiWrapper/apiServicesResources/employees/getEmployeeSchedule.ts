@@ -2,6 +2,7 @@ import axios from 'axios';
 import { cancelRequest } from '@/utilities/helpers/cancelRequest';
 import { getApiInstance } from '../../api';
 import { ResponseEmployeeSchedule, EmployeeSchedule } from '@/models';
+import { getEmployeesScheduleDates } from '@/utilities/apiWrapper/apiServicesResources/employees/index';
 
 let cancellationToken = null;
 

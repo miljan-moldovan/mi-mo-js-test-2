@@ -52,5 +52,27 @@ const styles = StyleSheet.create({
     color: 'white',
     transform: [{ rotate: '-90deg' }],
   },
+  assistantContainer: {
+    position: 'absolute',
+    width: 16,
+    backgroundColor: 'rgb(220, 213, 95)',
+    right: 0,
+    borderRadius: 3,
+    zIndex: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  assistantText: {
+    fontSize: 11,
+    lineHeight: 11,
+    minHeight: 11,
+    textAlign: 'right',
+    margin: 0,
+    marginTop: 10,
+    padding: 0,
+    color: 'black',
+    transform: [{ rotate: '-90deg' }],
+  },
 });
 export default styles;

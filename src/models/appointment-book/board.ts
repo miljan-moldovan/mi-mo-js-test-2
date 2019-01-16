@@ -7,6 +7,7 @@ export interface BoardProps {
   columns: any[],
   apptGridSettings: ApptGridSettings,
   showRoomAssignments: boolean,
+  showAssistantAssignments: boolean,
   cellWidth: number,
   selectedFilter: string,
   providerSchedule: ProviderSchedule[],

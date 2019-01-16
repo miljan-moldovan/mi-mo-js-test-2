@@ -2056,6 +2056,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               selectedProvider={selectedProvider}
               selectedFilter={selectedFilter}
               showRoomAssignments={filterOptions.showRoomAssignments}
+              showAssistantAssignments={filterOptions.showAssistantAssignments}
               providerSchedule={providerSchedule}
               availability={availability}
               isLoading={isLoading}
