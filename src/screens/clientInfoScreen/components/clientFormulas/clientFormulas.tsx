@@ -37,6 +37,7 @@ interface Props {
   clientFormulasActions: any;
   clientFormulasState: any;
   handleOnNavigateBack?: any;
+  settingsActions: any,
 }
 
 interface State {
@@ -105,9 +106,18 @@ class ClientFormulas extends React.Component<Props, State> {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getFormulas();
+    this.props.settingsActions.getSettingsByName('AvailableFormulaTypes', this.setFilterType);
   }
+
+  setFilterType = (result, data) => {
+    const newFilterTypes = data && data.settingValue && data.settingValue.split(',') || [];
+    this.setState({
+      activeTypes: newFilterTypes,
+      existingTypes: [...newFilterTypes],
+    });
+  };
 
   onPressTagFilter = (value) => {
     const filterTypes = this.state.activeTypes;
@@ -129,10 +139,6 @@ class ClientFormulas extends React.Component<Props, State> {
       } else {
         const formulas = this.props.clientFormulasState.formulas.sort(ClientFormulas.compareByDate);
         this.props.clientFormulasActions.setFilteredFormulas(formulas);
-        this.setState({
-          activeTypes: this.existingTypes(),
-          existingTypes: this.existingTypes(),
-        });
       }
     });
   };
@@ -228,7 +234,6 @@ class ClientFormulas extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.props, 'check')
     return (
       <View style={this.state.styles.container}>
         { this.props.clientFormulasState.isLoading &&
@@ -284,7 +289,7 @@ class ClientFormulas extends React.Component<Props, State> {
               keyExtractor={({ item, index }: { item: any, index: any }) => index}
               style={{ alignSelf: 'stretch', marginTop: 4 }}
               data={this.props.clientFormulasState.filtered}
-              renderItem={({ item, index }: { item: any, index: any },) => (
+              renderItem={({ item, index }: { item: any, index: any }) => (
                 <SalonCard
                   key={index}
                   containerStyles={{ marginVertical: 2, marginHorizontal: 8 }}
