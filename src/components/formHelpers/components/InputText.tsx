@@ -7,7 +7,17 @@ import {
 
 import { styles } from '../index';
 
-export default class InputText extends React.Component {
+export default class InputText extends React.Component<any, any> {
+
+
+  static defaultProps = {
+    autoFocus: false,
+    isEditable: true,
+    multiline: false,
+    placeholder: '',
+  };
+
+
   constructor(props) {
     super(props);
   }
@@ -26,6 +36,8 @@ export default class InputText extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
+
+  
     if (nextProps.autoFocus) {
       if (nextProps.isEditable) {
         if (this.input && !this.input.isFocused()) {
@@ -37,6 +49,13 @@ export default class InputText extends React.Component {
     }
   }
 
+
+  onSubmitEditing = () => {
+    if (!this.props.multiline) {
+      this.input.blur();
+    }
+  }
+
   render() {
     return (
       <View pointerEvents={this.state.editable ? 'auto' : 'none'}>
@@ -44,8 +63,8 @@ export default class InputText extends React.Component {
           ref={(input) => { this.input = input; }}
           {...this.props}
           style={styles.textArea}
-          onSubmitEditing={() => this.input.blur()}
-          multiline
+          onSubmitEditing={this.onSubmitEditing}
+          multiline={this.props.multiline}
           autoGrow
           numberOfLines={2}
           placeholderTextColor="#727A8F"

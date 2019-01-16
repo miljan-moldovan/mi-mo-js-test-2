@@ -227,6 +227,7 @@ class ClientFormulas extends React.Component<Props, State> {
   }
 
   render() {
+    
     return (
       <View style={this.state.styles.container}>
         { this.props.clientFormulasState.isLoading &&

@@ -63,7 +63,7 @@ const defaultClient = {
   name: '',
   middleName: '',
   lastName: '',
-  loyalty: null,
+  loyaltyNumber: null,
   birthday: '',
   age: ages[1],
   clientCode: null,
@@ -71,10 +71,8 @@ const defaultClient = {
   phones: [{ type: 0, value: '' }],
   email: '',
   confirmBy: null,
-  requireCard: null,
   declineEmail: null,
   declineAddress: null,
-  confirmationNote: null,
   street1: '',
   city: '',
   state: null,
@@ -106,7 +104,7 @@ interface State {
   name: string,
   middleName: string,
   lastName: string,
-  loyalty: number,
+  loyaltyNumber: number,
   birthday: string,
   age: number,
   clientCode: number,
@@ -117,7 +115,6 @@ interface State {
   requireCard: any,
   declineAddress: any,
   declineEmail: any,
-  confirmationNote: any,
   street1: string,
   city: string,
   state: any,
@@ -226,6 +223,9 @@ class ClientDetails extends React.Component<Props, State> {
   }
 
   onChangeClientField = (field: string, value: any, type?: any) => {
+
+  
+
     let newClient;
 
     if (field === 'phone') {
@@ -260,10 +260,6 @@ class ClientDetails extends React.Component<Props, State> {
   onChangeClientReferralTypes = (option) => {
     this.setReferredOptionOther(false);
     this.onChangeClientField('clientReferralType', option);
-  };
-
-  onChangeInputSwitch = () => {
-    this.setState({ requireCard: !this.state.requireCard });
   };
 
   onValidateReferred = isValid => {
@@ -557,6 +553,8 @@ class ClientDetails extends React.Component<Props, State> {
     let phones = reject(this.state.client.phones, ['value', null]);
     phones = reject(phones, ['value', '']);
 
+  
+
     const client = {
       firstName: this.state.client.name,
       lastName: this.state.client.lastName,
@@ -574,14 +572,11 @@ class ClientDetails extends React.Component<Props, State> {
         zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
       },
       gender: this.state.client.gender ? this.state.client.gender.value : null,
-      loyaltyNumber: this.state.client.loyalty,
+      loyaltyNumber: this.state.client.loyaltyNumber,
       confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
       clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,
-      requireCard: this.state.requireCard,
-      confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
       clientPreferenceProviderType: 1,
-      preferredProviderId: null,
       clientCode: this.state.client.clientCode ? this.state.client.clientCode :  null,
       receivesEmail: true,
       occupationId: null,
@@ -660,24 +655,7 @@ class ClientDetails extends React.Component<Props, State> {
       let isValidZipCode = false;
 
       if (client.address) {
-        if (typeof client.address === 'string' || client.address instanceof String) {
-          const matches = client.address.match(this.isValidAddress);
-          client.address = {};
-          if (matches && matches.length > 4) {
-            const street = matches[1];
-            const city = matches[2];
-
-            const zipCode = matches[4];
-
-            client.street1 = street.trim();
-            client.city = city.trim();
-            const state = find(states, { value: matches[3].trim().toUpperCase() });
-            client.state = state;
-
-            client.zipCode = zipCode.trim();
-          }
-
-        }else if (client.address.street1 === 'decline') {
+        if (client.address.street1 === 'decline') {
 
           client.state =  declineState;
           client.street1 = client.address.street1;
@@ -718,6 +696,9 @@ class ClientDetails extends React.Component<Props, State> {
       client.clientReferralType = clientReferralType;
 
       client.age = client.age ? client.age :  ages[1];
+    
+      client.confirmBy =  client.contactType ? find(confirmByTypes,
+        { key: client.contactType }) :  confirmByTypes[0];
 
       if (client.clientReferralType) {
         this.setReferredOptionOther(false);
@@ -1014,13 +995,13 @@ class ClientDetails extends React.Component<Props, State> {
       <InputGroup>
         <LabeledTextInput
           label="Loyalty Number"
-          value={this.state.client.loyalty}
+          value={this.state.client.loyaltyNumber}
           onChangeText={(text) => {
-            this.onChangeClientField('loyalty', text);
+            this.onChangeClientField('loyaltyNumber', text);
           }}
           placeholder=""
           keyboardType="number-pad"
-          inputStyle={this.state.client.loyalty ? {} : this.state.styles.inputStyle}
+          inputStyle={this.state.client.loyaltyNumber ? {} : this.state.styles.inputStyle}
         />
         <InputDivider />
         <InputPicker
@@ -1031,23 +1012,6 @@ class ClientDetails extends React.Component<Props, State> {
           }}
           defaultOption={this.state.client.confirmBy}
           options={confirmByTypes}
-        />
-        <InputDivider />
-        <InputSwitch
-          style={this.state.styles.inputSwitch}
-          textStyle={this.state.styles.inputSwitchText}
-          onChange={this.onChangeInputSwitch}
-          value={this.state.requireCard}
-          text="Req. card on file to book"
-        />
-        <InputDivider style={this.state.styles.inputDivider} />
-        <LabeledTextarea
-          label="Notes"
-          placeholder=""
-          onChangeText={(text) => {
-            this.onChangeClientField('confirmationNote', text);
-          }}
-          value={this.state.client.confirmationNote}
         />
       </InputGroup>
     );
