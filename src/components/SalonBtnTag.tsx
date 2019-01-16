@@ -14,6 +14,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 3,
     marginHorizontal: 2,
+    width: 70,
+    paddingHorizontal: 10,
   },
   text: {
     fontFamily: 'Roboto',
@@ -27,15 +29,50 @@ const styles = StyleSheet.create({
   },
 });
 
-class salonBtnTag extends React.Component {
+class SalonBtnTag extends React.Component<any, any> {
+
+  static propTypes = {
+    isVisible: PropTypes.bool.isRequired,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    valueSize: PropTypes.number,
+    tagHeight: PropTypes.number,
+    iconSize: PropTypes.number,
+    onPress: PropTypes.func,
+    activeStyle: PropTypes.shape({
+      icon: PropTypes.string,
+
+    }),
+    inactiveStyle: PropTypes.shape({
+      icon: PropTypes.string,
+
+    }),
+  };
+
+  static defaultProps = {
+    valueSize: 14,
+    tagHeight: 24,
+    iconSize: null,
+    activeStyle: {
+      backgroundColor: '#1DBF12',
+      valueColor: '#FFFFFF',
+      iconColor: '#FFFFFF',
+      icon: 'check',
+      iconSize: 10,
+    },
+    inactiveStyle: {
+      backgroundColor: '#FFFFFF',
+      valueColor: '#727A8F',
+      icon: 'square',
+      iconColor: '#727A8F',
+      iconSize: 15,
+    },
+    onPress: () => {},
+  };
+
   constructor(props) {
     super(props);
     const tagStyle = props.isVisible ? props.activeStyle : props.inactiveStyle;
     this.state = { tagStyle };
-  }
-
-  state = {
-    tagStyle: {},
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,34 +81,39 @@ class salonBtnTag extends React.Component {
   }
 
   render() {
-    const onPress = this.props.onPress ?
-      this.props.onPress : null;
-
+    const onPress = this.props.onPress ? this.props.onPress : null;
+    const { tagStyle } = this.state;
     return (
-
       <SalonTouchableHighlight
+        // @ts-ignore
         onPress={() => onPress(this.props.value)}
         underlayColor="transparent"
         style={styles.btnContainer}
       >
-        <View style={[styles.container, {
-    backgroundColor: this.state.tagStyle.backgroundColor,
-    height: this.props.tagHeight,
-  }]}
+        <View
+          style={
+            [
+              styles.container,
+              {
+                backgroundColor: tagStyle.backgroundColor,
+                height: this.props.tagHeight,
+              },
+            ]
+          }
         >
-          {this.state.tagStyle.icon &&
-          <Icon
-            size={this.props.iconSize ? this.props.iconSize : this.state.tagStyle.iconSize}
-            name={this.state.tagStyle.icon}
-            style={[styles.icon, { color: this.state.tagStyle.iconColor }]}
-          />
-    }
-
-          <Text style={[styles.text, {
-          fontSize: this.props.valueSize,
-          color: this.state.tagStyle.valueColor,
-        }]}
-          >{this.props.value}
+          {
+            tagStyle.icon && <Icon
+              size={this.props.iconSize ? this.props.iconSize : tagStyle.iconSize}
+              name={this.state.tagStyle.icon}
+              style={[styles.icon, { color: tagStyle.iconColor }]}
+            />
+          }
+          <Text
+            numberOfLines={1}
+            ellipsizeMode={'tail'}
+            style={[styles.text, { fontSize: this.props.valueSize, color: tagStyle.valueColor }]}
+          >
+            {this.props.value}
           </Text>
         </View>
       </SalonTouchableHighlight>
@@ -79,42 +121,4 @@ class salonBtnTag extends React.Component {
   }
 }
 
-salonBtnTag.propTypes = {
-  isVisible: PropTypes.bool.isRequired,
-  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-  valueSize: PropTypes.number,
-  tagHeight: PropTypes.number,
-  iconSize: PropTypes.number,
-  onPress: PropTypes.func,
-  activeStyle: PropTypes.shape({
-    icon: PropTypes.string,
-
-  }),
-  inactiveStyle: PropTypes.shape({
-    icon: PropTypes.string,
-
-  }),
-};
-
-salonBtnTag.defaultProps = {
-  valueSize: 14,
-  tagHeight: 24,
-  iconSize: null,
-  activeStyle: {
-    backgroundColor: '#1DBF12',
-    valueColor: '#FFFFFF',
-    iconColor: '#FFFFFF',
-    icon: 'check',
-    iconSize: 10,
-  },
-  inactiveStyle: {
-    backgroundColor: '#FFFFFF',
-    valueColor: '#727A8F',
-    icon: 'square',
-    iconColor: '#727A8F',
-    iconSize: 15,
-  },
-  onPress: () => {},
-};
-
-export default salonBtnTag;
+export default SalonBtnTag;

@@ -1,5 +1,4 @@
 export * from './context-menu';
-export * from './new-appointment';
 export * from './api';
 export * from './appointment-options';
 export * from './cards';

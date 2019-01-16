@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   ViewPropTypes,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { get, isString } from 'lodash';
@@ -259,41 +260,55 @@ LabeledButton.defaultProps = {
   value: null,
 };
 
-const LabeledTextInput = props => (
-  <View
-    style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}
-  >
-    <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
-    {props.mask
-      ? <TextInputMask
-        {...props}
-        style={[
-          styles.inputText,
-          { textAlign: 'right', flex: 1 },
-          props.inputStyle,
-        ]}
-        numberOfLines={1}
-        value={props.value}
-        placeholder={props.placeholder}
-        placeholderTextColor="#727A8F"
-      />
-      : <TextInput
-        {...props}
-        style={[
-          styles.inputText,
-          { textAlign: 'right', flex: 1 },
-          props.inputStyle,
-        ]}
-        numberOfLines={1}
-        value={props.value}
-        placeholder={props.placeholder}
-        placeholderTextColor="#727A8F"
-      />}
+const LabeledTextInput = props => {
+  let textInputRef = null;
 
-    {props.icon}
+  const handelFocus = () => {
+    textInputRef && textInputRef.input
+      ? textInputRef.input.focus()
+      : textInputRef.focus();
+  };
 
-  </View>
-);
+  return (
+    <TouchableWithoutFeedback onPress={handelFocus}>
+    <View
+      style={[styles.inputRow, { justifyContent: 'space-between' }, props.style]}
+    >
+      <Text style={[styles.labelText, props.labelStyle]}>{props.label}</Text>
+      {props.mask
+        ? <TextInputMask
+          {...props}
+          style={[
+            styles.inputText,
+            { textAlign: 'right', flex: 1 },
+            props.inputStyle,
+          ]}
+          numberOfLines={1}
+          ref={(ref) => textInputRef = ref}
+          value={props.value}
+          placeholder={props.placeholder}
+          placeholderTextColor="#727A8F"
+        />
+        : <TextInput
+          {...props}
+          ref={(ref) => textInputRef = ref}
+          style={[
+            styles.inputText,
+            { textAlign: 'right', flex: 1 },
+            props.inputStyle,
+          ]}
+          numberOfLines={1}
+          value={props.value}
+          placeholder={props.placeholder}
+          placeholderTextColor="#727A8F"
+        />}
+
+      {props.icon}
+
+    </View>
+    </TouchableWithoutFeedback>
+  )
+};
 
 export {
   styles,

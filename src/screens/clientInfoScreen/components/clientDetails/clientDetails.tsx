@@ -1180,7 +1180,11 @@ class ClientDetails extends React.Component<Props, State> {
             <ActivityIndicator />
           </View>
           :
-          <KeyboardAwareScrollView extraHeight={300}>
+
+          <KeyboardAwareScrollView
+            keyboardShouldPersistTaps={'always'}
+            extraHeight={300}
+          >
             <View pointerEvents={this.state.pointerEvents}>
               <SectionDivider />
                 {this.renderNameSection()}
