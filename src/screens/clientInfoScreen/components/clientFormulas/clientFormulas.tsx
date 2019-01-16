@@ -67,7 +67,8 @@ class ClientFormulas extends React.Component<Props, State> {
           if (item.service.name.toLowerCase().indexOf(info[n].Values) > -1) {
             count += 1;
           }
-        } else if ((typeof item[info[n].Field]) === 'string' && item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
+        } else if ((typeof item[info[n].Field]) === 'string'
+          && item[info[n].Field] && item[info[n].Field].toLowerCase().indexOf(info[n].Values) > -1) {
           count += 1;
         }
       }
@@ -118,7 +119,7 @@ class ClientFormulas extends React.Component<Props, State> {
     }
     this.setState({ activeTypes: filterTypes });
     this.filterFormulas(null, this.state.showDeleted);
-  }
+  };
 
   getFormulas = () => {
     this.props.clientFormulasActions.getClientFormulas(this.state.client.id).then((response) => {
@@ -134,12 +135,12 @@ class ClientFormulas extends React.Component<Props, State> {
         });
       }
     });
-  }
+  };
 
   getFormulaTypeName = (id) => {
     const type = find(formulaTypes, { id });
     return type.name;
-  }
+  };
 
   existingTypes = () => {
     const { formulas } = this.props.clientFormulasState;
@@ -155,7 +156,7 @@ class ClientFormulas extends React.Component<Props, State> {
     }
 
     return existing;
-  }
+  };
 
   filterFormulas(searchText: string, showDeleted?: boolean) {
     const baseFormulas = showDeleted ? this.props.clientFormulasState.formulas :
@@ -227,6 +228,7 @@ class ClientFormulas extends React.Component<Props, State> {
   }
 
   render() {
+    console.log(this.props, 'check')
     return (
       <View style={this.state.styles.container}>
         { this.props.clientFormulasState.isLoading &&
@@ -325,7 +327,9 @@ class ClientFormulas extends React.Component<Props, State> {
                   bodyChildren={[
                     <View style={{ flexDirection: 'column', height: 33 }} key={Math.random().toString()}>
                       <Text style={this.state.styles.formulaTextTitle}>
-                        <Text style={[this.state.styles.formulaTextTitle, this.state.styles.boldText]}>{item.service.name}</Text>
+                        <Text style={[this.state.styles.formulaTextTitle, this.state.styles.boldText]}>
+                          {item.service.name}
+                        </Text>
                         <Text style={this.state.styles.italicText}> by</Text> {item.stylistName}
                       </Text>
                       <Text style={this.state.styles.formulaText}>{item.store.name}</Text>
@@ -340,7 +344,9 @@ class ClientFormulas extends React.Component<Props, State> {
                   this.setState({ showDeleted: !this.state.showDeleted });
                 }}
               >
-                <Text style={this.state.styles.showDeletedText}>{this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}</Text>
+                <Text style={this.state.styles.showDeletedText}>
+                  {this.state.showDeleted ? 'Hide deleted' : 'Show deleted'}
+                </Text>
               </SalonTouchableOpacity>
             </View>
           </ScrollView>
