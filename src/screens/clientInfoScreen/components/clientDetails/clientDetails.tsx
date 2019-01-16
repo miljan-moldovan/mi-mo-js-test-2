@@ -932,7 +932,10 @@ class ClientDetails extends React.Component<Props, State> {
           </View>
           :
 
-          <KeyboardAwareScrollView extraHeight={300} /*enableAutoAutomaticScroll={false}*/>
+          <KeyboardAwareScrollView
+            keyboardShouldPersistTaps={'always'}
+            extraHeight={300}
+          >
             <View pointerEvents={this.state.pointerEvents}>
               <SectionDivider />
               <InputGroup>
