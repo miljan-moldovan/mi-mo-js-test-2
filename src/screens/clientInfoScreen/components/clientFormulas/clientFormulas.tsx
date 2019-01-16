@@ -55,7 +55,6 @@ interface Props {
 }
 
 interface State {
-  styles: any;
   client: any;
   activeTypes: any;
   existingTypes: any;
