@@ -15,17 +15,17 @@ const SalonHeader = (props) => {
   const headerTitle = createHeaderTitle(title, subTitle);
 
   return (
-      <View style={styles.container}>
-        <View style={styles.headerLeft}>
-          {headerLeft}
-        </View>
-        <View style={styles.headerTitle}>
-          {headerTitle}
-        </View>
-        <View style={styles.headerRight}>
-          {headerRight}
-        </View>
+    <View style={styles.container}>
+      <View style={styles.headerLeft}>
+        {headerLeft}
       </View>
+      <View style={styles.headerTitle}>
+        {headerTitle}
+      </View>
+      <View style={styles.headerRight}>
+        {headerRight}
+      </View>
+    </View>
   );
 };
 
@@ -36,7 +36,7 @@ const createHeaderTitle = (title, subTitle) => {
 
   return (
     <React.Fragment>
-      <Text style={styles.titleText}>{title}</Text>
+      <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
       {
         subTitle && createSubstring(subTitle)
       }
@@ -48,9 +48,8 @@ const createSubstring = (subTitle) => {
   if (!isString(subTitle)) {
     return subTitle;
   }
-
   return (
-    <Text style={styles.subTitleText}>{subTitle}</Text>
+    <Text style={styles.subTitleText} numberOfLines={1}>{subTitle}</Text>
   );
 };
 

@@ -121,23 +121,19 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
           const employeeScheduledIntervals = flatten(schedule.scheduledIntervals.map(employeeInterval => {
             const momentEmployeeStart = moment(employeeInterval.start, DateTime.time);
             const momentEmployeeEnd = moment(employeeInterval.end, DateTime.time);
-
             return storeSchedule.scheduledIntervals.map(storeInterval => {
               const momentStoreStart = moment(storeInterval.start, DateTime.time);
               const momentStoreEnd = moment(storeInterval.end, DateTime.time);
-
               const overlapInterval = areDateRangeOverlapped(
                 momentEmployeeStart, momentEmployeeEnd, momentStoreStart, momentStoreEnd,
               );
-
               if (!overlapInterval) {
                 return null;
               }
-
               const start = momentEmployeeStart.isBefore(momentStoreStart)
                 ? storeInterval.start : employeeInterval.start;
-              const end = momentEmployeeEnd.isAfter(momentStoreEnd) ? storeInterval.end : employeeInterval.end;
-
+              const end = momentEmployeeEnd.isAfter(momentStoreEnd)
+                ? storeInterval.end : employeeInterval.end;
               return {
                 startsAt: moment.duration(start),
                 endsAt: moment.duration(end),

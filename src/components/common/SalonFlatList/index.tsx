@@ -29,8 +29,8 @@ interface DividerProps {
 
 const Divider = (props: DividerProps) => {
   const style = props.fullWidth ? props.style : [props.style, { marginLeft: 15 }];
-  return <View style={style} />
-}
+  return <View style={style} />;
+};
 
 class SalonFlatList extends React.Component<SalonFlatListProps, SalonFlatListState> {
   styles = createStyleSheet(44); // list item height
@@ -55,7 +55,7 @@ class SalonFlatList extends React.Component<SalonFlatListProps, SalonFlatListSta
           ListFooterComponent={() => <Divider fullWidth={true} style={this.styles.divider} />}
         />
       </View>
-    )
+    );
   }
 }
 export default SalonFlatList;

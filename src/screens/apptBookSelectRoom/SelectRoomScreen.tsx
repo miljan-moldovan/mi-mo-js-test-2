@@ -1,20 +1,9 @@
 import * as React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 import SalonTouchableOpacity from '../../components/SalonTouchableOpacity';
 import { Store } from '../../utilities/apiWrapper';
-import {
-  InputGroup,
-  InputLabel,
-  InputDivider,
-} from '../../components/formHelpers';
-import headerStyles from '../../constants/headerStyles';
+import { InputDivider } from '../../components/formHelpers';
 import SalonHeader from '../../components/SalonHeader';
 
 export default class SelectRoomScreen extends React.Component {
@@ -40,15 +29,35 @@ export default class SelectRoomScreen extends React.Component {
       />
     ),
   })
+
+  constructor(props) {
+    super(props);
+    this.state.supportedRoomIds = props.navigation.state.params.supportedRooms.map(room => room.id);
+  }
+
   state = {
     isLoading: false,
     rooms: [],
-  }
+    supportedRoomIds: [],
+  };
 
   componentDidMount() {
     this.setState({ isLoading: true }, () => {
       Store.getRooms()
-        .then(rooms => this.setState({ isLoading: false, rooms }))
+        .then(rooms => {
+          const finalRoomsArray = [];
+          this.state.supportedRoomIds.forEach(roomId => {
+            const supportedRoom = rooms.find(room => room.id === roomId);
+            for (let i = 1; i <= supportedRoom.roomCount; i++) {
+              finalRoomsArray.push({
+                name: `${supportedRoom.name}#${i}`,
+                id: supportedRoom.id,
+                roomOrdinal: i,
+              });
+            }
+          });
+          return this.setState({ isLoading: false, rooms: finalRoomsArray });
+        })
         .catch(err => this.setState({ isLoading: false }));
     });
   }

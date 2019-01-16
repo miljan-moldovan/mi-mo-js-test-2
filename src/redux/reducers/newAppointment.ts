@@ -29,6 +29,7 @@ import {
   POPULATE_STATE_FROM_REBOOKED_APPT,
   SET_MAIN_EMPLOYEE,
   IS_BOOKED_BY_FIELD_ENABLED,
+  UPDATE_SERVICE_ITEMS,
 } from '../actions/newAppointment';
 import { Maybe, Client, PureProvider, Conflict, PureAppointment, AppointmentCard } from '@/models';
 import { ServiceItem } from '@/models/new-appointment';
@@ -186,7 +187,7 @@ export default function newAppointmentReducer(
         mainEmployee: data.mainEmployee,
         serviceItems: newServiceItems.map(item => {
           const employee = (item.service && item.service.employee && item.service.employee.id)
-          === (state.mainEmployee && state.mainEmployee.id)
+            === (state.mainEmployee && state.mainEmployee.id)
             ? data.mainEmployee
             : item.service.employee;
           return {
@@ -249,6 +250,11 @@ export default function newAppointmentReducer(
       return {
         ...state,
         serviceItems: data.serviceItems.slice(),
+      };
+    case UPDATE_SERVICE_ITEMS:
+      return {
+        ...state,
+        serviceItems: [...data.serviceItems],
       };
     case REMOVE_SERVICE_ITEM:
       const previousDeletedIds = state.deletedIds || [];
