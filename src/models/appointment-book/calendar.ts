@@ -51,4 +51,7 @@ export interface CalendarState {
   pan: any, //TO DO,
   pan2: any, //TO DO
   alert: any,
+  groupedAppointments: any,
+  groupedBlocks: any,
+  cardsArray: any,
 }
