@@ -620,21 +620,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       filterByProvider: true,
       client,
       selectedProvider: mainEmployee,
-      onChangeWithNavigation: (service, nav) => {
-        nav.navigate('ApptBookProvider', {
-          date,
-          mode: 'newAppointment',
-          dismissOnSelect: true,
-          selectedService: service,
-          selectedProvider: mainEmployee,
-          onChangeProvider: provider => {
-            if (!mainEmployee) {
-              this.props.newAppointmentActions.setMainEmployee(provider);
-            }
-            this.addService(service, provider);
-            nav.goBack();
-          },
-        });
+      onChangeService: service => {
+        this.addService(service, mainEmployee);
       },
     });
   };
@@ -665,21 +652,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         clientId: get(client, 'id', null),
         selectedProvider: mainEmployee,
         employeeId: mainEmployee.id,
-        onChangeWithNavigation: (service, nav) => {
-          nav.navigate('ApptBookProvider', {
-            date,
-            mode: 'newAppointment',
-            dismissOnSelect: true,
-            selectedService: service,
-            selectedProvider: mainEmployee,
-            onChangeProvider: provider => {
-              if (!mainEmployee) {
-                this.props.newAppointmentActions.setMainEmployee(provider);
-              }
-              this.addService(service, provider, guestId);
-              nav.goBack();
-            },
-          });
+        onChangeService: service => {
+          this.addService(service, mainEmployee, guestId);
         },
       });
     }
