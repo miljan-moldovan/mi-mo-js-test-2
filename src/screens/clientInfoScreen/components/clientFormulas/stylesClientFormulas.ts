@@ -1,16 +1,12 @@
-import {
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 
-const createStyleSheet = () => StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F1',
     flexDirection: 'column',
   },
   header: {
-    // flex: 2,
-    // paddingVertical: 10,
     alignSelf: 'stretch',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -170,7 +166,39 @@ const createStyleSheet = () => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  rootStyle: {
+    height: 56,
+    width: 56,
+    bottom: 25,
+    borderRadius: 56 / 2,
+    backgroundColor: '#115ECD',
+  },
+  searchStyle: {
+    paddingHorizontal: 8,
+  },
+  scrollViewStyle: {
+    alignSelf: 'stretch',
+  },
+  floatListStyle: {
+    alignSelf: 'stretch',
+    marginTop: 4,
+  },
+  salonCardStyle: {
+    marginVertical: 2,
+    marginHorizontal: 8,
+  },
+  salonTouchableStyle: {
+    marginRight: 10,
+  },
+  angleRight: {
+    marginLeft: 10,
+    color: '#115ECD',
+    fontSize: 22,
+  },
+  bodyChildren: {
+    flexDirection: 'column',
+    height: 33,
+  },
 });
 
-export default createStyleSheet;
 
