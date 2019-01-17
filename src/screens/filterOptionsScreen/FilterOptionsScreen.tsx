@@ -84,18 +84,13 @@ export default class FilterOptionsScreen extends React.Component<any, any> {
     this.state = {
       activeTab,
       searchText: '',
-      showResources: false,
-      checked: false,
     };
 
     this.props.navigation.setParams({ handleReset: this.handleReset });
   }
 
   componentWillMount() {
-    const { servicesState: { services } } = this.props;
-    if (services && services.length === 0) {
-      this.props.servicesActions.getServices();
-    }
+    this.props.servicesActions.getServices();
     this.onRefresh();
   }
 
@@ -111,21 +106,6 @@ export default class FilterOptionsScreen extends React.Component<any, any> {
       sortField: 'FirstName,LastName',
     });
   };
-
-  componentWillReceiveProps(nextProps: Readonly<any>, nextContext: any): void {
-    if (!this.state.checked) {
-      const { servicesState: { services } } = nextProps;
-      if (services && services.length > 0) {
-        const showResources = services.some(category =>
-          category.services.some(service =>
-            service.supportedResource));
-        this.setState({
-          showResources,
-          checked: true,
-        });
-      }
-    }
-  }
 
   handleReset = () => {
     this.handleChangeProvider('all');
@@ -222,7 +202,7 @@ export default class FilterOptionsScreen extends React.Component<any, any> {
           <OthersTab
             selectedFilter={selectedFilter}
             handleSelect={this.handleChangeOther}
-            showResources={this.state.showResources}
+            showResources={this.props.showResources}
           />
         );
       default:
