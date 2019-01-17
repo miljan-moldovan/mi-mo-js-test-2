@@ -21,6 +21,7 @@ export default class Board extends React.Component<BoardProps, any> {
     const {
       apptGridSettings,
       showRoomAssignments,
+      showAssistantAssignments,
       cellWidth,
       selectedFilter,
       providerSchedule,
@@ -50,6 +51,7 @@ export default class Board extends React.Component<BoardProps, any> {
         rooms={rooms}
         onCellPressed={this.props.onCellPressed}
         showRoomAssignments={showRoomAssignments}
+        showAssistantAssignments={showAssistantAssignments}
         displayMode={displayMode}
         startDate={startDate}
         createAlert={createAlert}

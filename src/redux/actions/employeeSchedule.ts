@@ -1,5 +1,4 @@
-import moment from 'moment';
-import { Employees } from '../../utilities/apiWrapper';
+import { Employees, AppointmentBook } from '../../utilities/apiWrapper';
 
 export const GET_EMPLOYEE_SCHEDULE_EXCEPTION =
   'employeeSchedule/GET_EMPLOYEE_SCHEDULE_EXCEPTION';
@@ -72,7 +71,7 @@ const getEmployeeScheduleException = (
 const getEmployeeSchedule = (employeeId, date, callback) => dispatch => {
   dispatch({ type: GET_EMPLOYEE_SCHEDULE });
 
-  return Employees.getEmployeeSchedule(employeeId, date)
+  return AppointmentBook.getAppointmentBookEmployees(date, employeeId)
     .then(response => {
       dispatch(getEmployeeScheduleSuccess(response));
       callback(true);

@@ -9,10 +9,10 @@ export default async ({ startDate, endDate, id }): Promise<ResponseEmployeeSched
   const apiInstance = await getApiInstance();
   cancelRequest(cancellationToken);
   return apiInstance
-    .get(`Employees/${id}/Schedule/${startDate}/${endDate}`, {
+    .get(`Employees/Schedule/${startDate}/${endDate}?ids=${id}`, {
       cancelToken: new axios.CancelToken(c => {
         cancellationToken = c;
       }),
     })
-    .then(({ data: { response } }) => response);
+    .then(({ data: { response } }) => response[0] ? response[0].value : response);
 };

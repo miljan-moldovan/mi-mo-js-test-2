@@ -16,6 +16,7 @@ export interface ColumnProps {
   rooms: RoomFromApi[],
   onCellPressed: Function,
   showRoomAssignments: boolean,
+  showAssistantAssignments: boolean,
   displayMode: string,
   startDate: string | Moment,
   createAlert: Function,
