@@ -14,5 +14,5 @@ export default async ({ startDate, endDate, id }): Promise<ResponseEmployeeSched
         cancellationToken = c;
       }),
     })
-    .then(({ data: { response } }) => response[0].value);
+    .then(({ data: { response } }) => response[0] ? response[0].value : response);
 };
