@@ -5,7 +5,8 @@ import { getRangeExtendedMoment } from '@/utilities/helpers';
 
 const extendedMoment = getRangeExtendedMoment();
 
-const serviceItemsSelector = state => state.newAppointmentReducer.serviceItems;
+const serviceItemsSelector = (state, item?) => item && item.type === 'ServiceItems' && item.value ||
+  state.newAppointmentReducer.serviceItems;
 
 const clientSelector = state => state.newAppointmentReducer.client;
 
