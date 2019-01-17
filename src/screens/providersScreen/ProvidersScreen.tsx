@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import moment, { isDate } from 'moment';
-import { get, includes, isFunction, isArray, map, filter, find } from 'lodash';
+import { get, includes, isNull, isFunction, isArray, map, filter, find } from 'lodash';
 import PropTypes from 'prop-types';
 import {
   getEmployeePhotoSource,
@@ -79,7 +79,7 @@ export interface ProvidersScreenState {
 class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScreenState> {
   static navigationOptions = ({ navigation }) => {
     const defaultProps = navigation.state.params &&
-    navigation.state.params.defaultProps
+      navigation.state.params.defaultProps
       ? navigation.state.params.defaultProps
       : {
         title: 'Providers',
@@ -92,34 +92,34 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
       ? navigation.state.params.ignoreNav
       : false;
     const { leftButton } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { leftButton: defaultProps.leftButton };
     const { rightButton } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { rightButton: defaultProps.rightButton };
     const { leftButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { leftButtonOnPress: defaultProps.leftButtonOnPress };
     const { rightButtonOnPress } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { rightButtonOnPress: defaultProps.rightButtonOnPress };
 
     const { title } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { title: defaultProps.title };
     const { subTitle } = navigation.state.params &&
-    navigation.state.params.headerProps &&
-    !ignoreNav
+      navigation.state.params.headerProps &&
+      !ignoreNav
       ? navigation.state.params.headerProps
       : { subTitle: defaultProps.subTitle };
     let customLeftButton = false;
@@ -310,7 +310,8 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
   get params() {
     const { navigation: { state }, availability } = this.props;
     const params = state.params || {};
-    const showFirstAvailable = !!availability;
+    let showFirstAvailable = get(params, 'showFirstAvailable', null);
+    showFirstAvailable = isNull(showFirstAvailable) ? !!availability : showFirstAvailable;
     const showAllProviders = get(params, 'showAllProviders', false);
     const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
@@ -375,7 +376,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
     } else if (isFunction(onChangeProvider)) {
       onChangeProvider(provider);
       if (dismissOnSelect) {
-       navigation.goBack();
+        navigation.goBack();
       }
     }
   };
@@ -459,15 +460,15 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
         />
 
         {showFirstAvailable &&
-        <React.Fragment>
-          <FirstAvailableRow onPress={this.handleOnChangeProvider} />
-          <InputDivider fullWidth={!this.currentData.length} />
-        </React.Fragment>}
+          <React.Fragment>
+            <FirstAvailableRow onPress={this.handleOnChangeProvider} />
+            <InputDivider fullWidth={!this.currentData.length} />
+          </React.Fragment>}
         {showAllProviders &&
-        <React.Fragment>
-          <AllProvidersRow onPress={this.handleOnChangeProvider} />
-          <InputDivider fullWidth={!this.currentData.length} />
-        </React.Fragment>}
+          <React.Fragment>
+            <AllProvidersRow onPress={this.handleOnChangeProvider} />
+            <InputDivider fullWidth={!this.currentData.length} />
+          </React.Fragment>}
         <SalonFlatList
           data={this.currentData}
           renderItem={this.renderItem}

@@ -50,6 +50,12 @@ import { CalendarProps, CalendarState } from '@/models/appointment-book/calendar
 import HeightHelper from '@/components/slidePanels/SalonCardDetailsSlide/helpers/heightHelper';
 import styles from './styles';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import {
+  TYPE_FILTER_PROVIDERS,
+  TYPE_FILTER_DESK_STAFF,
+  TYPE_PROVIDER,
+  GROUP_BY_DATE,
+} from '@/constants/filterTypes';
 
 import { findOverlappingAppointments } from './helpers';
 
@@ -64,6 +70,7 @@ const timeColumnWidth = 36;
 const cellHeight = 30;
 const initialHeightOfHeader = 300;
 const defaultBufferHeight = 110;
+const MASSAGE_OF_DAY_ALREADY_PASSED = 'Cannot move an appointment to a day that has already passed';
 
 export default class Calendar extends React.Component<CalendarProps, CalendarState> {
   constructor(props) {
@@ -260,36 +267,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
 // group appoitnments and block time by filterOption
-  setGroupedAppointments = ({
-                              blockTimes,
-                              appointments,
-                              selectedFilter,
-                              selectedProvider,
-                              displayMode,
-                            }) => {
-
-    let groupByCondition = ViewTypes[selectedFilter];
-    const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
-    if (isCanBeOnlyUser) {
-      if (selectedProvider === 'all') {
-        groupByCondition = groupByCondition[selectedProvider];
-      } else {
-        groupByCondition = groupByCondition[displayMode];
-      }
-    }
-
-    const groupedAppointments = groupBy(
-      appointments,
-      groupByCondition !== 'date'
-        ? groupByCondition
-        : item => moment(item.date).format(DateTime.date),
-    );
-    const groupedBlocks = groupBy(
-      blockTimes,
-      groupByCondition !== 'date'
-        ? groupByCondition
-        : item => moment(item.date).format(DateTime.date),
-    );
+  setGroupedAppointments = (data) => {
+    const { groupedAppointments, groupedBlocks } = this.prepareDataForUpdate(data);
 
     const cardsArray = mergeWith(
       { ...groupedAppointments },
@@ -299,12 +278,63 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     );
 
     const overlappingCardsMap = this.setCardsOverlappingMap(cardsArray);
+
     this.setState({
       groupedAppointments,
       groupedBlocks,
       overlappingCardsMap,
       cardsArray,
     });
+  };
+
+  prepareDataForUpdate = (data) => {
+    const {
+      blockTimes,
+      appointments,
+      selectedFilter,
+      selectedProvider,
+      displayMode,
+    } = data;
+
+    const groupByCondition = this.getGroupByCondition(selectedFilter, selectedProvider, displayMode);
+
+    return this.groupBy(groupByCondition, blockTimes, appointments);
+  };
+
+  getGroupByCondition = (selectedFilter, selectedProvider, displayMode) => {
+
+    const isCanBeOnlyUser = selectedFilter === TYPE_FILTER_PROVIDERS || selectedFilter === TYPE_FILTER_DESK_STAFF;
+
+    if (isCanBeOnlyUser) {
+      if (selectedProvider === TYPE_PROVIDER) {
+        return ViewTypes[selectedFilter][selectedProvider];
+      } else {
+        return ViewTypes[selectedFilter][displayMode];
+      }
+    }
+
+    return ViewTypes[selectedFilter];
+  };
+
+  groupBy = (groupByCondition, blockTimes, appointments) => {
+    const groupedAppointments = groupBy(
+      appointments,
+      groupByCondition !== GROUP_BY_DATE
+        ? groupByCondition
+        : item => moment(item.date).format(DateTime.date),
+    );
+
+    const groupedBlocks = groupBy(
+      blockTimes,
+      groupByCondition !== GROUP_BY_DATE
+        ? groupByCondition
+        : item => moment(item.date).format(DateTime.date),
+    );
+
+    return {
+      groupedAppointments,
+      groupedBlocks,
+    };
   };
 
   setCardsOverlappingMap = (groupedCards = null) => {
@@ -1171,27 +1201,56 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   };
 
   // logic after dropping the card
-  handleMove = ({
-                  date,
-                  newTime,
-                  employeeId,
-                  id,
-                  resourceId = null,
-                  resourceOrdinal = null,
-                  roomId = null,
-                  roomOrdinal = null,
-                  newToTime,
-                }) => {
-    const { onDrop, appointments } = this.props;
+  handleMove = (data) => {
+    const { id } = data;
     const { buffer } = this.state;
-    const index = buffer.findIndex(appt => appt.id === id);
-    let oldAppointment = null;
-    if (index > -1) {
-      oldAppointment = buffer[index];
-      buffer.splice(index, 1);
-    } else {
-      oldAppointment = appointments.find(item => item.id === id);
+    const newBuffer = [...buffer];
+    const {
+      conflictsForPreviousDay: conflicts, dataForConflictsScreen, conflictData,
+      oldAppointment, dataForOnDrop, isPreviousDay,
+    } = this.getDataForHandelDropAppointment(data, newBuffer);
+
+    if (isPreviousDay) {
+      const params = this.generateParamsForConflictScreenAfterDropAppointment(
+        conflicts,
+        dataForConflictsScreen,
+        newBuffer,
+      );
+      this.hideAlert();
+      return this.props.navigation.navigate('Conflicts', params);
     }
+    // check for conflicts after moveing the card
+    this.props.checkConflicts(conflictData).then(({ data: { conflicts } }) => {
+      if (conflicts && conflicts.length > 0) {
+        const params = this.generateParamsForConflictScreenAfterDropAppointment(
+          conflicts,
+          dataForConflictsScreen,
+          newBuffer,
+        );
+        this.props.navigation.navigate('Conflicts', params);
+      } else {
+        this.handelDropWithoutConflicts(id, dataForOnDrop, oldAppointment, newBuffer);
+      }
+    });
+
+    this.hideAlert();
+  };
+
+  getDataForHandelDropAppointment = (data, buffer) => {
+    const {
+      date,
+      newTime,
+      employeeId,
+      id,
+      resourceId = null,
+      resourceOrdinal = null,
+      roomId = null,
+      roomOrdinal = null,
+      newToTime,
+    } = data;
+    const index = buffer.findIndex(appt => appt.id === id);
+    const oldAppointment = this.getOldAppointment(index, id, buffer);
+
     const conflictData = {
       actionName: CHECK_APPT_CONFLICTS,
       actionNameSuccess: CHECK_APPT_CONFLICTS_SUCCESS,
@@ -1212,68 +1271,109 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         ],
       },
     };
-    // check for conflicts after moveing the card
-    this.props.checkConflicts(conflictData).then(({ data: { conflicts } }) => {
-      if (conflicts && conflicts.length > 0) {
+
+    const conflictsForPreviousDay = [{
+      associativeKey: null,
+      bookAnyway: false,
+      canBeSkipped: false,
+      date: moment(date),
+      duration: oldAppointment.service.duration,
+      employeeFullName: oldAppointment.employee.fullName,
+      fromTime: oldAppointment.fromTime,
+      notes: null,
+      overlap: null,
+      price: 0,
+      reason: MASSAGE_OF_DAY_ALREADY_PASSED,
+      serviceDescription: null,
+      toTime: oldAppointment.toTime,
+    }];
+
+    const dataForOnDrop = {
+      date,
+      newTime,
+      employeeId,
+      resourceId,
+      resourceOrdinal,
+      roomId,
+      roomOrdinal,
+    };
+
+    const dataForConflictsScreen = {
+      index,
+      oldAppointment,
+      dataForOnDrop,
+      id,
+      date,
+      newTime,
+      newToTime,
+    };
+
+    const isPreviousDay = moment(date).isBefore(moment(), 'day');
+
+    return {
+      conflictData,
+      conflictsForPreviousDay,
+      dataForConflictsScreen,
+      oldAppointment,
+      index,
+      dataForOnDrop,
+      isPreviousDay,
+    };
+  };
+
+  getOldAppointment = (index, id, buffer) => {
+    const { appointments } = this.props;
+
+    if (index > -1) {
+      buffer.splice(index, 1);
+      return buffer[index];
+    }
+
+    return appointments.find(item => item.id === id);
+  };
+
+  generateParamsForConflictScreenAfterDropAppointment = (conflicts, dataForConflictsScreen, buffer) => {
+    const { onDrop, manageBuffer } = this.props;
+
+    const { index, oldAppointment, dataForOnDrop, id, date, newTime, newToTime } = dataForConflictsScreen;
+
+    if (index > -1) {
+      buffer.splice(index, 0, oldAppointment);
+    }
+
+    return {
+      date,
+      startTime: newTime,
+      endTime: newToTime,
+      conflicts,
+      handleDone: () => {
         if (index > -1) {
-          buffer.splice(index, 0, oldAppointment);
+          buffer.splice(index, 1);
         }
-        const params = {
-          date,
-          startTime: newTime,
-          endTime: newToTime,
-          conflicts,
-          handleDone: () => {
-            if (index > -1) {
-              buffer.splice(index, 1);
-            }
-            if (buffer.length > 0) {
-              this.props.manageBuffer(true);
-            }
-            onDrop(
-              id,
-              {
-                date,
-                newTime,
-                employeeId,
-                resourceId,
-                resourceOrdinal,
-                roomId,
-                roomOrdinal,
-              },
-              oldAppointment,
-            );
-          },
-          handleGoBack: () => {
-            if (buffer.length > 0) {
-              this.props.manageBuffer(true);
-            }
-          },
-          headerProps: {
-            btnRightText: 'Move anyway',
-          },
-        };
-        this.props.navigation.navigate('Conflicts', params);
-      } else {
-        if (buffer.length < 1) {
-          this.props.manageBuffer(false);
+        if (buffer.length > 0) {
+          manageBuffer(true);
         }
-        onDrop(
-          id,
-          {
-            date,
-            newTime,
-            employeeId,
-            resourceId,
-            resourceOrdinal,
-            roomId,
-            roomOrdinal,
-          },
-          oldAppointment,
-        );
-      }
-    });
-    this.hideAlert();
+        onDrop(id, dataForOnDrop, oldAppointment);
+      },
+      handleGoBack: () => {
+        if (buffer.length > 0) {
+          manageBuffer(true);
+        }
+      },
+      headerProps: {
+        btnRightText: 'Move anyway',
+      },
+    };
+  };
+
+  handelDropWithoutConflicts = (id, dataForOnDrop, oldAppointment, buffer) => {
+    const { onDrop, manageBuffer } = this.props;
+
+    if (buffer.length < 1) {
+      manageBuffer(false);
+    }
+
+    onDrop(id, dataForOnDrop, oldAppointment);
   };
 
   handleMoveBlock = ({

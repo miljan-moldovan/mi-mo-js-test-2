@@ -359,9 +359,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ],
           ) => {
-            orderBy(appointments, appt =>
-              moment(appt.fromTime, 'HH:mm').unix(),
-            );
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
               StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),

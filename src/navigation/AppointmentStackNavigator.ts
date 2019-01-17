@@ -1,6 +1,5 @@
 import { get } from 'lodash';
 import { createStackNavigator } from 'react-navigation';
-import headerStyles from '../constants/headerStyles';
 
 import NewAppointmentScreen from '../screens/newAppointmentScreen';
 import ProvidersScreen from '../screens/providersScreen';
@@ -35,13 +34,13 @@ import RecommendedServicesScreen from '../screens/recommendedServicesScreen';
 import RequiredServicesScreen from '../screens/requiredServicesScreen';
 import ProductsScreen from '../screens/productsScreen';
 import RecommendProductScreen from '../screens/recommendProductScreen';
-import SelectRoomScreen from '../screens/apptBookSelectRoom';
-import SelectResourceScreen from '../screens/apptBookSelectResource';
 import RoomAssignmentScreen from '../screens/roomAssignmentScreen';
 import ChangeDateTimeScreen from '../screens/newAppointmentScreen/components/ChangeDateTimeScreen';
 import CancelAppointmentScreen from '../screens/cancelAppointment';
 import ShowApptScreen from '../screens/showAppointmentsScreen';
 import RebookDialogScreen from '../screens/rebookDialogScreen';
+import SelectRoomScreen from '../screens/SelectRoomScreen';
+import SelectResourceScreen from '../screens/SelectResourceScreen';
 import TransitionConfiguration from './transitionConfiguration';
 
 const AppointmentStackNavigator = createStackNavigator(
