@@ -122,22 +122,23 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
 };
 
 const resetTimeForServices = (items: any, index: Maybe<number>,
-  initialFromTime: Maybe<string | moment.Moment>): any => {
+                              initialFromTime: Maybe<string | moment.Moment>): any => {
+  let prevItem = null;
   return items.map((item, i) => {
     if (i > index) {
-      const prevItem = items[i - 1];
       let fromTime = initialFromTime;
       if (prevItem) {
         fromTime = get(prevItem.service, 'toTime', initialFromTime);
       }
-      return {
+      prevItem = {
         ...item,
         service: {
-          ...item.service, fromTime, toTime: moment(item.service.fromTime).add(
+          ...item.service, fromTime, toTime: moment(fromTime).add(
             item.service.length,
           ),
         },
       };
+      return prevItem;
     }
   });
 };
