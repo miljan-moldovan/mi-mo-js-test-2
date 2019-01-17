@@ -36,8 +36,6 @@ export default class InputText extends React.Component<any, any> {
   }
 
   componentWillUpdate(nextProps) {
-
-  
     if (nextProps.autoFocus) {
       if (nextProps.isEditable) {
         if (this.input && !this.input.isFocused()) {
