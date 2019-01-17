@@ -283,7 +283,7 @@ class ClientFormulas extends React.Component<Props, State> {
               <Text style={styles.italicText}> by</Text>
               {item.stylistName}
             </Text>
-            <Text style={styles.formulaText}>{item.store.name}</Text>
+            <Text style={styles.formulaText}>{item.store ? item.store.name : '--'}</Text>
           </View>,
         ]}
       />

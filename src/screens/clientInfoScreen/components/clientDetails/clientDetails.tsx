@@ -18,8 +18,8 @@ import {
   ClientInput,
   SectionDivider,
   InputSwitch,
-  LabeledTextarea,
   ValidatableInput,
+  InputButton,
 } from '../../../../components/formHelpers';
 import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
 
@@ -173,8 +173,8 @@ class ClientDetails extends React.Component<Props, State> {
       isValidBirth: true,
       isValidReferred: false,
       birthdayPickerOpen: false,
-      maxChildAge: 1000,
-      maxAdultAge: 1000,
+      maxChildAge: null,
+      maxAdultAge: null,
       tooglePicker: false,
       trackClientAge: false,
       updateClientAge: false,
@@ -211,21 +211,9 @@ class ClientDetails extends React.Component<Props, State> {
     this.props.setHandleDone(this.handleDone);
     this.props.setHandleBack(this.handleBack);
     this.props.settingsActions.getSettings(this.calculateRequiredFields);
-    this.props.clientInfoActions.getClientReferralTypes((result) => {
-      if (result && this.props.actionType === 'update') {
-        this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
-      } else if (this.props.actionType === 'new') {
-        this.setState({
-          loadingClient: false,
-        });
-      }
-    });
   }
 
   onChangeClientField = (field: string, value: any, type?: any) => {
-
-  
-
     let newClient;
 
     if (field === 'phone') {
@@ -418,6 +406,27 @@ class ClientDetails extends React.Component<Props, State> {
     return isValid;
   };
 
+  getAgeFromBirthday = (birthday) => {
+
+    let ageEnum = agesEnum.Adult;
+
+    if (birthday && (this.state.maxChildAge ||  this.state.maxAdultAge)) {
+      const clientAge = moment().diff(birthday, 'years', false);
+
+      if (this.state.maxChildAge && clientAge <= this.state.maxChildAge) {
+        ageEnum = agesEnum.Child;
+      }else if (this.state.maxAdultAge && clientAge <= this.state.maxAdultAge) {
+        ageEnum = agesEnum.Adult;
+      }else {
+        ageEnum = agesEnum.Senior;
+      }
+    }
+
+    const age = find(ages, { key: ageEnum });
+
+    return age;
+  }
+
   calculateRequiredFields = (result, error) => {
 
     if (result) {
@@ -467,7 +476,15 @@ class ClientDetails extends React.Component<Props, State> {
         updateClientAge,
       });
 
-      this.validateReferred();
+      this.props.clientInfoActions.getClientReferralTypes((result) => {
+        if (result && this.props.actionType === 'update') {
+          this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+        } else if (this.props.actionType === 'new') {
+          this.setState({
+            loadingClient: false,
+          });
+        }
+      });
     }
   };
 
@@ -552,9 +569,6 @@ class ClientDetails extends React.Component<Props, State> {
   handleDone = () => {
     let phones = reject(this.state.client.phones, ['value', null]);
     phones = reject(phones, ['value', '']);
-
-  
-
     const client = {
       firstName: this.state.client.name,
       lastName: this.state.client.lastName,
@@ -612,6 +626,11 @@ class ClientDetails extends React.Component<Props, State> {
           if (this.props.onDismiss) {
             this.props.onDismiss(clientResult);
           } else {
+
+            if (this.props.navigation.state.params.onDismiss) {
+              this.props.navigation.state.params.onDismiss(clientResult);
+            }
+
             this.props.appointmentCalendarActions.setGridView();
             this.props.navigation.goBack();
           }
@@ -629,6 +648,7 @@ class ClientDetails extends React.Component<Props, State> {
   });
 
   handleClientSelection = (selectedClient) => {
+    
     this.setState({ selectedClient }, this.validateReferred);
   };
 
@@ -691,12 +711,13 @@ class ClientDetails extends React.Component<Props, State> {
       this.props.setHandleDone(this.handleDone);
       this.props.setHandleBack(this.handleBack);
 
+      
+
       const clientReferralType = find(this.props.clientInfoState.clientReferralTypes,
-        { key: client.clientReferralTypeId });
+        { key: client.myReferralTypeId });
       client.clientReferralType = clientReferralType;
 
-      client.age = client.age ? client.age :  ages[1];
-    
+      client.age = client.age ? client.age : this.getAgeFromBirthday(client.birthday);
       client.confirmBy =  client.contactType ? find(confirmByTypes,
         { key: client.contactType }) :  confirmByTypes[0];
 
@@ -706,13 +727,20 @@ class ClientDetails extends React.Component<Props, State> {
 
       client.gender = client.gender ? client.gender : genders[0];
 
+      const selectedClient = client.referredByClient ? client.referredByClient : null;
+
+      if (selectedClient) {
+        this.setReferredOptionClient(false);
+      }
+
       this.setState({
         client,
         declineAddress,
         loadingClient: false,
         isValidZipCode,
+        selectedClient,
         pointerEvents: this.props.editionMode ? 'auto' : 'none',
-      });
+      }, this.validateReferred);
     }
   };
 
@@ -1125,7 +1153,7 @@ class ClientDetails extends React.Component<Props, State> {
               }
             </FontAwesome>
           </SalonTouchableOpacity>
-          <ClientInput
+         <ClientInput
             label="Select Client"
             placeholder={false}
             selectedClient={this.state.selectedClient}
@@ -1205,7 +1233,26 @@ class ClientDetails extends React.Component<Props, State> {
               />
                 {this.renderReferredSection()}
               <SectionDivider />
-            </View>
+
+              {this.props.actionType === 'update' ?
+                <View>
+                  <InputGroup>
+                    <InputButton
+                      noIcon
+                      childrenContainerStyle={{
+                        justifyContent: 'center', alignItems: 'center',
+                      }}
+                      onPress={this.deleteClient}
+                    >
+                      <Text style={{ color: '#D1242A', fontFamily: 'Roboto-Medium' }}>Delete Client</Text>
+                    </InputButton>
+                  </InputGroup>
+                  <SectionDivider />
+                </View>
+                : null
+                }
+              </View>
+
           </KeyboardAwareScrollView>}
       </View>
     );

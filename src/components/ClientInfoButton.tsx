@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image } from 'react-native';
+import { Image, Alert } from 'react-native';
 import PropTypes from 'prop-types';
 import SalonTouchableOpacity from './SalonTouchableOpacity';
 import styles from './style';
@@ -12,14 +12,20 @@ class ClientInfoButton extends React.Component<any, any> {
   }
 
   goToClientInfo = () => {
-    this.props.navigation.navigate('ClientInfo', {
-      client: this.props.client,
-      apptBook: this.props.apptBook,
-      canDelete: this.props.canDelete,
-    });
-    if (this.props.onDonePress) {
-      this.props.onDonePress();
+    if (this.props.client.isDeleted) {
+      Alert.alert('The client was deleted');
+    }else {
+      this.props.navigation.navigate('ClientInfo', {
+        client: this.props.client,
+        apptBook: this.props.apptBook,
+        canDelete: this.props.canDelete,
+        onDismiss: this.props.onDismiss,
+      });
+      if (this.props.onDonePress) {
+        this.props.onDonePress();
+      }
     }
+
   };
 
   render() {
@@ -43,6 +49,7 @@ ClientInfoButton.defaultProps = {
   iconStyle: { },
   buttonStyle: {},
   canDelete: false,
+  onDismiss: () => {},
 };
 
 ClientInfoButton.propTypes = {
@@ -51,6 +58,7 @@ ClientInfoButton.propTypes = {
   apptBook: PropTypes.bool.isRequired,
   canDelete: PropTypes.bool,
   onDonePress: PropTypes.func.isRequired,
+  onDismiss: PropTypes.func,
   client: PropTypes.any.isRequired,
   navigation: PropTypes.any.isRequired,
 };
