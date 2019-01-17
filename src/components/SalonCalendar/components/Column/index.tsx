@@ -277,13 +277,70 @@ export default class Column extends React.Component<ColumnProps, any> {
     });
   }
 
+  getAssistantFromProviderSchedule = () => {
+    const { colData, providerSchedule } = this.props;
+    const columnDate = moment(colData).format('YYYY-MM-DD').toString();
+    const scheduleAtDay = providerSchedule[columnDate];
+    if (scheduleAtDay && scheduleAtDay.length) {
+      return scheduleAtDay[0].assistantAssignment;
+    }
+    return null;
+  };
+
+  renderAssistants = () => {
+    const { colData, apptGridSettings } = this.props;
+    const assistant = colData.assistantAssignment ?
+      colData.assistantAssignment :
+      this.getAssistantFromProviderSchedule();
+    if (assistant === null) { return null; }
+
+    const startTime = apptGridSettings.minStartTime;
+    const startTimeMoment = this.convertFromTimeToMoment(startTime);
+    return assistant.timeIntervals.map(timeInterval => {
+      const startTimeDifference = this.convertFromTimeToMoment(
+        timeInterval.start,
+      ).diff(startTimeMoment, 'minutes');
+      const endTimeDifference = this.convertFromTimeToMoment(
+        timeInterval.end,
+      ).diff(startTimeMoment, 'minutes');
+      const startPos = startTimeDifference / apptGridSettings.step * 30;
+      const endPos = endTimeDifference / apptGridSettings.step * 30;
+      const height = endPos - startPos;
+      const containerStyle = [
+        styles.assistantContainer,
+        {
+          height,
+          top: startPos,
+        },
+      ];
+      const textStyle = [
+        styles.assistantText,
+        {
+          maxHeight: height,
+          minWidth: height,
+          maxWidth: height,
+        },
+      ];
+      return (
+        <View
+          key={assistant.id}
+          style={containerStyle}
+        >
+          <Text style={textStyle} numberOfLines={1}>{assistant.name}</Text>
+        </View>
+      );
+    });
+  };
+
   render() {
-    const { apptGridSettings, showRoomAssignments } = this.props;
+    const { apptGridSettings, showRoomAssignments, showAssistantAssignments, providerSchedule } = this.props;
     const rooms = showRoomAssignments ? this.renderRooms() : null;
+    const assistants = showAssistantAssignments ? this.renderAssistants() : null;
     return (
       <View style={styles.colContainer}>
         {apptGridSettings.schedule.map(this.renderCell)}
         {rooms}
+        {assistants}
       </View>
     );
   }
