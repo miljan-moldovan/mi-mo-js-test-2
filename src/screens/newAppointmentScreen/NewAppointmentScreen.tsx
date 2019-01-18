@@ -128,7 +128,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   componentDidUpdate(prevProps: NewAppointmentScreenProps, prevState) {
     const {
       isValidAppointment,
-      newAppointmentState: { guests, editType },
+      newAppointmentState: { client, isPopulatingState, guests, editType },
     } = this.props;
     const { canSave } = this.props.navigation.state.params;
 
@@ -138,6 +138,11 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
 
     const remarksChanged = prevProps.newAppointmentState.remarks !== this.props.newAppointmentState.remarks;
+    if (
+      isPopulatingState !== prevProps.newAppointmentState.isPopulatingState
+    ) {
+      this.setState({ ...this.getClientInfo(client) });
+    }
     if (
       remarksChanged ||
       (isValidAppointment !== prevProps.isValidAppointment && isValidAppointment !== canSave) ||

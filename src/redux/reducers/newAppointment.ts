@@ -57,10 +57,12 @@ const defaultState: NewAppointmentReducer = {
   initialState: null,
   selectedAppt: null,
   ordinalId: null,
+  isPopulatingState: false,
   id: null,
 };
 
 export interface NewAppointmentReducer {
+  isPopulatingState: boolean;
   isLoading: boolean;
   isBooking: boolean;
   editType: string;
@@ -122,6 +124,7 @@ export default function newAppointmentReducer(
       return {
         ...state,
         isLoading: true,
+        isPopulatingState: true,
         bookedByEmployee: data.appt.bookedByEmployee,
         remarks: data.appt.remarks,
         selectedAppt: data.appt,
@@ -132,6 +135,7 @@ export default function newAppointmentReducer(
         ...state,
         isLoading: false,
         isBooking: false,
+        isPopulatingState: false,
         editType: 'new',
         rebooked: true,
         isBookingQuickAppt: false,
@@ -152,6 +156,7 @@ export default function newAppointmentReducer(
         ...state,
         isLoading: false,
         isBooking: false,
+        isPopulatingState: false,
         editType: 'edit',
         isBookingQuickAppt: false,
         isQuickApptRequested: true,
