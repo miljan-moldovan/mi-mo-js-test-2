@@ -42,6 +42,10 @@ const deletedIdsSelector = state => state.newAppointmentReducer.deletedIds;
 
 const rebookedSelector = state => state.newAppointmentReducer.rebooked;
 
+const ordinalresourceIdSelector = state => state.newAppointmentReducer.ordinalId;
+
+const resourceIdselector = state => state.newAppointmentReducer.id;
+
 const newAppointmentInfoSelector = createSelector(
   [
     dateSelector,
@@ -58,6 +62,8 @@ const newAppointmentInfoSelector = createSelector(
     deletedIdsSelector,
     remarksSelector,
     rebookedSelector,
+    ordinalresourceIdSelector,
+    resourceIdselector,
   ],
   (
     date,
@@ -74,6 +80,8 @@ const newAppointmentInfoSelector = createSelector(
     deletedIds,
     remarks,
     rebooked,
+    ordinalId,
+    resourceId,
   ) => ({
     date,
     startTime,
@@ -89,6 +97,8 @@ const newAppointmentInfoSelector = createSelector(
     deletedIds,
     remarks,
     rebooked,
+    ordinalId,
+    resourceId,
   }),
 );
 
@@ -206,10 +216,12 @@ const getEndTime = createSelector(
 );
 
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
+  console.log(appointment)
   const service = get(serviceItem, 'service', null);
   if (!service) {
     return null;
   }
+  console.log(service, 'service')
   const isFirstAvailable = get(service.employee, 'id', 0) === 0;
   const itemData = {
     clientId: serviceItem.guestId
@@ -227,8 +239,8 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
     bookedByEmployeeId: get(appointment.bookedByEmployee, 'id'),
     roomId: get(service.room, 'id', null),
     roomOrdinal: get(service, 'roomOrdinal', null),
-    resourceId: get(service.resource, 'id', null),
-    resourceOrdinal: get(service, 'resourceOrdinal', null),
+    resourceId: appointment.resourceId || get(service.resource, 'id', null),
+    resourceOrdinal: appointment.ordinalId || get(service, 'resourceOrdinal', null),
   } as any;
   if (appointment.editType === 'edit') {
     itemData.id = get(serviceItem.service, 'id', null);

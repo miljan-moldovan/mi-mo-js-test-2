@@ -30,6 +30,8 @@ import {
   SET_MAIN_EMPLOYEE,
   IS_BOOKED_BY_FIELD_ENABLED,
   UPDATE_SERVICE_ITEMS,
+  SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
+  CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
 } from '../actions/newAppointment';
 import { Maybe, Client, PureProvider, Conflict, PureAppointment, AppointmentCard } from '@/models';
 import { ServiceItem } from '@/models/new-appointment';
@@ -54,6 +56,8 @@ const defaultState: NewAppointmentReducer = {
   rebooked: true,
   initialState: null,
   selectedAppt: null,
+  ordinalId: null,
+  id: null,
 };
 
 export interface NewAppointmentReducer {
@@ -76,6 +80,8 @@ export interface NewAppointmentReducer {
   rebooked: boolean;
   initialState: any;
   selectedAppt: Maybe<AppointmentCard | PureAppointment>;
+  ordinalId: number | null,
+  id: number | null,
 }
 
 export default function newAppointmentReducer(
@@ -91,6 +97,7 @@ export default function newAppointmentReducer(
       };
     case CLEAN_FORM:
       return {
+        ...state,
         isLoading: false,
         isBooking: false,
         editType: 'new',
@@ -354,6 +361,18 @@ export default function newAppointmentReducer(
           }
           return item;
         }),
+      };
+    case SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID:
+      return {
+        ...state,
+        ordinalId: data.ordinalId,
+        id: data.id,
+      };
+    case CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID:
+      return {
+        ...state,
+        ordinalId: null,
+        id: null,
       };
     default:
       return state;
