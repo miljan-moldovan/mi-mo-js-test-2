@@ -201,40 +201,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     setTimeout(() => this.selectExtraServices(newServiceItem));
   };
 
-  createPhonesArr = phones => {
-    const createPhone = type => {
-      const cell = phones.find(itm => get(itm, 'type', null) === ClientPhoneTypes[type]);
-      if (!cell || !cell.value || !cell.value.trim() || !this.isValidPhoneNumberRegExp.test(cell.value)) {
-        return { type: ClientPhoneTypes[type], value: '' };
-      }
-      return cell;
-    };
-    return [createPhone('cell'), createPhone('home'), createPhone('work')];
-  };
-
-  selectMainEmployee = () =>
-    new Promise(resolve => {
-      const {
-        newAppointmentState: { date },
-        appointmentScreenState: { providers },
-      } = this.props;
-      this.props.navigation.navigate('ApptBookProvider', {
-        date,
-        mode: 'newAppointment',
-        headerProps: {
-          title: 'Providers',
-          leftButton: (
-            <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-          ),
-          leftButtonOnPress: navigation => navigation.goBack,
-        },
-        showFirstAvailable: true,
-        showEstimatedTime: true,
-        dismissOnSelect: true,
-        onChangeProvider: provider => resolve(provider),
-      });
-    });
-
   selectExtraServices = serviceItem => {
     const {
       service: { service = null },
@@ -917,6 +883,11 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       <ClientInfoButton
         client={this.props.newAppointmentState.client}
         navigation={this.props.navigation}
+        onDismiss={(client) => {
+          if (client) {
+            this.props.newAppointmentActions.setClient(client);
+          }
+        }}
         onDonePress={() => {
         }}
         iconStyle={{ fontSize: 20, color: '#115ECD' }}

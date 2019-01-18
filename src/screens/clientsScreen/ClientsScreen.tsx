@@ -222,6 +222,9 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   onChangeClient = client => {
+
+    
+
     const {
       navigation,
       salonSearchHeaderActions: { setShowFilter },
