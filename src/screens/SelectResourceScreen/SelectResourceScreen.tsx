@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Text } from 'react-native';
-import { chain, flatten, includes, times } from 'lodash';
+import { chain, get } from 'lodash';
 import SalonFlatList from '@/components/common/SalonFlatList';
 import { Store } from '@/utilities/apiWrapper';
 import { ServiceItem, StoreResource } from '@/models';
@@ -18,9 +18,9 @@ import { getServiceName } from './helpers';
 interface SelectResourceScreenNavigationParams {
   serviceItem?: ServiceItem;
   onChange?: ({
-                resource: StoreResource,
-                resourceOrdinal: number,
-              }) => void;
+    resource: StoreResource,
+    resourceOrdinal: number,
+  }) => void;
 }
 
 interface SelectResourceScreenProps {
@@ -133,13 +133,13 @@ class SelectResourceScreen extends React.Component<SelectResourceScreenProps, Se
       : services.find(itm => itm.serviceItem.itemId === currentOpenService);
     if (!currentService) { return; }
     const resourcesArray = [];
-    const supportedResourceId = currentService.supportedResource.id;
-    const supportedResource = allResources.find(res => res.id === supportedResourceId);
+    const supportedResourceId = get(currentService, 'supportedResource.id', null);
+    const supportedResource = allResources.find(res => get(res, 'id') === supportedResourceId);
     if (!supportedResource) { return []; }
-    for (let i = 1; i < supportedResource.resourceCount + 1; i++) {
+    for (let i = 1; i < supportedResource.resourceCount + 1; i += 1) {
       resourcesArray.push({
         resource: supportedResource,
-        id: supportedResource.id,
+        id: get(supportedResource, 'id'),
         name: `${supportedResource.name} #${i}`,
         resourceOrdinal: i,
       });

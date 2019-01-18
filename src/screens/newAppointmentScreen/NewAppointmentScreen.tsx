@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View, Alert, StyleProp, ViewStyle } from 'react-native';
 import moment from 'moment';
 import uuid from 'uuid/v4';
-import { get, debounce, isNull } from 'lodash';
+import { get, debounce, isNull, values, findKey } from 'lodash';
 import deepEqual from 'deep-equal';
 import { NavigationEvents } from 'react-navigation';
 import { Picker } from 'react-native-wheel-datepicker';
@@ -28,12 +28,12 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 import SalonToast from '../appointmentCalendarScreen/components/SalonToast';
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
 import { Store, Client, Services } from '@/utilities/apiWrapper';
-
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
-import { NewAppointmentScreenProps, NewAppointmentScreenState, Service, Room, ServiceItem, Maybe } from '@/models';
+import { NewAppointmentScreenProps, NewAppointmentScreenState, Service, Room, ServiceItem, Maybe, ConfirmationType, ClientDetailed, Client } from '@/models';
 import { shouldSelectRoom, shouldSelectResource } from './helpers';
+import SalonPicker from '@/components/formHelpers/components/SalonPicker';
 
 export const SubTitle = (props: { title: string; style?: StyleProp<ViewStyle>; children?: React.ReactChildren }) => (
   <View style={[styles.subTitleContainer, props.style || {}]}>
@@ -43,6 +43,13 @@ export const SubTitle = (props: { title: string; style?: StyleProp<ViewStyle>; c
     {props.children}
   </View>
 );
+
+const confirmationTypes = {
+  [ConfirmationType.DoNotConfirm]: 'None',
+  [ConfirmationType.Email]: 'Email',
+  [ConfirmationType.EmailAndSms]: 'Email & SMS',
+  [ConfirmationType.Sms]: 'SMS',
+};
 
 class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, NewAppointmentScreenState> {
   static navigationOptions = ({ navigation, screenProps }) => {
@@ -81,13 +88,21 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     };
   };
 
+  // tslint:disable-next-line:max-line-length
   isValidEmailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   isValidPhoneNumberRegExp = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 
   constructor(props: NewAppointmentScreenProps) {
     super(props);
     const { client, editType } = props.newAppointmentState;
-    const { clientEmail, clientPhone, clientPhoneType, isValidEmail, isValidPhone } = this.getClientInfo(client);
+    const {
+      clientEmail,
+      clientPhone,
+      clientPhoneType,
+      isValidEmail,
+      isValidPhone,
+      clientConfirmationType,
+    } = this.getClientInfo(client as ClientDetailed);
     props.navigation.setParams({
       editType,
       handleSave: debounce(this.handleSave, 500),
@@ -100,11 +115,13 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       isValidEmail,
       isValidPhone,
       clientPhoneType,
+      clientConfirmationType,
       isRecurring: false,
       selectedAddons: [],
       selectedRequired: [],
       selectedRecommended: [],
       recurringPickerOpen: false,
+      confirmationTypePickerOpen: false,
     };
     this.props.navigation.addListener('willFocus', () => {
       const { client, editType } = this.props.newAppointmentState;
@@ -117,6 +134,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   }
 
   componentDidMount() {
+    this.getClientDetailed();
     this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
     this.checkConflicts();
   }
@@ -139,6 +157,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
   }
 
+  getClientDetailed = async () => {
+    const { client } = this.props.newAppointmentState;
+    if (get(client, 'id')) {
+      const clientDetailed = await Client.getClient(client.id);
+      this.setState({
+        ...this.getClientInfo(clientDetailed as ClientDetailed),
+      });
+    }
+  }
   addService = (service, provider = null, guestId: string = undefined) => {
     const {
       client,
@@ -165,27 +192,11 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       gapTime: moment.duration(get(service, 'gapDuration', 0)),
       afterTime: moment.duration(get(service, 'afterDuration', 0)),
     } as ServiceItem['service'];
-
-    // if (service.requireRoom) {
-    //   const room = await this.getRoomInfo(service.requireRoom);
-    //   if (room) {
-    //     newService.room = room;
-    //   }
-    // }
-
-    // if (service.requiredResourceId) {
-    //   const resource = await this.getResourceInfo(service.requiredResourceId);
-    //   if (resource) {
-    //     newService.resource = resource;
-    //   }
-    // }
-
     const newServiceItem = {
       itemId: uuid(),
       guestId,
       service: newService,
     };
-
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
     setTimeout(() => this.selectExtraServices(newServiceItem));
   };
@@ -374,6 +385,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       clientPhone,
       isValidEmail: emailValid,
       isValidPhone: phoneValid,
+      clientConfirmationType: confirmationType,
     } = this.state;
     const { client } = this.props.newAppointmentState;
 
@@ -384,11 +396,22 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       }
 
       const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
+      const hasConfirmationTypeChanged =
+        get(client, 'confirmBy') ? confirmationType !== get(client, 'confirmBy') : false;
       const hasEmailChanged = clientEmail !== client.email;
       const hasPhoneChanged = clientPhone !== currentPhone.value;
       const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
       const isValidPhone = phoneValid && clientPhone !== '' && hasPhoneChanged;
       if (!isValidEmail && !isValidPhone) {
+        if (hasConfirmationTypeChanged) {
+          const updateObject = {
+            id: client.id,
+            phones: client.phones,
+            confirmationType: +confirmationType,
+            email: client.email,
+          };
+          return await Client.putContactInformation(client.id, updateObject);
+        }
         return false;
       }
       const phones =
@@ -410,10 +433,9 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       const updateObject = {
         id: client.id,
         phones,
-        confirmationType: 1,
+        confirmationType: +confirmationType,
         email: isValidEmail ? clientEmail : client.email,
       };
-
       return await Client.putContactInformation(client.id, updateObject);
     } catch (error) {
       console.warn('Error updating client info:', error);
@@ -474,34 +496,22 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
   getServiceItem = serviceId => this.props.newAppointmentState.serviceItems.find(item => item.itemId === serviceId);
 
-  getClientInfo = client => {
+  getClientInfo = (client: ClientDetailed) => {
     const phones = get(client, 'phones', []);
     const phone = phones.find(item => get(item, 'type', null) === ClientPhoneTypes.cell);
     const clientEmail = get(client, 'email', '') || '';
     const clientPhone = get(phone, 'value', '') || '';
     const clientPhoneType = get(phone, 'type', ClientPhoneTypes.cell);
+    const clientConfirmationType = get(client, 'confirmBy', ConfirmationType.Email);
     return {
+      clientPhoneType,
+      clientConfirmationType,
       clientPhone: isNull(clientPhone) ? '' : clientPhone,
       clientEmail: isNull(clientEmail) ? '' : clientEmail,
-      clientPhoneType,
       isValidEmail: this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true),
       isValidPhone: this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true),
     };
   };
-
-  getRoomInfo = roomId =>
-    new Promise((resolve, reject) => {
-      Store.getRooms()
-        .then(rooms => resolve(rooms.find(room => room.id === roomId)))
-        .catch(err => reject(err));
-    });
-
-  getResourceInfo = resourceId =>
-    new Promise((resolve, reject) => {
-      Store.getResources()
-        .then(resources => resolve(resources.find(resource => resource.id === resourceId)))
-        .catch(err => reject(err));
-    });
 
   getMainServices = serviceItems => serviceItems.filter(item => this.isMainService(item));
 
@@ -555,14 +565,16 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     this.props.newAppointmentActions.setBookedBy(employee);
   };
 
-  onChangeClient = client => {
+  onChangeClient = async (client) => {
+    const clientDetailed = await Client.getClient(get(client, 'id'));
     const {
       clientEmail,
       clientPhone,
       isValidEmail,
       isValidPhone,
       clientPhoneType,
-    } = this.getClientInfo(client);
+      clientConfirmationType,
+    } = this.getClientInfo(clientDetailed as ClientDetailed);
     this.props.formulaActions.getFormulasAndNotes(client.id);
     this.props.newAppointmentActions.setClient(client);
     this.setState(
@@ -572,6 +584,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         isValidEmail,
         isValidPhone,
         clientPhoneType,
+        clientConfirmationType,
       },
       this.checkConflicts,
     );
@@ -807,13 +820,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       guests,
       serviceItems,
     } = this.props.newAppointmentState;
-    const { clientEmail, clientPhone } = this.state;
+    const { clientEmail, clientPhone, clientConfirmationType } = this.state;
     const diffDate = date.format('MM/DD/YYYY') !== initialState.date.format('MM/DD/YYYY');
     const diffTime = startTime.format('hh:mm A') !== initialState.startTime.format('hh:mm A');
     const diffRemarks = remarks !== initialState.remarks;
     const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
     const diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
     const diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
+    const diffConfirmationType =
+      clientConfirmationType !== this.getClientInfo(initialState.client).clientConfirmationType;
     const diffBookedByEmployee = get(bookedByEmployee, 'id', -1) !== get(initialState.bookedByEmployee, 'id', -1);
     const diffGuests = !deepEqual(guests, initialState.guests, { strict: true });
     const diffServices = !deepEqual(serviceItems, initialState.serviceItems, {
@@ -828,7 +843,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       diffClient ||
       diffServices ||
       diffGuests ||
-      diffBookedByEmployee
+      diffBookedByEmployee ||
+      diffConfirmationType
     );
   };
 
@@ -854,6 +870,17 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   totalPrice = () => this.props.totalPrice;
 
   totalLength = () => this.props.appointmentLength;
+
+  toggleConfirmationTypePicker = () => this.setState(
+    ({ confirmationTypePickerOpen: prev }) => ({ confirmationTypePickerOpen: !prev }),
+  );
+
+  onChangeConfirmationType = (value: string, index: number) => {
+    const clientConfirmationType = findKey(confirmationTypes, itm => itm === value);
+    this.setState({
+      clientConfirmationType,
+    }, this.shouldUpdateClientInfo);
+  }
 
   resetTimeForServices = (items, index, initialFromTime) => {
     items.forEach((item, i) => {
@@ -924,6 +951,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       isValidEmail,
       isValidPhone,
       toast,
+      clientConfirmationType,
+      confirmationTypePickerOpen,
     } = this.state;
     const totalPrice = this.totalPrice();
     const totalDuration = this.totalLength();
@@ -1026,6 +1055,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
             <InputDivider
               style={isValidPhone || !client ? {} : dividerWithErrorStyle}
             />
+            <SalonPicker
+              label="Confirmation Type"
+              isOpen={confirmationTypePickerOpen}
+              toggle={this.toggleConfirmationTypePicker}
+              onChange={this.onChangeConfirmationType}
+              pickerData={values(confirmationTypes)}
+              selectedValue={confirmationTypes[clientConfirmationType]}
+            />
+            <InputDivider />
             <InputNumber
               value={guests.length}
               onChange={this.onChangeGuestNumber}
