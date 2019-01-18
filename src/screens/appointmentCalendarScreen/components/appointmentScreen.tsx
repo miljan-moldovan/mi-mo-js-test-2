@@ -27,8 +27,13 @@ import appointmentOverlapHelper from './appointmentOverlapHelper';
 import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 import { getHeaderRoomsOrResources } from '@/screens/appointmentCalendarScreen/helpers';
-import { appointmentCalendarActions } from '@/redux/actions/appointmentBook';
-import { TYPE_FILTTER_RESOURCES } from '@/constants/filterTypes';
+import {
+  TYPE_FILTTER_RESOURCES,
+  TYPE_FILTER_PROVIDERS,
+  TYPE_FILTER_DESK_STAFF,
+  TYPE_FILTTER_REBOOK_APPOINTMENT,
+  TYPE_PROVIDER,
+} from '@/constants/filterTypes';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -338,24 +343,15 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   onCalendarCellPressed = (cellId, colData) => {
-    const {
-      startDate,
-      selectedFilter,
-      selectedProvider,
-    } = this.props.appointmentScreenState;
     const { newAppointmentActions, restrictedToBookInAdvanceDays } = this.props;
-    if (selectedFilter === TYPE_FILTTER_RESOURCES) {
-      const targetId = colData && colData.id && colData.id.split('_');
-      newAppointmentActions.setOrdinalIdAndResourcesId(+targetId[1], +targetId[0]);
-    } else {
-      newAppointmentActions.clearOrdinalIdAndResourcesId();
-    }
+
     const startTime = moment(cellId, 'HH:mm A');
-    const { client } = this.props.newAppointmentState;
-    let date = selectedFilter === ('providers' ||
-      selectedFilter === 'deskStaff' ||
-      selectedFilter === 'rebookAppointment') && selectedProvider === 'all' ? startDate : colData;
+    const date = this.getDateAndWhenPressCell(colData);
+
     const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+
+    this.checkAndAddOrClearOrdinalAndResourceId(colData);
+
     if (restrictedToBookInAdvanceDays && differenceInDaysFromToday >= restrictedToBookInAdvanceDays) {
       const alert = {
         title: '',
@@ -366,77 +362,87 @@ class AppointmentScreen extends React.Component<any, any> {
       this.setState({ alert });
       return;
     }
+
     newAppointmentActions.cleanForm();
-    if (
-      this.state.bookAnotherEnabled ||
-      this.props.rebookState.rebookData.rebookAppointment
-    ) {
+    this.setClientIfBookAnotherEnabledAndThereAreRebookAppointment();
+    this.setMainEmployAndDateDependOnStateOfFilter(colData);
+
+    newAppointmentActions.setStartTime(startTime);
+
+    this.checkIsRebookAppointmentAndSetSsBookingQuickAppt(colData, startTime);
+  };
+
+  checkAndAddOrClearOrdinalAndResourceId = (colData) => {
+    const { newAppointmentActions, appointmentScreenState: { selectedFilter } } = this.props;
+
+    if (selectedFilter === TYPE_FILTTER_RESOURCES) {
+      const targetId = colData && colData.id && colData.id.split('_');
+      newAppointmentActions.setOrdinalIdAndResourcesId(+targetId[1], +targetId[0]);
+    } else {
+      newAppointmentActions.clearOrdinalIdAndResourcesId();
+    }
+  };
+
+  setClientIfBookAnotherEnabledAndThereAreRebookAppointment = () => {
+    const { newAppointmentActions, newAppointmentState: { client } } = this.props;
+
+    if (this.state.bookAnotherEnabled || this.props.rebookState.rebookData.rebookAppointment) {
       newAppointmentActions.setClient(client);
     }
-    if (
-      selectedFilter === 'providers' ||
-      selectedFilter === 'deskStaff' ||
-      selectedFilter === 'rebookAppointment'
-    ) {
-      if (selectedProvider === 'all') {
-        const differenceInDaysFromToday = moment(date, DateTime.date).diff(moment().startOf('day'), 'days');
+  };
 
-        newAppointmentActions.setMainEmployee(colData);
-        newAppointmentActions.setDate(startDate);
-        newAppointmentActions.setQuickApptRequested(!colData.isFirstAvailable);
-      } else {
-        newAppointmentActions.setMainEmployee(selectedProvider);
-        newAppointmentActions.setDate(colData);
-        newAppointmentActions.setQuickApptRequested(true);
-      }
+  setMainEmployAndDateDependOnStateOfFilter = (colData) => {
+    const { newAppointmentActions, appointmentScreenState: { startDate } } = this.props;
+
+    if (this.isFilterProviderOrDeskStaffOrRebookAppointment()) {
+      this.checkTypeProviderAndSetMainEmployAndDateDependOnProvider(colData);
     } else {
       newAppointmentActions.setMainEmployee(null);
       newAppointmentActions.setDate(startDate);
     }
-    newAppointmentActions.setStartTime(startTime);
+  };
 
-    if (this.props.rebookState.rebookData.rebookAppointment) {
-      const {
-        selectedAppointment,
-        rebookProviders,
-        rebookServices,
-        filterProvider,
-      } = this.props.rebookState.rebookData;
-      let mainEmployee = null;
-      const services = JSON.parse(JSON.stringify(rebookServices));
+  isFilterProviderOrDeskStaffOrRebookAppointment = () => {
+    const { selectedFilter } = this.props.appointmentScreenState;
 
-      if (filterProvider !== null && typeof filterProvider === 'object') {
-        mainEmployee = filterProvider;
-      } else {
-        mainEmployee = rebookProviders.length === 1
-          ? rebookProviders[0]
-          : colData;
-      }
+    return selectedFilter === TYPE_FILTER_PROVIDERS ||
+      selectedFilter === TYPE_FILTER_DESK_STAFF ||
+      selectedFilter === TYPE_FILTTER_REBOOK_APPOINTMENT;
+  };
 
-      date = rebookProviders.length === 1 ? colData : startDate;
+  checkTypeProviderAndSetMainEmployAndDateDependOnProvider = (colData) => {
+    const { selectedProvider, startDate } = this.props.appointmentScreenState;
 
-      for (let i = 0; i < services.length; i += 1) {
-        services[i].employee = mainEmployee;
-      }
+    if (selectedProvider === TYPE_PROVIDER) {
+      this.setMainEmployAndDateDependOnProvider(colData, startDate, !colData.isFirstAvailable);
+    } else {
+      this.setMainEmployAndDateDependOnProvider(selectedProvider, startDate, true);
+    }
+  };
 
-      newAppointmentActions.cleanForm();
-      newAppointmentActions.populateStateFromRebookAppt(
-        selectedAppointment,
-        services,
-        mainEmployee,
-        date,
-        startTime,
-      );
-      this.props.navigation.navigate('NewAppointment', {
-        rebook: true,
-        onFinishRebook: () => {
-          this.setRebookAppointment();
-          this.props.navigation.setParams({ hideTabBar: false });
+  setMainEmployAndDateDependOnProvider = (employee, date, quickApptRequested) => {
+    const { newAppointmentActions } = this.props;
 
-          this.selectFilter('providers', rebookProviders[0]);
-        },
-      });
-      newAppointmentActions.isBookingQuickAppt(false);
+    newAppointmentActions.setMainEmployee(employee);
+    newAppointmentActions.setDate(date);
+    newAppointmentActions.setQuickApptRequested(quickApptRequested);
+  };
+
+  getDateAndWhenPressCell = (colData) => {
+    const { selectedProvider, startDate, selectedFilter } = this.props.appointmentScreenState;
+
+    return selectedFilter === (TYPE_FILTER_PROVIDERS ||
+      selectedFilter === TYPE_FILTER_DESK_STAFF ||
+      selectedFilter === TYPE_FILTTER_REBOOK_APPOINTMENT) && selectedProvider === TYPE_PROVIDER ? startDate : colData;
+  };
+
+  checkIsRebookAppointmentAndSetSsBookingQuickAppt = (colData, startTime) => {
+    const { newAppointmentActions } = this.props;
+    if (
+      this.props.rebookState && this.props.rebookState.rebookData
+      && this.props.rebookState.rebookData.rebookAppointment
+    ) {
+      this.setPopulateStateFromRebookApptAndBookingQuickAppt(colData, startTime);
     } else {
       newAppointmentActions.isBookingQuickAppt(true);
       this.setState({
@@ -444,6 +450,54 @@ class AppointmentScreen extends React.Component<any, any> {
         visibleNewAppointment: true,
       }, this.hideApptSlide);
     }
+  };
+
+  setPopulateStateFromRebookApptAndBookingQuickAppt = (colData, startTime) => {
+    const { selectedAppointment, rebookProviders } = this.props.rebookState.rebookData;
+    const { newAppointmentActions } = this.props;
+    const { startDate } = this.props.appointmentScreenState;
+
+    const mainEmployee = this.getMainEmployeePopulateState(colData);
+    const services = this.getServiceForPopulateState(mainEmployee);
+    const date = rebookProviders.length === 1 ? colData : startDate;
+
+    newAppointmentActions.cleanForm();
+    newAppointmentActions.populateStateFromRebookAppt(selectedAppointment, services, mainEmployee, date, startTime);
+    this.props.navigation.navigate('NewAppointment', {
+      rebook: true,
+      onFinishRebook: this.onFinishRebook,
+    });
+    newAppointmentActions.isBookingQuickAppt(false);
+  };
+
+  getMainEmployeePopulateState = (colData) => {
+    const { rebookProviders, filterProvider } = this.props.rebookState.rebookData;
+
+    if (filterProvider !== null && typeof filterProvider === 'object') {
+      return filterProvider;
+    }
+
+    return rebookProviders.length === 1
+      ? rebookProviders[0]
+      : colData;
+  };
+
+  getServiceForPopulateState = (mainEmployee) => {
+    const { rebookServices } = this.props.rebookState.rebookData;
+    const services = JSON.parse(JSON.stringify(rebookServices));
+
+    for (let i = 0; i < services.length; i += 1) {
+      services[i].employee = mainEmployee;
+    }
+    return services;
+  };
+
+  onFinishRebook = () => {
+    const { rebookProviders } = this.props.rebookState.rebookData;
+
+    this.setRebookAppointment();
+    this.props.navigation.setParams({ hideTabBar: false });
+    this.selectFilter(TYPE_FILTER_PROVIDERS, rebookProviders[0]);
   };
 
   setSelectedProvider = provider => {
