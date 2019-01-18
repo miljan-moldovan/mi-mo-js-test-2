@@ -50,6 +50,7 @@ class SalonPicker extends React.PureComponent<SalonPickerProps> {
         )}
         {(inline || isOpen) && (
           <Picker
+            style={styles.picker}
             pickerData={pickerData}
             selectedValue={selectedValue}
             onValueChange={this.onChange}
