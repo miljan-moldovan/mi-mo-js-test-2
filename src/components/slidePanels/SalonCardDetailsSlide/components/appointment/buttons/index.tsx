@@ -23,7 +23,6 @@ const appointmentButtons = (props) => {
 
   const checkOut = isWaiting ? alertStartServiceFirst : handleCheckout;
 
-
   return (
     <React.Fragment>
       <View style={styles.panelIcon}>
@@ -100,13 +99,16 @@ appointmentButtons.propTypes = {
 };
 
 const mapStateToProps = (state, { appointment }) => {
+
   return {
     isCheckingIn: state.appointmentReducer.isCheckingIn,
     isCheckingOut: state.appointmentReducer.isCheckingOut,
     isGridLoading: state.appointmentBookReducer.isLoading,
     isCheckInDisabled: state.appointmentReducer.isCheckingIn
-      || appointment.queueStatus !== ApptQueueStatus.NotInQueue 
-      || appointment.status !== ApptQueueStatus.NotInQueue || appointment.isNoShow,
+    || appointment.queueStatus === ApptQueueStatus.CheckedOut ||
+    appointment.status === ApptQueueStatus.CheckedOut ||
+    appointment.queueStatus === ApptQueueStatus.Waiting ||
+    appointment.status === ApptQueueStatus.Waiting || appointment.isNoShow,
     isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
       appointment.queueStatus === ApptQueueStatus.CheckedOut ||
       appointment.status === ApptQueueStatus.CheckedOut
