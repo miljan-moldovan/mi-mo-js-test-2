@@ -189,10 +189,26 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       this.setGroupedAppointments(nextProps);
     }
 
+    if (this.props.displayMode !== displayMode) {
+      if (this.state.isResizeing || this.state.activeCard || this.state.activeBlock) {
+        this.cancelResize();
+      }
+    }
+
     if (!this.props.bufferVisible && nextProps.bufferVisible) {
       this.handelHidePanel();
     }
   }
+
+  cancelResize = () => {
+    this.setState({
+      activeCard: null,
+      activeBlock: null,
+      isResizeing: false,
+      alert: null,
+    });
+    this.props.setResizing(false);
+  };
 
   componentWillUpdate(nextProps) {
     if (
@@ -804,6 +820,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       ),
     };
     // when drags start we set the active card in the state and call scrill function
+    this.props.setResizing(true);
     this.setState(newState, this.scrollAnimation);
   };
 
@@ -854,8 +871,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       const newState = {
         isResizeing: true,
       };
+      this.props.setResizing(true);
       this.setState(newState, this.scrollAnimationResize);
+      return;
     }
+    this.props.setResizing(isResizeing);
   };
 
   handleScroll = ev => {
@@ -947,12 +967,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         this.createAlert(alert);
       }
     } else {
-      this.setState({
-        alert: null,
-        activeCard: null,
-        activeBlock: null,
-        isResizeing: false,
-      });
+      this.cancelResize();
     }
   };
 
@@ -1621,12 +1636,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     if (this.props.bufferVisible && this.state.buffer.length < 1) {
       this.props.manageBuffer(false);
     }
-    this.setState({
-      alert: null,
-      activeCard: null,
-      activeBlock: null,
-      isResizeing: false,
-    });
+    this.cancelResize();
   };
 
   closeBuffer = () => {
@@ -1639,13 +1649,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         btnRightText: 'Yes',
         onPressRight: () => {
           this.props.manageBuffer(false);
-          this.setState({
-            buffer: [],
-            alert: null,
-            activeCard: null,
-            activeBlock: null,
-            isResizeing: false,
-          });
+          this.cancelResize();
           this.isBufferCollapsed = false;
         },
       }
@@ -1660,6 +1664,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         activeBlock: null,
         isResizeing: false,
       });
+      this.props.setResizing(false);
     } else {
       this.createAlert(alert);
     }
@@ -2113,7 +2118,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           this.calendar = view;
         }}
       >
-        {!areProviders && !isLoading ? <EmptyScreen /> : null}
+        {!areProviders && !isLoading ? <EmptyScreen/> : null}
         <ScrollView
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -2185,7 +2190,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               { top: showHeader ? headerHeight : 0 },
             ]}
           >
-            <TimeColumn schedule={apptGridSettings.schedule} />
+            <TimeColumn schedule={apptGridSettings.schedule}/>
             <CurrentTime
               apptGridSettings={apptGridSettings}
               startTime={startTime}

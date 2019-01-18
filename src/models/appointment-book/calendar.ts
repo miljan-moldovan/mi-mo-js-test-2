@@ -38,6 +38,7 @@ export interface CalendarProps {
   startDate: string | moment.Moment,
   storeScheduleExceptions: ProviderSchedule[],
   refsSliderPanel: any,
+  setResizing: Function,
 }
 
 export interface CalendarState {
