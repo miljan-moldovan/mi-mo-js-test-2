@@ -22,6 +22,7 @@ import ActionSheet from './components/CrossedAppointmentsActionSheet';
 import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
 import PanelbottomAppt from './components/appointment/panelBottom';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 const notImplemented = () => Alert.alert('Not implemented');
 
@@ -249,6 +250,18 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
     return appointment && moment(appointment.date).isBefore(moment(), 'day');
   };
 
+  getDefaultHeight = () => {
+    if (isIphoneX()) {
+      return this.calculateHeight(0.3, 0.35);
+    }
+    return this.calculateHeight(0.38, 0.44);
+  };
+
+  calculateHeight = (firstFactor, secondFactor) => {
+    const { crossedAppointments } = this.props;
+    return crossedAppointments.length < 2 ? height * firstFactor : height * secondFactor;
+  };
+
   renderHeaderSlide = () => {
     const { crossedAppointments } = this.props;
 
@@ -405,6 +418,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   };
 
   render() {
+    const defaultHeight = this.getDefaultHeight();
     return (
       <SlidingUpPanel
         visible={this.props.visible}
@@ -413,7 +427,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
         allowMomentum={false}
         renderDraggableHeader={this.renderHeader}
         onDragEnd={this.hanleOnDragEnd}
-        defaultYPosition={initialHeightOfHeader}
+        defaultYPosition={defaultHeight}
         onDragStart={this.renderStart}
         height={this.props.workHeight - this.state.previousHeight}
         ref={(slidingPanel) => {
