@@ -604,7 +604,7 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
   dispatch,
   getState,
 ) => {
-  const { startTime, serviceItems, ordinalId, id } = getState().newAppointmentReducer;
+  const { startTime, serviceItems } = getState().newAppointmentReducer;
 
   dispatch({
     type: BOOK_NEW_APPT,
@@ -615,23 +615,7 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
   const requestBody = serializeApptToRequestData(getState(),
     { type: 'ServiceItems', value: newServiceItems });
 
-  let newRequestBody = null;
-
-  if (ordinalId && id && Array.isArray(requestBody.items)) {
-    newRequestBody = {
-      ...requestBody,
-      items: requestBody.items.map(item => {
-        return {
-          ...item,
-          resourceId: id,
-          resourceOrdinal: ordinalId,
-          requested: false,
-        };
-      }),
-    };
-  }
-
-  return Appointment.postNewAppointment(newRequestBody || requestBody)
+  return Appointment.postNewAppointment(requestBody)
     .then(res => {
       dispatch(bookNewApptSuccess(successCallback));
     })
@@ -653,7 +637,7 @@ const populateStateFromRebookAppt = (
   mainEmployee,
   startDate,
   startTime,
-) => (dispatch, getState) => {
+) => (dispatch) => {
   dispatch({
     type: SET_SELECTED_APPT,
     data: { appt },
