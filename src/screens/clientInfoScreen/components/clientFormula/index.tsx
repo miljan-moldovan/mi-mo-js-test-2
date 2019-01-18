@@ -1,23 +1,20 @@
 import * as React from 'react';
-import {View, Text, Alert} from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {find} from 'lodash';
-import FontAwesome, {Icons} from 'react-native-fontawesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { find } from 'lodash';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import clientFormulasActions from '../../../../redux/actions/clientFormulas';
 import settingsActions from '../../../../redux/actions/settings';
 import fetchFormCache from '../../../../utilities/fetchFormCache';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
-import groupedSettingsSelector
-  from '../../../../redux/selectors/settingsSelector';
+import groupedSettingsSelector from '../../../../redux/selectors/settingsSelector';
 import formulaTypesEnum from '../../../../constants/FormulaTypesEnum';
-import SalonTimePicker
-  from '../../../../components/formHelpers/components/SalonTimePicker';
-import SalonTouchableOpacity
-  from '../../../../components/SalonTouchableOpacity';
+import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
+import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 
 import {
   InputText,
@@ -31,7 +28,6 @@ import {
 import createStyleSheet from './stylesClientFormula';
 import headerStyles from '../../../../constants/headerStyles';
 import SalonHeader from '../../../../components/SalonHeader';
-
 
 
 interface Props {
@@ -52,7 +48,6 @@ interface State {
     date: any;
     formulaType: any;
     provider: any;
-    enteredBy: any;
     text: string;
     stylistName: string;
     store: any
@@ -65,15 +60,15 @@ interface State {
 }
 
 class ClientFormula extends React.Component<Props, State> {
-  static navigationOptions = ({navigation}) => {
-    const {params} = navigation.state;
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
     const canSave = params.canSave || false;
     const title = params.actionType === 'update'
       ? 'Edit Formula'
       : 'New Formula';
 
 
-    const styles = createStyleSheet()
+    const styles = createStyleSheet();
 
     return {
       header: (
@@ -81,24 +76,22 @@ class ClientFormula extends React.Component<Props, State> {
           title={title}
           headerLeft={
             <SalonTouchableOpacity
-              style={{paddingLeft: 10}}
               wait={3000}
-              onPress={navigation.getParam ('handleGoBack', () => {})}
+              onPress={navigation.getParam('handleGoBack', () => {})}
             >
               <Text style={styles.leftButtonText}>Cancel</Text>
             </SalonTouchableOpacity>
           }
           headerRight={
             <SalonTouchableOpacity
-              style={{paddingRight: 10}}
               disabled={!canSave}
               wait={3000}
-              onPress={navigation.getParam ('handlePress', () => {})}
+              onPress={navigation.getParam('handlePress', () => {})}
             >
               <Text
                 style={[
                   styles.rightButtonText,
-                  {color: canSave ? '#FFFFFF' : '#19428A'},
+                  { color: canSave ? '#FFFFFF' : '#19428A' },
                 ]}
               >
                 Save
@@ -113,14 +106,15 @@ class ClientFormula extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const {client} = props.navigation.state.params;
-    props.settingsActions.getSettingsByName (
+    const { client } = props.navigation.state.params;
+
+    props.settingsActions.getSettingsByName(
       'AvailableFormulaTypes',
       (result, availableFormulaTypes) => {
-        props.settingsActions.getSettingsByName (
+        props.settingsActions.getSettingsByName(
           'DefaultFormulaType',
           (result, defaultFormulaType) => {
-            this.loadFormulaTypes (availableFormulaTypes, defaultFormulaType);
+            this.loadFormulaTypes(availableFormulaTypes, defaultFormulaType);
           }
         );
       }
@@ -130,13 +124,12 @@ class ClientFormula extends React.Component<Props, State> {
       styles: createStyleSheet(),
       client,
       formula: {
-        date: null,
+        date: moment(),
         formulaType: null,
         provider: {},
-        enteredBy:{},
         text: '',
         stylistName: '',
-        store: null
+        store: null,
       },
       isLoading: true,
       defaultFormulaType: null,
@@ -149,18 +142,19 @@ class ClientFormula extends React.Component<Props, State> {
   componentWillMount () {}
 
   handleSaveCopy = copied => {
-    const {formula} = this.state;
+
+    const { formula } = this.state;
     formula.text = copied.text;
     formula.date = copied.date;
-    formula.enteredBy = copied.stylistName
+    formula.provider = copied.stylistName
       ? {
-          fullName: copied.stylistName,
-          name: copied.stylistName.split (' ')[0],
-          lastName: copied.stylistName.split (' ')[1],
-        }
+        fullName: copied.stylistName,
+        name: copied.stylistName.split(' ')[0],
+        lastName: copied.stylistName.split(' ')[1],
+      }
       : null;
 
-    const formulaType = find (this.state.formulaTypes, {
+    const formulaType = find(this.state.formulaTypes, {
       key: copied.formulaType,
     });
     formula.formulaType = formulaType;
@@ -203,23 +197,17 @@ class ClientFormula extends React.Component<Props, State> {
     const {navigate} = this.props.navigation;
   };
 
-  onChangeEnteredBy = enteredBy => {
-    const {formula} = this.state;
-    formula.enteredBy = enteredBy;
-    this.setState ({formula}, this.checkCanSave);
-  };
-
   onChangeProvider = provider => {
-    const {formula} = this.state;
+    const { formula } = this.state;
     formula.provider = provider;
 
-    this.setState ({formula}, this.checkCanSave);
+    this.setState({ formula }, this.checkCanSave);
   };
 
   goToCopy = () => {
-    const {navigate} = this.props.navigation;
+    const { navigate } = this.props.navigation;
 
-    navigate ('ClientCopyFormula', {
+    navigate('ClientCopyFormula', {
       transition: 'SlideFromBottom',
       ...this.props,
       client: this.state.client,
@@ -228,23 +216,23 @@ class ClientFormula extends React.Component<Props, State> {
   };
 
   goToAssociatedAppt = () => {
-    Alert.alert ('Not Implemented');
+    Alert.alert('Not Implemented');
   };
 
   checkCanSave = () => {
-    const {formula} = this.state;
+    const { formula } = this.state;
 
-    if (formula.text && formula.text.length > 0 && formula.formulaType) {
-      this.props.navigation.setParams ({canSave: true});
+    if (formula.text && formula.text.length > 0 && formula.formulaType && formula.date) {
+      this.props.navigation.setParams({ canSave: true });
     } else {
-      this.props.navigation.setParams ({canSave: false});
+      this.props.navigation.setParams({ canSave: false });
     }
   };
 
   onChangeText = txtFormula => {
-    const {formula} = this.state;
+    const { formula } = this.state;
     formula.text = txtFormula;
-    this.setState ({formula, shouldSave: true}, this.checkCanSave);
+    this.setState({ formula, shouldSave: true }, this.checkCanSave);
   };
 
   loadFormulaTypes = (
@@ -296,29 +284,29 @@ class ClientFormula extends React.Component<Props, State> {
   loadFormulaData = () => {
     const onEditionFormula = this.props.navigation.state.params.formula;
 
-    let {formula} = this.state;
+    let { formula } = this.state;
 
     if (this.props.navigation.state.params.actionType === 'update') {
-      formula = Object.assign ({}, onEditionFormula);
+      formula = Object.assign({}, onEditionFormula);
 
       const provider = formula.stylistName
         ? {
-            fullName: formula.stylistName,
-            name: formula.stylistName.split (' ')[0],
-            lastName: formula.stylistName.split (' ')[1],
-          }
+          fullName: formula.stylistName,
+          name: formula.stylistName.split(' ')[0],
+          lastName: formula.stylistName.split(' ')[1],
+        }
         : null;
 
-      const formulaType = find (this.state.formulaTypes, {
+      const formulaType = find(this.state.formulaTypes, {
         key: formula.formulaType,
       });
       formula.formulaType = formulaType;
-      formula.enteredBy = provider;
+      formula.provider = provider;
 
-      const cachedForm = fetchFormCache (
+      const cachedForm = fetchFormCache(
         'ClientFormulaUpdate',
         onEditionFormula.id,
-        this.props.formCache
+        this.props.formCache,
       );
 
       if (onEditionFormula.id === cachedForm.id) {
@@ -326,63 +314,58 @@ class ClientFormula extends React.Component<Props, State> {
       }
     } else if (this.props.navigation.state.params.actionType === 'new') {
       formula.formulaType = this.state.defaultFormulaType;
-      formula.enteredBy = this.props.userInfoState.currentEmployee
+      formula.provider = this.props.userInfoState.currentEmployee
     }
 
-    this.setState ({formula, isLoading: false}, this.checkCanSave);
+    this.setState({ formula, isLoading: false }, this.checkCanSave);
 
-    this.props.navigation.setParams ({
-      handlePress: () => this.saveFormula (),
-      handleGoBack: () => this.goBack (),
+    this.props.navigation.setParams({
+      handlePress: () => this.saveFormula(),
+      handleGoBack: () => this.goBack(),
     });
   };
 
   saveFormula () {
-    const {client} = this.props.navigation.state.params;
+    const { client } = this.props.navigation.state.params;
 
     if (this.props.navigation.state.params.actionType === 'new') {
-      const formula = Object.assign ({}, this.state.formula);
+      const formula = Object.assign({}, this.state.formula);
       formula.text = formula.text;
       formula.formulaType = formula.formulaType.key;
-      formula.stylistName = formula.enteredBy
-        ? formula.enteredBy.fullName
+      formula.stylistName = formula.provider
+        ? formula.provider.fullName
         : null;
       delete formula.provider;
-      delete formula.enteredBy;
-      // delete formula.date;
-
       this.props.clientFormulasActions
-        .postClientFormulas (client.id, formula)
-        .then (response => {
-          this.goBack ();
-          this.props.navigation.state.params.onNavigateBack ();
+        .postClientFormulas(client.id, formula)
+        .then(response => {
+          this.goBack();
+          this.props.navigation.state.params.onNavigateBack();
         })
-        .catch (error => {});
+        .catch(error => {});
     } else if (this.props.navigation.state.params.actionType === 'update') {
-      const formula = Object.assign ({}, this.state.formula);
+      const formula = Object.assign({}, this.state.formula);
       formula.text = formula.text;
       formula.formulaType = formula.formulaType.key;
-      formula.stylistName = formula.enteredBy
-        ? formula.enteredBy.fullName
+      formula.stylistName = formula.provider
+        ? formula.provider.fullName
         : null;
       delete formula.provider;
-      delete formula.enteredBy;
       delete formula.store;
-      // delete formula.date;
       this.props.clientFormulasActions
-        .putClientFormulas (client.id, formula)
-        .then (response => {
-          this.goBack ();
-          this.props.navigation.state.params.onNavigateBack ();
+        .putClientFormulas(client.id, formula)
+        .then(response => {
+          this.goBack();
+          this.props.navigation.state.params.onNavigateBack();
         })
-        .catch (error => {});
+        .catch(error => {});
     }
   }
 
   handleChangedate = dateDateObj => {
-    const {formula} = this.state;
-    formula.date = moment (dateDateObj);
-    this.setState ({formula, shouldSave: true}, this.checkCanSave);
+    const { formula } = this.state;
+    formula.date = moment(dateDateObj);
+    this.setState({ formula, shouldSave: true }, this.checkCanSave);
   };
 
   render () {
@@ -396,24 +379,9 @@ class ClientFormula extends React.Component<Props, State> {
           keyboardShouldPersistTaps="always"
           ref="scroll"
           extraHeight={300}
-          /*enableAutoAutomaticScroll*/
         >
           <View style={this.state.styles.topView} />
           <InputGroup>
-            <ProviderInput
-              showFirstAvailable={false}
-              placeholder={false}
-              style={this.state.styles.innerRow}
-              selectedProvider={this.state.formula.enteredBy}
-              label="Added By"
-              iconStyle={this.state.styles.carretIcon}
-              avatarSize={20}
-              navigate={this.props.navigation.navigate}
-              onChange={this.onChangeEnteredBy}
-              onPress={this.handlePressProvider}
-              headerProps={{title: 'Providers', ...this.cancelButton ()}}
-            />
-            <InputDivider />
             <InputPicker
               label="Type"
               value={
@@ -430,22 +398,17 @@ class ClientFormula extends React.Component<Props, State> {
               placeholder="Write formula"
               onChangeText={this.onChangeText}
               value={this.state.formula.text}
+              multiline
             />
           </InputGroup>
           <SectionDivider />
           <InputGroup style={this.state.styles.inputGroupAssociated}>
-            <InputButton
-              style={this.state.styles.inputButton}
-              onPress={this.goToAssociatedAppt}
-              label="Associated appt."
-            />
-            <InputDivider />
             <SalonTimePicker
               label="Date"
-              noIcon={this.state.formula.date == null}
+              noIcon={this.state.formula.date === null}
               icon={
                 <FontAwesome
-                  style={{fontSize: 20, color: '#727A8F', marginLeft: 16}}
+                  style={{ fontSize: 20, color: '#727A8F', marginLeft: 16 }}
                 >
                   {Icons.timesCircle}
                 </FontAwesome>
@@ -453,7 +416,7 @@ class ClientFormula extends React.Component<Props, State> {
               mode="date"
               placeholder="Optional"
               valueStyle={
-                this.state.formula.date == null ? this.state.styles.dateValueStyle : {}
+                this.state.formula.date === null ? this.state.styles.dateValueStyle : {}
               }
               value={this.state.formula.date}
               isOpen={this.state.datePickerOpen}
@@ -473,7 +436,7 @@ class ClientFormula extends React.Component<Props, State> {
               navigate={this.props.navigation.navigate}
               onChange={this.onChangeProvider}
               onPress={this.handlePressProvider}
-              headerProps={{title: 'Providers', ...this.cancelButton ()}}
+              headerProps={{ title: 'Providers', ...this.cancelButton() }}
             />
           </InputGroup>
           <SectionDivider />
@@ -495,15 +458,15 @@ const mapStateToProps = state => ({
   clientFormulasState: state.clientFormulasReducer,
   userInfoState: state.userInfoReducer,
   settingsState: state.settingsReducer,
-  groupedSettings: groupedSettingsSelector (state),
+  groupedSettings: groupedSettingsSelector(state),
 });
 
 const mapActionsToProps = dispatch => ({
-  settingsActions: bindActionCreators ({...settingsActions}, dispatch),
-  clientFormulasActions: bindActionCreators (
-    {...clientFormulasActions},
-    dispatch
+  settingsActions: bindActionCreators({ ...settingsActions }, dispatch),
+  clientFormulasActions: bindActionCreators(
+    { ...clientFormulasActions },
+    dispatch,
   ),
 });
 
-export default connect (mapStateToProps, mapActionsToProps) (ClientFormula);
+export default connect(mapStateToProps, mapActionsToProps)(ClientFormula);

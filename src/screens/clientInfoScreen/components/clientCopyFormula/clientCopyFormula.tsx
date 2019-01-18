@@ -67,7 +67,6 @@ class ClientCopyFormula extends React.Component<Props, State> {
           headerLeft={(
             <SalonTouchableOpacity
               onPress={navigation.goBack}
-              style={{ paddingLeft: 10 }}
             >
               <Text style={styles.headerLeftText}>
                   Cancel
@@ -76,7 +75,6 @@ class ClientCopyFormula extends React.Component<Props, State> {
           )}
           headerRight={(
             <SalonTouchableOpacity
-              style={{ paddingRight: 10 }}
               disabled={!canSave}
               onPress={handleDone}
             >
@@ -141,6 +139,7 @@ class ClientCopyFormula extends React.Component<Props, State> {
       />
       <Text style={this.state.styles.formulaType}>{this.getFormulaTypeName(option.formulaType)}</Text>
       <Text style={this.state.styles.italicText}> by {option.stylistName}</Text>
+      <Text style={this.state.styles.formulaType} numberOfLines={1}>{option.text}</Text>
     </View>
   )
 
@@ -150,10 +149,11 @@ class ClientCopyFormula extends React.Component<Props, State> {
   }
 
   handleDone = () => {
-    this.props.navigation.state.params.handleSaveCopy ?
+    if (this.props.navigation.state.params.handleSaveCopy) {
       this.props.navigation.state.params.handleSaveCopy(this.state.selectedFormula)
-      :
-      this.props.navigation.navigation.goBack();
+    }
+
+    this.props.navigation.goBack();
   }
 
   render() {

@@ -841,6 +841,11 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       <ClientInfoButton
         client={this.props.newAppointmentState.client}
         navigation={this.props.navigation}
+        onDismiss={(client) => {
+          if (client) {
+            this.props.newAppointmentActions.setClient(client);
+          }
+        }}
         onDonePress={() => {
         }}
         iconStyle={{ fontSize: 20, color: '#115ECD' }}
