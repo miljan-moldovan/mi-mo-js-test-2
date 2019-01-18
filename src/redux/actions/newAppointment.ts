@@ -91,6 +91,9 @@ export const MESSAGE_PROVIDERS_CLIENTS_FAILED =
 export const POPULATE_STATE_FROM_REBOOKED_APPT =
   'newAppointment/POPULATE_STATE_FROM_REBOOKED_APPT';
 
+export const SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID = 'newAppointment/SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID';
+export const CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID = 'newAppointment/RESOURCES_ORDINAL_ID_AND_RESOURCES_ID';
+
 const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
@@ -173,7 +176,6 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
     recommended = [],
     required = null,
   } = selectedServices;
-
   const length = appointmentLength(getState());
   const serviceLength = moment.duration(service.maxDuration);
   const fromTime = moment(startTime).add(moment.duration(length));
@@ -230,6 +232,7 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
 const addServiceItem = (serviceItem: ServiceItem): any => (dispatch, getState: () => AppStore) => {
   const { startTime } = getState().newAppointmentReducer;
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
+
   newServiceItems.push(serviceItem);
   const newServiceItemsWithResetTime = resetTimeForServices(newServiceItems, -1, startTime);
   return dispatch({
@@ -601,17 +604,34 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
   dispatch,
   getState,
 ) => {
-  const { startTime, serviceItems } = getState().newAppointmentReducer;
+  const { startTime, serviceItems, ordinalId, id } = getState().newAppointmentReducer;
 
   dispatch({
     type: BOOK_NEW_APPT,
   });
+
   const newServiceItems = resetTimeForServices(serviceItems, -1, startTime);
   // @ts-ignore
   const requestBody = serializeApptToRequestData(getState(),
     { type: 'ServiceItems', value: newServiceItems });
 
-  return Appointment.postNewAppointment(requestBody)
+  let newRequestBody = null;
+
+  if (ordinalId && id && Array.isArray(requestBody.items)) {
+    newRequestBody = {
+      ...requestBody,
+      items: requestBody.items.map(item => {
+        return {
+          ...item,
+          resourceId: id,
+          resourceOrdinal: ordinalId,
+          requested: false,
+        };
+      }),
+    };
+  }
+
+  return Appointment.postNewAppointment(newRequestBody || requestBody)
     .then(res => {
       dispatch(bookNewApptSuccess(successCallback));
     })
@@ -946,6 +966,15 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
     });
 };
 
+const setOrdinalIdAndResourcesId = (ordinalId, id) => ({
+  type: SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
+  data: { ordinalId, id },
+});
+
+const clearOrdinalIdAndResourcesId = () => ({
+  type: CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
+});
+
 const newAppointmentActions = {
   cleanForm,
   setBookedBy,
@@ -976,6 +1005,8 @@ const newAppointmentActions = {
   getConflictsForService,
   checkIsBookedByFieldEnabled,
   updateServiceItems,
+  setOrdinalIdAndResourcesId,
+  clearOrdinalIdAndResourcesId,
 };
 
 export interface NewApptActions {
@@ -1008,6 +1039,8 @@ export interface NewApptActions {
   getConflictsForService: typeof newAppointmentActions.getConflictsForService;
   checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
   updateServiceItems: (serviceItems: ServiceItem[]) => any;
+  setOrdinalIdAndResourcesId: typeof newAppointmentActions.setOrdinalIdAndResourcesId,
+  clearOrdinalIdAndResourcesId: typeof newAppointmentActions.clearOrdinalIdAndResourcesId,
 }
 
 export default newAppointmentActions;

@@ -166,63 +166,14 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       afterTime: moment.duration(get(service, 'afterDuration', 0)),
     } as ServiceItem['service'];
 
-    // if (service.requireRoom) {
-    //   const room = await this.getRoomInfo(service.requireRoom);
-    //   if (room) {
-    //     newService.room = room;
-    //   }
-    // }
-
-    // if (service.requiredResourceId) {
-    //   const resource = await this.getResourceInfo(service.requiredResourceId);
-    //   if (resource) {
-    //     newService.resource = resource;
-    //   }
-    // }
-
     const newServiceItem = {
       itemId: uuid(),
       guestId,
       service: newService,
     };
-
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
     setTimeout(() => this.selectExtraServices(newServiceItem));
   };
-
-  createPhonesArr = phones => {
-    const createPhone = type => {
-      const cell = phones.find(itm => get(itm, 'type', null) === ClientPhoneTypes[type]);
-      if (!cell || !cell.value || !cell.value.trim() || !this.isValidPhoneNumberRegExp.test(cell.value)) {
-        return { type: ClientPhoneTypes[type], value: '' };
-      }
-      return cell;
-    };
-    return [createPhone('cell'), createPhone('home'), createPhone('work')];
-  };
-
-  selectMainEmployee = () =>
-    new Promise(resolve => {
-      const {
-        newAppointmentState: { date },
-        appointmentScreenState: { providers },
-      } = this.props;
-      this.props.navigation.navigate('ApptBookProvider', {
-        date,
-        mode: 'newAppointment',
-        headerProps: {
-          title: 'Providers',
-          leftButton: (
-            <Text style={{ fontSize: 14, color: 'white' }}>Cancel</Text>
-          ),
-          leftButtonOnPress: navigation => navigation.goBack,
-        },
-        showFirstAvailable: true,
-        showEstimatedTime: true,
-        dismissOnSelect: true,
-        onChangeProvider: provider => resolve(provider),
-      });
-    });
 
   selectExtraServices = serviceItem => {
     const {

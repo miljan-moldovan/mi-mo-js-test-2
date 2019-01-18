@@ -28,6 +28,7 @@ import SalonHeader from '@/components/SalonHeader';
 import Icon from '@/components/common/Icon';
 import { getHeaderRoomsOrResources } from '@/screens/appointmentCalendarScreen/helpers';
 import { appointmentCalendarActions } from '@/redux/actions/appointmentBook';
+import { TYPE_FILTTER_RESOURCES } from '@/constants/filterTypes';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -342,8 +343,13 @@ class AppointmentScreen extends React.Component<any, any> {
       selectedFilter,
       selectedProvider,
     } = this.props.appointmentScreenState;
-
     const { newAppointmentActions, restrictedToBookInAdvanceDays } = this.props;
+    if (selectedFilter === TYPE_FILTTER_RESOURCES) {
+      const targetId = colData && colData.id && colData.id.split('_');
+      newAppointmentActions.setOrdinalIdAndResourcesId(+targetId[1], +targetId[0]);
+    } else {
+      newAppointmentActions.clearOrdinalIdAndResourcesId();
+    }
     const startTime = moment(cellId, 'HH:mm A');
     const { client } = this.props.newAppointmentState;
     let date = selectedFilter === ('providers' ||
