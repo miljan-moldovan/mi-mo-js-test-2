@@ -46,9 +46,10 @@ export const SubTitle = (props: { title: string; style?: StyleProp<ViewStyle>; c
 
 class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, NewAppointmentScreenState> {
   static navigationOptions = ({ navigation, screenProps }) => {
-    const params = navigation.state.params || {};
-    const editType = params.editType || 'new';
-    const canSave = params.canSave;
+    const editType = navigation.getParam('editType', 'new');
+    const canSave = navigation.getParam('canSave', false);
+    const handleCancel = navigation.getParam('handleCancel');
+    const handleSave = navigation.getParam('handleSave');
     const leftButtonStyle = { paddingLeft: 10 };
     const rightButtonStyle = { paddingRight: 10 };
     const doneButtonStyle = { color: canSave ? 'white' : 'rgba(0,0,0,0.3)' };
@@ -59,7 +60,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
           headerLeft={
             <SalonTouchableOpacity
               style={leftButtonStyle}
-              onPress={params.handleCancel}
+              onPress={handleCancel}
             >
               <Text style={styles.headerButtonText}>Cancel</Text>
             </SalonTouchableOpacity>
@@ -68,7 +69,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
             <SalonTouchableOpacity
               disabled={!canSave}
               style={rightButtonStyle}
-              onPress={params.handleSave}
+              onPress={handleSave}
             >
               <Text style={[styles.headerButtonText, doneButtonStyle]}>
                 Done
@@ -87,12 +88,12 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   constructor(props: NewAppointmentScreenProps) {
     super(props);
     const { client, editType } = props.newAppointmentState;
-    const { clientEmail, clientPhone, clientPhoneType, isValidEmail, isValidPhone } = this.getClientInfo(client);
     props.navigation.setParams({
       editType,
       handleSave: debounce(this.handleSave, 500),
       handleCancel: debounce(this.handleCancel, 500),
     });
+    const { clientEmail, clientPhone, clientPhoneType, isValidEmail, isValidPhone } = this.getClientInfo(client);
     this.state = {
       toast: null,
       clientEmail,
@@ -109,6 +110,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     this.props.navigation.addListener('willFocus', () => {
       const { client, editType } = this.props.newAppointmentState;
       if (editType !== 'new') {
+        this.props.navigation.setParams({ editType });
         this.props.formulaActions.getFormulasAndNotes(client.id);
       }
       this.shouldUpdateClientInfo();
@@ -118,13 +120,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
   componentDidMount() {
     this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
-    this.checkConflicts();
+    this.setState({
+      ...this.getClientInfo(this.props.newAppointmentState.client),
+    }, this.checkConflicts);
   }
 
   componentDidUpdate(prevProps: NewAppointmentScreenProps, prevState) {
     const {
       isValidAppointment,
-      newAppointmentState: { guests },
+      newAppointmentState: { guests, editType },
     } = this.props;
     const { canSave } = this.props.navigation.state.params;
 
@@ -134,7 +138,11 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
 
     const remarksChanged = prevProps.newAppointmentState.remarks !== this.props.newAppointmentState.remarks;
-    if (remarksChanged || (isValidAppointment !== prevProps.isValidAppointment && isValidAppointment !== canSave)) {
+    if (
+      remarksChanged ||
+      (isValidAppointment !== prevProps.isValidAppointment && isValidAppointment !== canSave) ||
+      editType !== prevProps.newAppointmentState.editType
+    ) {
       this.validate();
     }
   }
@@ -759,8 +767,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       serviceItems,
     } = this.props.newAppointmentState;
     const { clientEmail, clientPhone } = this.state;
-    const diffDate = date.format('MM/DD/YYYY') !== initialState.date.format('MM/DD/YYYY');
-    const diffTime = startTime.format('hh:mm A') !== initialState.startTime.format('hh:mm A');
+    const diffDate = !date.isSame(initialState.date);
+    const diffTime = !startTime.isSame(initialState.startTime);
     const diffRemarks = remarks !== initialState.remarks;
     const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
     const diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
@@ -784,17 +792,18 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   };
 
   validate = () => {
+    const { editType, initialState } = this.props.newAppointmentState;
     const isEmailValide = this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', false);
     const isPhoneValid = this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', false);
     let canSave = this.props.isValidAppointment;
-    if (this.props.newAppointmentState.editType === 'edit') {
-      if (this.props.newAppointmentState.initialState && isPhoneValid && isEmailValide) {
+    if (editType === 'edit') {
+      if (initialState && isPhoneValid && isEmailValide) {
         canSave = canSave && this.lookForChanges();
       } else {
         canSave = false;
       }
     }
-    this.props.navigation.setParams({ canSave });
+    this.props.navigation.setParams({ editType, canSave });
   };
 
   toggleRecurringPicker = () =>
@@ -1026,7 +1035,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
                           conflicts={this.getConflictsForService(addon.itemId)}
                           onPressDelete={addonDelete}
                           onPressConflicts={addonConflicts}
-                        />
+                          g />
                       );
                     })
                   }
