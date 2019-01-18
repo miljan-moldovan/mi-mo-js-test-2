@@ -60,7 +60,6 @@ export default class ProviderInput extends React.Component<any, any> {
   };
 
   render() {
-
     const { selectedService } = this.props;
     const disabled = this.props.disabled || selectedService && selectedService.isAddon;
     const {

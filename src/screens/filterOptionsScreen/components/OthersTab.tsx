@@ -69,11 +69,13 @@ const styles = StyleSheet.create({
   viewAllStyle: { paddingHorizontal: 14 },
 });
 
-const OthersTab = ({ handleSelect, selectedFilter }) => {
+const OthersTab = ({ handleSelect, selectedFilter, showResources }) => {
   const selectRooms = () => handleSelect('rooms');
   const selectResources = () => handleSelect('resources');
-  const roomIcon = selectedFilter === 'rooms' ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
-  const resourceIcon = selectedFilter === 'resources' ? <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
+  const roomIcon = selectedFilter === 'rooms' ?
+    <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
+  const resourceIcon = selectedFilter === 'resources' ?
+    <FontAwesome style={styles.greenColor}>{Icons.checkCircle}</FontAwesome> : null;
   return (
     <View style={styles.container}>
       <InputGroup>
@@ -87,8 +89,8 @@ const OthersTab = ({ handleSelect, selectedFilter }) => {
           label="View all Rooms"
           onPress={selectRooms}
         />
-        <InputDivider />
-        <InputButton
+        <InputDivider/>
+        {showResources && <InputButton
           icon={resourceIcon}
           labelStyle={
             selectedFilter === 'resources' ?
@@ -97,7 +99,7 @@ const OthersTab = ({ handleSelect, selectedFilter }) => {
           }
           label="View all Resources"
           onPress={selectResources}
-        />
+        />}
       </InputGroup>
     </View>
   );

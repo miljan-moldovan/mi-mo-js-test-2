@@ -58,6 +58,9 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
     }
 
     const handleBack = () => {
+
+      
+
       const onPressRight = () => {
         params.setAlert(null)
         handleDone();
@@ -65,6 +68,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
           params.handleBack();
         }
         navigation.goBack();
+        
       }
       if(params.hasChanged) {
         const alert = {
@@ -83,7 +87,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
         }
         params.setAlert(alert)
       } else {
-        onPressRight();
+        navigation.goBack();
       }
     }
 
@@ -204,7 +208,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
       editionMode={this.state.editionMode}
       client={this.state.client}
       navigation={this.props.navigation}
-      onDismiss={()=>{}}
+      //onDismiss={()=>{}}
       {...this.props}
     />),
     1: () => <ClientNotes editionMode={this.state.editionMode} client={this.state.client} navigation={this.props.navigation} {...this.props} />,
@@ -213,6 +217,7 @@ export default class ClientInfoScreen extends React.Component<Props, State> {
 
   render() {
     const { alert } = this.state;
+    
     return (
       <View style={this.state.styles.container}>
         <TabView

@@ -38,6 +38,7 @@ export interface CalendarProps {
   startDate: string | moment.Moment,
   storeScheduleExceptions: ProviderSchedule[],
   refsSliderPanel: any,
+  setResizing: Function,
 }
 
 export interface CalendarState {
@@ -51,4 +52,7 @@ export interface CalendarState {
   pan: any, //TO DO,
   pan2: any, //TO DO
   alert: any,
+  groupedAppointments: any,
+  groupedBlocks: any,
+  cardsArray: any,
 }

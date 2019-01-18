@@ -90,6 +90,7 @@ export default class FilterOptionsScreen extends React.Component<any, any> {
   }
 
   componentWillMount() {
+    this.props.servicesActions.getServices();
     this.onRefresh();
   }
 
@@ -201,6 +202,7 @@ export default class FilterOptionsScreen extends React.Component<any, any> {
           <OthersTab
             selectedFilter={selectedFilter}
             handleSelect={this.handleChangeOther}
+            showResources={this.props.showResources}
           />
         );
       default:

@@ -14,20 +14,26 @@ export function shouldSelectRoom(itm: ServiceItem) {
   ) {
     const { supportedRooms } = itm.service.service;
     if (supportedRooms && supportedRooms.length) {
-      return itm.service.room ? false : true;
+      if (itm.service.room !== null && itm.service.resource !== undefined) {
+        return itm.service.room.id === null;
+      }
+      return true;
     }
   }
   return false;
 }
 
 export function shouldSelectResource(itm: ServiceItem) {
-  if (!itm.service.service || itm.service.room || itm.hasSelectedResource) {
+  if (!itm.service.service || itm.service.resource || itm.hasSelectedResource) {
     return false;
   }
   if (itm.service.service.requireResource) {
-    const { supportedRooms } = itm.service.service;
-    if (supportedRooms && supportedRooms.length) {
-      return itm.service.room ? false : true;
+    const { supportedResource } = itm.service.service;
+    if (supportedResource) {
+      if (itm.service.resource !== null && itm.service.resource !== undefined) {
+        return itm.service.resource.id === null;
+      }
+      return true;
     }
   }
   return false;

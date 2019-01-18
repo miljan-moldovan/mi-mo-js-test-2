@@ -21,6 +21,7 @@ export default class Board extends React.Component<BoardProps, any> {
     const {
       apptGridSettings,
       showRoomAssignments,
+      showAssistantAssignments,
       cellWidth,
       selectedFilter,
       providerSchedule,
@@ -31,6 +32,7 @@ export default class Board extends React.Component<BoardProps, any> {
       createAlert,
       hideAlert,
       rooms,
+      step,
       storeScheduleExceptions,
     } = this.props;
     const isDate = selectedFilter === 'providers' && selectedProvider !== 'all';
@@ -40,6 +42,7 @@ export default class Board extends React.Component<BoardProps, any> {
         storeScheduleExceptions={storeScheduleExceptions}
         cellWidth={cellWidth}
         colData={col}
+        step={step}
         isDate={isDate}
         startTime={startTime}
         selectedFilter={selectedFilter}
@@ -48,6 +51,7 @@ export default class Board extends React.Component<BoardProps, any> {
         rooms={rooms}
         onCellPressed={this.props.onCellPressed}
         showRoomAssignments={showRoomAssignments}
+        showAssistantAssignments={showAssistantAssignments}
         displayMode={displayMode}
         startDate={startDate}
         createAlert={createAlert}

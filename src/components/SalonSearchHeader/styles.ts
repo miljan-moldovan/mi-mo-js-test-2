@@ -1,7 +1,7 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 
-export default StyleSheet.create ({
+export default StyleSheet.create({
   headerContainer: {
     backgroundColor: Colors.defaultBlue,
     width: '100%',
@@ -65,7 +65,6 @@ export default StyleSheet.create ({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    // justifyContent: 'flex-start',
   },
   rightButton: {
     flex: 1,
@@ -94,5 +93,14 @@ export default StyleSheet.create ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  styleForTouchableView: {
+    flex: 1,
+    paddingLeft: 10,
+  },
+  searchBar: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingVertical: 5,
   },
 });

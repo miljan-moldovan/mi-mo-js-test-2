@@ -380,6 +380,7 @@ class ClientNote extends React.Component<Props, State> {
               placeholder="Write Note"
               onChangeText={this.onChangeText}
               value={this.state.note.text}
+              multiline
             />
           </InputGroup>
           <SectionTitle value="TYPES" style={this.state.styles.sectionTitle} />

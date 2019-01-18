@@ -87,6 +87,7 @@ export default class NewClientScreen extends React.Component {
 
     if (this.props.navigation.state.params && onChangeClient) {
       onChangeClient(client);
+    }else{
       this.props.navigation.goBack();
     }
   }

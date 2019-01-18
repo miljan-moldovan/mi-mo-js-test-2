@@ -27,7 +27,6 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 import { NavigationScreenProp } from 'react-navigation';
 import { Maybe, Client, ServiceItem, Provider, Service, PureProvider, StoreRoom, StoreResource } from '@/models';
 import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
-import { shouldSelectRoom } from '../newAppointmentScreen/helpers';
 
 interface ModifyApptServiceScreenNavigationParams {
   date: Maybe<moment.Moment>;
@@ -66,6 +65,7 @@ interface ModifyApptServiceScreenState {
   room: Maybe<StoreRoom>;
   roomOrdinal: Maybe<number>;
   resource: Maybe<StoreResource>;
+  resourceOrdinal: Maybe<number>;
   serviceId: string;
   initialConflicts: NewAppointmentReducer['conflicts'];
 }
@@ -188,7 +188,6 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       room: get(serviceItem.service, 'room', null),
       roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
       resource: get(serviceItem.service, 'resource', null),
-      roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
       resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', 1),
       serviceId: serviceItem && serviceItem.itemId || null,
       supportedRooms: get(serviceItem.service.service, 'supportedRooms', []),
@@ -228,12 +227,12 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     if (requireResource) {
       resourceToSet = {
         ...supportedResource,
-        name: `${supportedResource.name}#1`,
+        name: supportedResource ? `${supportedResource.name}#1` : 'None',
       };
     }
     roomToSet = {
       ...roomToSet,
-      name: `${roomToSet.name}#1`,
+      name: roomToSet ? `${roomToSet.name}#1` : 'None',
     };
     return {
       resource: resourceToSet,
@@ -364,9 +363,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     this.setState(
       {
         selectedProvider,
-      },
-      this.checkConflicts,
-    );
+      }, this.checkConflicts);
   };
 
   handleRequested = requested => {
@@ -512,8 +509,8 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
 
   selectResource = () => {
     this.props.navigation.navigate('SelectResource', {
-      onSelect: selectedResource =>
-        this.setState({ resource: selectedResource }, this.checkConflicts),
+      serviceItem: this.props.navigation.getParam('serviceItem', undefined),
+      onChange: ({ resource, resourceOrdinal }) => this.setState({ resource, resourceOrdinal }, this.checkConflicts),
     });
   }
 
@@ -535,6 +532,10 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       toast,
       date,
       roomOrdinal,
+<<<<<<< HEAD
+=======
+      resourceOrdinal,
+>>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
     } = this.state;
     const supportsRooms = get(selectedService, 'supportedRooms.length', false);
     const supportsResource = get(selectedService, 'supportedResource', false);
@@ -639,7 +640,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           }
         </InputGroup>
         {
-          supportsResource || supportsRooms &&
+          (supportsResource || supportsRooms) &&
           (
             <React.Fragment>
               <SectionTitle value="Room & Resource" />
@@ -661,7 +662,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
                   <InputButton
                     onPress={this.selectResource}
                     label="Assigned Resource"
-                    value={resource ? resource.name : 'None'}
+                    value={resource ? `${resource.name} #${resourceOrdinal}` : 'None'}
                   />
                 }
               </InputGroup>

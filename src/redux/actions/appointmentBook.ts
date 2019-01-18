@@ -93,16 +93,11 @@ const setGridAllViewSuccess = (
   blockTimes,
   rooms,
 ) => {
-  const step = 15;
-  const apptGridSettings = {
-    step,
-  };
   return {
     type: SET_GRID_ALL_VIEW_SUCCESS,
     data: {
       employees,
       appointments,
-      apptGridSettings,
       availability,
       blockTimes,
       rooms,
@@ -364,9 +359,6 @@ const reloadGridRelatedStuff = () => (dispatch, getState) => {
               storeInfo,
             ],
           ) => {
-            orderBy(appointments, appt =>
-              moment(appt.fromTime, 'HH:mm').unix(),
-            );
             dispatch(StoreActions.loadStoreInfoSuccess(storeInfo));
             dispatch(
               StoreActions.loadScheduleExceptionsSuccess(scheduleExceptions as StoreScheduleException[]),

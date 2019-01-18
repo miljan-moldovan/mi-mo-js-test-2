@@ -157,6 +157,12 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     } as SelectRoomScreenNavigationParams;
   }
 
+  goBack = () => {
+    const { onNavigateBack } = this.props.navigation.state.params;
+    onNavigateBack && onNavigateBack();
+    this.props.navigation.goBack();
+  }
+
   previousService = () => {
     const { services, currentOpenService } = this.state;
     const currentIndex = services.findIndex(itm => itm.serviceItem.itemId === currentOpenService);
@@ -180,7 +186,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         room: item.room,
         roomOrdinal: item.roomOrdinal,
       });
-      return this.props.navigation.goBack();
+      return this.goBack();
     }
     const services = [...this.state.services];
     const currentIndex = services.findIndex(itm => itm.serviceItem.itemId === currentOpenService);
@@ -200,7 +206,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         });
       } else {
         this.props.updateServiceItems(services.map(itm => itm.serviceItem));
-        this.props.navigation.goBack();
+        this.goBack();
       }
     });
   }

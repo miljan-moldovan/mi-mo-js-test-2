@@ -24,7 +24,16 @@ import {
   getBookedByEmployee,
 } from '../selectors/newAppt';
 import { showErrorAlert } from './utils';
-import { PureProvider, Maybe, Client as ClientModel, Service, AppointmentCard, AppStore, ShortProvider, StoreRoom } from '@/models';
+import {
+  PureProvider,
+  Maybe,
+  Client as ClientModel,
+  Service,
+  AppointmentCard,
+  AppStore,
+  ShortProvider,
+  StoreRoom,
+} from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
 import { RoomServiceItem } from '@/screens/SelectRoomScreen/SelectRoomScreen';
@@ -83,6 +92,9 @@ export const MESSAGE_PROVIDERS_CLIENTS_FAILED =
 export const POPULATE_STATE_FROM_REBOOKED_APPT =
   'newAppointment/POPULATE_STATE_FROM_REBOOKED_APPT';
 
+export const SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID = 'newAppointment/SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID';
+export const CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID = 'newAppointment/RESOURCES_ORDINAL_ID_AND_RESOURCES_ID';
+
 const clearServiceItems = () => ({
   type: CLEAR_SERVICE_ITEMS,
 });
@@ -136,6 +148,7 @@ const resetTimeForServices = (
         },
       };
     }
+    return item;
   });
 };
 
@@ -169,7 +182,6 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
     recommended = [],
     required = null,
   } = selectedServices;
-
   const length = appointmentLength(getState());
   const serviceLength = moment.duration(service.maxDuration);
   const fromTime = moment(startTime).add(moment.duration(length));
@@ -226,11 +238,12 @@ const addQuickServiceItem = (selectedServices: Maybe<ServiceWithAddons>, guestId
 const addServiceItem = (serviceItem: ServiceItem): any => (dispatch, getState: () => AppStore) => {
   const { startTime } = getState().newAppointmentReducer;
   const newServiceItems = getState().newAppointmentReducer.serviceItems;
+
   newServiceItems.push(serviceItem);
-  resetTimeForServices(newServiceItems, -1, startTime);
+  const newServiceItemsWithResetTime = resetTimeForServices(newServiceItems, -1, startTime);
   return dispatch({
     type: ADD_SERVICE_ITEM,
-    data: { serviceItems: newServiceItems },
+    data: { serviceItems: newServiceItemsWithResetTime },
   });
 };
 
@@ -307,11 +320,11 @@ const addServiceItemExtras = (
       newServiceItems.push(serializeServiceItem(services));
     }
 
-    resetTimeForServices(newServiceItems, -1, startTime);
+    const newServiceItemsWithResetTime = resetTimeForServices(newServiceItems, -1, startTime);
 
     dispatch({
       type: ADD_SERVICE_ITEM_EXTRAS,
-      data: { serviceItems: newServiceItems },
+      data: { serviceItems: newServiceItemsWithResetTime },
     });
   };
 
@@ -352,14 +365,14 @@ const updateServiceItem = (
       });
 
     }
-    resetTimeForServices(
+    const newServiceItemsWithResetTime = resetTimeForServices(
       newServiceItems,
       serviceIndex - 1,
       updatedService.fromTime,
     );
     return dispatch({
       type: UPDATE_SERVICE_ITEM,
-      data: { serviceItems: newServiceItems },
+      data: { serviceItems: newServiceItemsWithResetTime },
     });
   };
 
@@ -378,7 +391,7 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
     );
     newServiceItems.splice(extraIndex, 1);
   });
-  resetTimeForServices(
+  const newServiceItemsWithResetTime = resetTimeForServices(
     newServiceItems,
     serviceIndex - 1,
     removedAppt.service.fromTime,
@@ -386,7 +399,7 @@ const removeServiceItem = (serviceId: Maybe<string>): any => (dispatch, getState
   return dispatch({
     type: REMOVE_SERVICE_ITEM,
     data: {
-      serviceItems: newServiceItems,
+      serviceItems: newServiceItemsWithResetTime,
       deletedIds: removedAppt && removedAppt.service && removedAppt.service.id || null,
     },
   });
@@ -470,7 +483,7 @@ const getConflicts = (callback?: Maybe<Function>): any => (dispatch, getState) =
     type: CHECK_CONFLICTS,
   });
 
-  resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
+  const newServiceItemsWithResetTime = resetTimeForServices(serviceItems, -1, moment(startTime, 'HH:mm'));
 
   const conflictData = {
     date: date.format('YYYY-MM-DD'),
@@ -478,7 +491,7 @@ const getConflicts = (callback?: Maybe<Function>): any => (dispatch, getState) =
     bookedByEmployeeId: get(provider, 'id', null),
     items: [],
   };
-  serviceItems.forEach(serviceItem => {
+  newServiceItemsWithResetTime.forEach(serviceItem => {
     const isFirstAvailable = get(serviceItem.service.employee, 'id', 0) === 0;
     conflictData.items.push({
       isFirstAvailable,
@@ -535,13 +548,13 @@ const getConflictsForService = (serviceItem, callback) => (dispatch, getState) =
 
   dispatch({ type: CHECK_CONFLICTS });
 
-  resetTimeForServices([serviceItem], -1, moment(startTime, 'HH:mm'));
+  const newServiceItemWithResetTime = resetTimeForServices([serviceItem], -1, moment(startTime, 'HH:mm'));
 
   const conflictData = {
     date: date.format('YYYY-MM-DD'),
     clientId: client.id,
     bookedByEmployeeId: get(provider, 'id', null),
-    items: [serviceItem.service],
+    items: [newServiceItemWithResetTime.service],
   };
 
   AppointmentBook.postCheckConflicts(conflictData)
@@ -615,9 +628,11 @@ const quickBookAppt = (successCallback: Maybe<Function>, errorCallback: Maybe<Fu
   dispatch({
     type: BOOK_NEW_APPT,
   });
-  resetTimeForServices(serviceItems, -1, startTime);
 
-  const requestBody = serializeApptToRequestData(getState());
+  const newServiceItems = resetTimeForServices(serviceItems, -1, startTime);
+  // @ts-ignore
+  const requestBody = serializeApptToRequestData(getState(),
+    { type: 'ServiceItems', value: newServiceItems });
 
   return Appointment.postNewAppointment(requestBody)
     .then(res => {
@@ -641,7 +656,7 @@ const populateStateFromRebookAppt = (
   mainEmployee,
   startDate,
   startTime,
-) => (dispatch, getState) => {
+) => (dispatch) => {
   dispatch({
     type: SET_SELECTED_APPT,
     data: { appt },
@@ -927,9 +942,11 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
   dispatch({
     type: BOOK_NEW_APPT,
   });
-  resetTimeForServices(serviceItems, -1, startTime);
-  const requestBody = serializeApptToRequestData(getState());
-  const existingServices = reject(serviceItems, itm => !itm.service.id).map(
+  const newServiceItemWithResetTime = resetTimeForServices(serviceItems, -1, startTime);
+  // @ts-ignore
+  const requestBody = serializeApptToRequestData(getState(),
+    { type: 'ServiceItems', value: newServiceItemWithResetTime });
+  const existingServices = reject(newServiceItemWithResetTime, itm => !itm.service.id).map(
     itm => itm.service.id,
   );
   const deletedIds = reject(existingApptIds, id =>
@@ -951,6 +968,15 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
       });
     });
 };
+
+const setOrdinalIdAndResourcesId = (ordinalId, id) => ({
+  type: SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
+  data: { ordinalId, id },
+});
+
+const clearOrdinalIdAndResourcesId = () => ({
+  type: CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
+});
 
 const newAppointmentActions = {
   cleanForm,
@@ -982,7 +1008,12 @@ const newAppointmentActions = {
   getConflictsForService,
   checkIsBookedByFieldEnabled,
   updateServiceItems,
+<<<<<<< HEAD
   changeDateTime,
+=======
+  setOrdinalIdAndResourcesId,
+  clearOrdinalIdAndResourcesId,
+>>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
 };
 
 export interface NewApptActions {
@@ -1015,7 +1046,12 @@ export interface NewApptActions {
   getConflictsForService: typeof newAppointmentActions.getConflictsForService;
   checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
   updateServiceItems: (serviceItems: ServiceItem[]) => any;
+<<<<<<< HEAD
   changeDateTime: (date: moment.Moment, startTime: moment.Moment) => any;
+=======
+  setOrdinalIdAndResourcesId: typeof newAppointmentActions.setOrdinalIdAndResourcesId,
+  clearOrdinalIdAndResourcesId: typeof newAppointmentActions.clearOrdinalIdAndResourcesId,
+>>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
 }
 
 export default newAppointmentActions;

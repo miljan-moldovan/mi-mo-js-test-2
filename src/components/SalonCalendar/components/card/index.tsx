@@ -329,6 +329,7 @@ class Card extends React.Component<any, any> {
         isFirstAvailable,
         requested,
         badgeData,
+        employee,
       } = this.props.appointment;
     const {
       showAssistant,
@@ -344,6 +345,7 @@ class Card extends React.Component<any, any> {
       isMultiBlock,
       goToAppointmentId,
       hiddenCard,
+      selectedFilter,
     } = this.props;
     const lastIndex = verticalPositions.length - 1;
     if (isResizeCard && this.state.height === 0) {
@@ -446,6 +448,14 @@ class Card extends React.Component<any, any> {
                                 </Text>
                               </View>
                           ))}
+                          { (selectedFilter === 'rooms' || selectedFilter === 'resources') &&
+                            <Text
+                              numberOfLines={1}
+                              style={styles.providerName}
+                            >
+                              {`w/ ${employee.name} ${employee.lastName.slice(0, 1).toUpperCase()}.`}
+                            </Text>
+                          }
                           { !isMultiBlock && height > 30 && (
                             <Text
                               numberOfLines={1}

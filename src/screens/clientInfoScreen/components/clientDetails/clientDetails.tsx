@@ -6,7 +6,7 @@ import {
   Alert,
 } from 'react-native';
 import moment from 'moment';
-import { find, reject, get, cloneDeep } from 'lodash';
+import { find, reject, get, cloneDeep, set } from 'lodash';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {
@@ -18,18 +18,21 @@ import {
   ClientInput,
   SectionDivider,
   InputSwitch,
-  LabeledTextarea,
   ValidatableInput,
+  InputButton,
 } from '../../../../components/formHelpers';
 import SalonTimePicker from '../../../../components/formHelpers/components/SalonTimePicker';
 
 import SalonTouchableOpacity from '../../../../components/SalonTouchableOpacity';
 import usStates from '../../../../constants/UsStates';
 import gendersEnum from '../../../../constants/Genders';
+import addressModesEnum from '../../../../constants/AddressModes';
 import agesEnum from '../../../../constants/Ages';
 import confirmByTypesEnum from '../../../../constants/ClientConfirmByTypes';
 import regexs from '../../../../constants/Regexs';
 import createStyleSheet from './styles';
+
+const declineState = { key: 0, value: 'N/A' };
 
 const genders = [
   { key: gendersEnum.Unspecified, value: 'unspecified' },
@@ -60,18 +63,16 @@ const defaultClient = {
   name: '',
   middleName: '',
   lastName: '',
-  loyalty: null,
+  loyaltyNumber: null,
   birthday: '',
   age: ages[1],
-  anniversary: null,
-  clientId: null,
+  clientCode: null,
   gender: genders[0],
   phones: [{ type: 0, value: '' }],
   email: '',
   confirmBy: null,
-  requireCard: null,
-  decline: null,
-  confirmationNote: null,
+  declineEmail: null,
+  declineAddress: null,
   street1: '',
   city: '',
   state: null,
@@ -103,18 +104,17 @@ interface State {
   name: string,
   middleName: string,
   lastName: string,
-  loyalty: number,
+  loyaltyNumber: number,
   birthday: string,
   age: number,
-  anniversary: any,
-  clientId: number,
+  clientCode: number,
   gender: any,
   phones: [{ type: number, value: string }],
   email: string,
   confirmBy: any,
   requireCard: any,
-  decline: any,
-  confirmationNote: any,
+  declineAddress: any,
+  declineEmail: any,
   street1: string,
   city: string,
   state: any,
@@ -137,10 +137,15 @@ interface State {
   isValidState: boolean,
   isValidGender: boolean,
   isValidBirth: boolean,
+  isValidReferred:boolean,
   birthdayPickerOpen: boolean,
-  anniversaryPickerOpen: boolean,
   requiredFields: { [key: string]: boolean },
   pointerEvents: any
+  maxChildAge: number,
+  maxAdultAge: number,
+  tooglePicker: boolean,
+  trackClientAge: boolean,
+  updateClientAge: boolean,
 }
 
 class ClientDetails extends React.Component<Props, State> {
@@ -166,8 +171,13 @@ class ClientDetails extends React.Component<Props, State> {
       isValidState: true,
       isValidGender: true,
       isValidBirth: true,
+      isValidReferred: false,
       birthdayPickerOpen: false,
-      anniversaryPickerOpen: false,
+      maxChildAge: null,
+      maxAdultAge: null,
+      tooglePicker: false,
+      trackClientAge: false,
+      updateClientAge: false,
       requiredFields: {
         age: true,
         address: true,
@@ -180,6 +190,7 @@ class ClientDetails extends React.Component<Props, State> {
         workPhone: true,
         homePhone: false,
         cellPhone: false,
+        referred: false,
       },
       styles: createStyleSheet(),
     };
@@ -200,15 +211,6 @@ class ClientDetails extends React.Component<Props, State> {
     this.props.setHandleDone(this.handleDone);
     this.props.setHandleBack(this.handleBack);
     this.props.settingsActions.getSettings(this.calculateRequiredFields);
-    this.props.clientInfoActions.getClientReferralTypes((result) => {
-      if (result && this.props.actionType === 'update') {
-        this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
-      } else if (this.props.actionType === 'new') {
-        this.setState({
-          loadingClient: false,
-        });
-      }
-    });
   }
 
   onChangeClientField = (field: string, value: any, type?: any) => {
@@ -217,9 +219,13 @@ class ClientDetails extends React.Component<Props, State> {
     if (field === 'phone') {
       newClient = this.onChangePhones(value, type);
     } else {
-      newClient = { ...this.state.client, [field]: value };
+      newClient = set(this.state.client, field, value);
     }
+
+
+    this.props.navigation.setParams({ hasChanged: true });
     this.setState({ client: newClient }, this.checkValidation);
+
   };
 
   onChangePhones = (value, type) => {
@@ -240,214 +246,244 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
   onChangeClientReferralTypes = (option) => {
-    this.setReferredOptionOther();
+    this.setReferredOptionOther(false);
     this.onChangeClientField('clientReferralType', option);
   };
 
-
-  onChangeInputSwitch = () => {
-    this.setState({ requireCard: !this.state.requireCard });
+  onValidateReferred = isValid => {
+    const isValidReferred  = get(this.state.requiredFields, 'referred', true) ? isValid : true;
+    this.setState({
+      isValidReferred,
+    }, this.checkValidation);
   };
 
   onValidateEmail = isValid => {
 
     const isValidEmail = this.state.requiredFields.email ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidEmail,
-    });
+    }, this.checkValidation);
   };
 
-  onValidateZipCode = isValid => {
+  onValidateZipCode = (isValid, isFirstValidation = false) => {
 
     const isValidZipCode = this.state.requiredFields.zip ? isValid : true;
 
-    if (isValid && this.state.client.zipCode && this.state.client.zipCode.length === 5) {
+    if (isValid && !isFirstValidation && this.state.client.zipCode && this.state.client.zipCode.length === 5
+      && this.state.client.zipCode !== '00000') {
       this.props.clientInfoActions.getZipCode(this.state.client.zipCode, this.loadDataFromZipCode);
     }
 
-    this.checkValidation();
-
     this.setState({
       isValidZipCode,
-    });
+    }, this.checkValidation);
   };
 
 
   onValidatePhoneWork = isValid => {
 
     const phone = find(this.state.client.phones, { type: 0 });
-
     const isValidPhoneWork = phone !== undefined ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidPhoneWork,
-    });
+    }, this.checkValidation);
   };
 
   onValidatePhoneHome = isValid => {
-
     const phone = find(this.state.client.phones, { type: 1 });
-
     const isValidPhoneHome = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidPhoneHome,
-    });
+    }, this.checkValidation);
   };
 
   onValidatePhoneCell = isValid => {
-
     const phone = find(this.state.client.phones, { type: 2 });
-
     const isValidPhoneCell = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidPhoneCell,
-    });
+    }, this.checkValidation);
   };
 
 
   onValidateName = isValid => {
-
     const isValidName = this.state.client.name !== undefined ? isValid : true;
-    this.checkValidation();
-
     this.setState({
       isValidName,
-    });
+    }, this.checkValidation);
   };
 
   onValidateLastName = isValid => {
-
     const isValidLastName = this.state.client.lastName !== undefined ? isValid : true;
-    this.checkValidation();
-
     this.setState({
       isValidLastName,
-    });
+    }, this.checkValidation);
   };
 
   onValidateStreet1 = isValid => {
-
-
     const isValidStreet1 = this.state.requiredFields.address ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidStreet1,
-    });
+    }, this.checkValidation);
   };
 
   onValidateCity = isValid => {
-
     const isValidCity = this.state.requiredFields.city ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidCity,
-    });
+    }, this.checkValidation);
   };
 
   onValidateGender = isValid => {
-
     const isValidGender = this.state.requiredFields.gender ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidGender,
-    });
+    }, this.checkValidation);
   };
 
   onValidateBirth = isValid => {
-
     const isValidBirth = this.state.requiredFields.birthday ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidBirth,
-    });
+    }, this.checkValidation);
   };
 
   onValidateAge = isValid => {
-
     const isValidAge = this.state.requiredFields.age ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidAge,
-    });
+    }, this.checkValidation);
   };
 
   onValidateState = isValid => {
-
     const isValidState = this.state.requiredFields.state ? isValid : true;
-
-    this.checkValidation();
-
     this.setState({
       isValidState,
-    });
+    }, this.checkValidation);
   };
 
   onPressOkDelete = () => {
     this.props.clientInfoActions.deleteClientInfo(this.state.client.id, this.handleDeleteClient);
   };
 
-  setReferredOptionOther = () => {
-    this.selectReferredOption(SelectedReferredClientEnum.Other);
+  setReferredOptionOther = (tooglePicker  = true) => {
+    this.selectReferredOption(SelectedReferredClientEnum.Other, tooglePicker, false);
   };
 
   setReferredOptionClient = (navigateToClients) => {
-    this.selectReferredOption(SelectedReferredClientEnum.Client, navigateToClients);
+    this.selectReferredOption(SelectedReferredClientEnum.Client, false, navigateToClients);
   };
 
-  calculateRequiredFields = (result) => {
+  handleConditionalsForBirthday = (date) => {
+    let isValid = false;
+
+    if (!date) {
+      isValid = !this.state.requiredFields.forceChildBirthday &&
+      !this.state.requiredFields.forceAdultBirthday;
+    } else {
+      const ageSector = get(this.state.client, 'age', {}).key;
+      let settingMaxAge = 999;
+
+      if (this.state.requiredFields.forceChildBirthday &&
+        ageSector === agesEnum.Child &&
+        this.state.maxChildAge) {
+        settingMaxAge = this.state.maxChildAge;
+      }
+
+      if (this.state.requiredFields.forceAdultBirthday &&
+        ageSector === agesEnum.Adult &&
+        this.state.maxAdultAge) {
+        settingMaxAge = this.state.maxAdultAge;
+      }
+
+      const clientAge = moment().diff(date, 'years', false);
+
+      if (clientAge <= settingMaxAge) {
+        isValid = true;
+      }
+    }
+
+    return isValid;
+  };
+
+  getAgeFromBirthday = (birthday) => {
+
+    let ageEnum = agesEnum.Adult;
+
+    if (birthday && (this.state.maxChildAge ||  this.state.maxAdultAge)) {
+      const clientAge = moment().diff(birthday, 'years', false);
+
+      if (this.state.maxChildAge && clientAge <= this.state.maxChildAge) {
+        ageEnum = agesEnum.Child;
+      }else if (this.state.maxAdultAge && clientAge <= this.state.maxAdultAge) {
+        ageEnum = agesEnum.Adult;
+      }else {
+        ageEnum = agesEnum.Senior;
+      }
+    }
+
+    const age = find(ages, { key: ageEnum });
+
+    return age;
+  }
+
+  calculateRequiredFields = (result, error) => {
+
     if (result) {
+
       const { settings } = this.props.settingsState;
 
       const requiredFields: { [key: string]: boolean } = {};
 
-      const trackClientAge = find(settings, { settingName: 'TrackClientAge' }).settingValue;
-      const forceAgeInput = find(settings, { settingName: 'ForceAgeInput' }).settingValue;
-      const isLargeForm = find(settings, { settingName: 'UseFullClientFormApptQueue' }).settingValue;
-      const forceChildBirthday = find(settings, { settingName: 'ForceChildBirthday' }).settingValue;
-      const forceAdultBirthday = find(settings, { settingName: 'ForceAdultBirthday' }).settingValue;
-      const requireClientGender = find(settings, { settingName: 'RequireClientGender' }).settingValue;
+      const trackClientAge = get(find(settings, { settingName: 'TrackClientAge' }), 'settingValue', false);
+      const missingAddressMode = get(find(settings, { settingName: 'missingAddressMode' }), 'settingValue', false);
+      const forceAgeInput = get(find(settings, { settingName: 'ForceAgeInput' }), 'settingValue', false);
+      const isLargeForm = get(find(settings, { settingName: 'UseFullClientFormApptQueue' }), 'settingValue', false);
+      const forceChildBirthday = get(find(settings, { settingName: 'ForceChildBirthday' }), 'settingValue', false);
+      const forceAdultBirthday = get(find(settings, { settingName: 'ForceAdultBirthday' }), 'settingValue', false);
+      const maxChildAge = get(find(settings, { settingName: 'MaxChildAge' }), 'settingValue', false);
+      const maxAdultAge = get(find(settings, { settingName: 'MaxAdultAge' }), 'settingValue', false);
+      const requireClientGender = get(find(settings, { settingName: 'RequireClientGender' }), 'settingValue', false);
+      const updateClientAge = get(find(settings, { settingName: 'UpdateClientAge' }), 'settingValue', false);
+      const forceClientReferralQuestion = get(find(settings,
+          { settingName: 'ForceClientReferralQuestion' }), 'settingValue', false);
 
       requiredFields.age = trackClientAge && forceAgeInput;
-      requiredFields.address = isLargeForm; // && address !== 'Decline';
-      requiredFields.city = isLargeForm;
-      requiredFields.email = isLargeForm; // && email !== 'Will-not-provide';
+      requiredFields.address = isLargeForm && missingAddressMode === addressModesEnum.FullAddress;
+      requiredFields.city = isLargeForm && missingAddressMode === addressModesEnum.FullAddress;
+      requiredFields.email = isLargeForm;
       requiredFields.birthday = trackClientAge && (forceChildBirthday || forceAdultBirthday);
+      requiredFields.forceChildBirthday = forceChildBirthday;
+      requiredFields.forceAdultBirthday = forceAdultBirthday;
       requiredFields.gender = requireClientGender;
-      requiredFields.zip = isLargeForm;
-      requiredFields.state = isLargeForm;
+      requiredFields.zip = isLargeForm && missingAddressMode === addressModesEnum.ZipOnly;
+      requiredFields.state = isLargeForm && missingAddressMode === addressModesEnum.FullAddress;
       requiredFields.workPhone = true;
       requiredFields.homePhone = false;
       requiredFields.cellPhone = false;
+      requiredFields.referred = forceClientReferralQuestion;
 
       this.setState({
         isValidGender: !requiredFields.gender,
         isValidBirth: !requiredFields.birthday,
-        isValidAge: !requiredFields.age,
         isValidPhoneWork: !requiredFields.workPhone,
         isValidPhoneHome: !requiredFields.homePhone,
         isValidPhoneCell: !requiredFields.cellPhone,
         requiredFields,
+        maxChildAge,
+        maxAdultAge,
+        trackClientAge,
+        updateClientAge,
+      });
+
+      this.props.clientInfoActions.getClientReferralTypes((result) => {
+        if (result && this.props.actionType === 'update') {
+          this.props.clientInfoActions.getClientInfo(this.props.client.id, this.loadClientData);
+        } else if (this.props.actionType === 'new') {
+          this.setState({
+            loadingClient: false,
+          });
+        }
       });
     }
   };
@@ -465,7 +501,10 @@ class ClientDetails extends React.Component<Props, State> {
       && this.state.isValidBirth
       && this.state.isValidPhoneHome
       && this.state.isValidPhoneWork
+      && this.state.isValidReferred
       && this.state.isValidPhoneCell;
+
+    this.props.navigation.setParams({ canSave });
     this.props.setCanSave(canSave);
   };
 
@@ -494,8 +533,7 @@ class ClientDetails extends React.Component<Props, State> {
     }
   };
 
-
-  selectReferredOption = (selectedReferredClient: any, navigateToClients?: boolean) => {
+  selectReferredOption = (selectedReferredClient: any, tooglePicker?: boolean, navigateToClients?: boolean) => {
     if (selectedReferredClient === SelectedReferredClientEnum.Client) {
       const newClient = this.state.client;
       newClient.clientReferralType = null;
@@ -505,7 +543,7 @@ class ClientDetails extends React.Component<Props, State> {
         this.handlePressClient();
       }
     } else {
-      this.setState({ selectedClient: null, selectedReferredClient });
+      this.setState({ selectedClient: null, selectedReferredClient, tooglePicker }, this.validateReferred);
     }
   };
 
@@ -547,19 +585,13 @@ class ClientDetails extends React.Component<Props, State> {
         state: this.state.client.state ? this.state.client.state.value : null,
         zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
       },
-      gender: this.state.client.gender ? this.state.client.gender.key : null,
-      loyaltyNumber: this.state.client.loyalty,
+      gender: this.state.client.gender ? this.state.client.gender.value : null,
+      loyaltyNumber: this.state.client.loyaltyNumber,
       confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
       clientReferralTypeId: this.state.client.clientReferralType ? this.state.client.clientReferralType.key : null,
-      anniversary: moment(this.state.client.anniversary).isValid()
-        ? moment(this.state.client.anniversary).format('YYYY-MM-DD')
-        : null,
-      requireCard: this.state.requireCard,
-      confirmationNote: this.state.client.confirmationNote ? this.state.client.confirmationNote : null,
       clientPreferenceProviderType: 1,
-      preferredProviderId: null,
-      clientCode: null,
+      clientCode: this.state.client.clientCode ? this.state.client.clientCode :  null,
       receivesEmail: true,
       occupationId: null,
       profilePhotoUuid: null,
@@ -570,7 +602,6 @@ class ClientDetails extends React.Component<Props, State> {
         if (result) {
           this.setState({
             client: defaultClient,
-            intialClient: clientResult,
             loadingClient: false,
           });
 
@@ -583,17 +614,23 @@ class ClientDetails extends React.Component<Props, State> {
       });
     } else if (this.props.actionType === 'update') {
       this.props.clientInfoActions.putClientInfo(this.props.client.id, client, (result, clientResult) => {
+
         if (result) {
           const newClient = { ...clientResult };
           newClient.age = ages.find(item => item.key === clientResult.age);
           this.setState({
             client: newClient,
-            intialClient: newClient,
             loadingClient: false,
           });
+
           if (this.props.onDismiss) {
             this.props.onDismiss(clientResult);
           } else {
+
+            if (this.props.navigation.state.params.onDismiss) {
+              this.props.navigation.state.params.onDismiss(clientResult);
+            }
+
             this.props.appointmentCalendarActions.setGridView();
             this.props.navigation.goBack();
           }
@@ -605,13 +642,14 @@ class ClientDetails extends React.Component<Props, State> {
   cancelButton = () => ({
     leftButton: <Text style={this.state.styles.cancelButton}>Cancel</Text>,
     leftButtonOnPress: (navigation) => {
-      this.selectReferredOption(SelectedReferredClientEnum.NotAssigned);
+      this.selectReferredOption(SelectedReferredClientEnum.NotAssigned, false, false);
       navigation.goBack();
     },
   });
 
   handleClientSelection = (selectedClient) => {
-    this.setState({ selectedClient });
+    
+    this.setState({ selectedClient }, this.validateReferred);
   };
 
   isValidEmailRegExp = regexs.emailWillNotProvide;
@@ -620,28 +658,36 @@ class ClientDetails extends React.Component<Props, State> {
   isValidText = regexs.notemptytext;
   isValidAddress = regexs.address;
 
+  validateReferred = () => {
+    const isClientValid = get(this.state, 'selectedClient', null);
+    const isOtherValid = get(this.state.client, 'clientReferralType', null);
+    const isValid = this.state.selectedReferredClient === SelectedReferredClientEnum.Other ?
+    isOtherValid !== null : isClientValid  !== null;
+
+    this.onValidateReferred(isValid);
+  }
 
   loadClientData = (result) => {
     if (result) {
       const { client } = this.props.clientInfoState;
       const states = usStates;
+      let declineAddress = false;
+      let isValidZipCode = false;
+
       if (client.address) {
-        if (typeof client.address === 'string' || client.address instanceof String) {
-          const matches = client.address.match(this.isValidAddress);
-          client.address = {};
-          if (matches && matches.length > 4) {
-            const street = matches[1];
-            const city = matches[2];
+        if (client.address.street1 === 'decline') {
 
-            const zipCode = matches[4];
+          client.state =  declineState;
+          client.street1 = client.address.street1;
+          client.city = client.address.city;
+          client.zipCode = client.address.zipCode;
+          declineAddress = true;
 
-            client.street1 = street.trim();
-            client.city = city.trim();
-            const state = find(states, { value: matches[3].trim().toUpperCase() });
-            client.state = state;
+          this.onValidateState(true);
+          this.onValidateCity(true);
+          this.onValidateStreet1(true);
+          isValidZipCode = true;
 
-            client.zipCode = zipCode.trim();
-          }
         } else {
           const state = find(states, { value: client.address.state && client.address.state.toUpperCase() });
 
@@ -651,6 +697,9 @@ class ClientDetails extends React.Component<Props, State> {
           client.city = client.address.city ? client.address.city : '';
           client.zipCode = client.address.zipCode ? client.address.zipCode : '';
         }
+
+        delete client.address;
+
       } else {
         client.state = null;
         client.street1 = '';
@@ -658,24 +707,40 @@ class ClientDetails extends React.Component<Props, State> {
         client.zipCode = '';
       }
 
-
       this.props.setCanSave(false);
       this.props.setHandleDone(this.handleDone);
       this.props.setHandleBack(this.handleBack);
 
+      
+
       const clientReferralType = find(this.props.clientInfoState.clientReferralTypes,
-        { key: client.clientReferralTypeId });
+        { key: client.myReferralTypeId });
       client.clientReferralType = clientReferralType;
 
+      client.age = client.age ? client.age : this.getAgeFromBirthday(client.birthday);
+      client.confirmBy =  client.contactType ? find(confirmByTypes,
+        { key: client.contactType }) :  confirmByTypes[0];
+
       if (client.clientReferralType) {
-        this.setReferredOptionOther();
+        this.setReferredOptionOther(false);
       }
+
+      client.gender = client.gender ? client.gender : genders[0];
+
+      const selectedClient = client.referredByClient ? client.referredByClient : null;
+
+      if (selectedClient) {
+        this.setReferredOptionClient(false);
+      }
+
       this.setState({
         client,
-        initialClient: cloneDeep(client),
+        declineAddress,
         loadingClient: false,
+        isValidZipCode,
+        selectedClient,
         pointerEvents: this.props.editionMode ? 'auto' : 'none',
-      });
+      }, this.validateReferred);
     }
   };
 
@@ -688,17 +753,6 @@ class ClientDetails extends React.Component<Props, State> {
     }
 
     this.setState({ birthdayPickerOpen: !this.state.birthdayPickerOpen });
-  };
-
-
-  pickerToogleAnniversary = () => {
-    if (this.state.anniversaryPickerOpen) {
-      if (moment(this.state.client.anniversary).isAfter(moment())) {
-        return Alert.alert('Anniversary can\'t be greater than today');
-      }
-    }
-
-    this.setState({ anniversaryPickerOpen: !this.state.anniversaryPickerOpen });
   };
 
   renderPhones = () => {
@@ -764,21 +818,386 @@ class ClientDetails extends React.Component<Props, State> {
       const states = usStates;
       const state = find(states, { value: this.props.clientInfoState.zipCode.state.toUpperCase() });
       this.onChangeClientField('state', state);
-
       this.onChangeClientField('city', this.props.clientInfoState.zipCode.city);
-
       this.onChangeClientField('zipCode', this.props.clientInfoState.zipCode.zip);
-
-
       this.setState({ isValidState: true, isValidCity: true });
     }
   };
 
-  onChangeDeclineInputSwitch = () => {
-    this.onChangeClientField('email', this.state.decline ? '' : 'will-not-provide');
-    this.onValidateEmail(!this.state.decline);
-    this.setState({ decline: !this.state.decline });
+  onChangeDeclineEmailInputSwitch = () => {
+    this.onChangeClientField('email', this.state.declineEmail ? '' : 'will-not-provide');
+    this.onValidateEmail(!this.state.declineEmail);
+    this.setState({ declineEmail: !this.state.declineEmail });
   };
+
+
+  onChangeDeclineAddressInputSwitch = () => {
+
+    this.onChangeClientField('state', this.state.declineAddress ? null: declineState);
+    this.onChangeClientField('city', this.state.declineAddress ? '' : 'None');
+    this.onChangeClientField('zipCode', this.state.declineAddress ? '' : '00000');
+    this.onChangeClientField('street1', this.state.declineAddress ? '' : 'Decline');
+    this.onValidateState(!this.state.declineAddress);
+    this.onValidateCity(!this.state.declineAddress);
+    this.onValidateStreet1(!this.state.declineAddress);
+    this.onValidateZipCode(!this.state.declineAddress);
+    this.setState({ declineAddress: !this.state.declineAddress });
+  };
+
+  setBirthdayAndAge = (selectedDate) => {
+
+    const newClient = set(this.state.client, 'birthday', selectedDate);
+
+    if (this.state.updateClientAge && (this.state.maxAdultAge || this.state.maxChildAge)) {
+
+      const age = moment().diff(selectedDate, 'years', false);
+
+      if (age <= this.state.maxChildAge) {
+        newClient.age = find(ages, { key: agesEnum.Child });
+      }else if (age <= this.state.maxAdultAge && age > this.state.maxChildAge) {
+        newClient.age = find(ages, { key: agesEnum.Adult });
+      }else {
+        newClient.age = find(ages, { key: agesEnum.Senior });
+      }
+    }
+
+    this.props.navigation.setParams({ hasChanged: true });
+
+    this.setState({
+      client: newClient,
+      isValidBirth: this.handleConditionalsForBirthday(selectedDate),
+    }, this.checkValidation);
+
+  }
+
+  renderNameSection = () => {
+    return (
+      <InputGroup>
+        <LabeledTextInput
+          label="Client ID"
+          value={this.state.client.clientCode}
+          onChangeText={(text) => {
+            this.onChangeClientField('clientCode', text);
+          }}
+          placeholder=""
+          inputStyle={this.state.client.clientCode ? {} : this.state.styles.inputStyle}
+        />
+        <InputDivider />
+        <ValidatableInput
+          validateOnChange
+          validation={this.isValidText}
+          isValid={this.state.isValidName}
+          onValidated={this.onValidateName}
+          label="First Name"
+          value={this.state.client.name}
+          onChangeText={(text) => {
+            this.onChangeClientField('name', text);
+          }}
+          placeholder=""
+          inputStyle={this.state.client.name ? {} : this.state.styles.inputStyle}
+        />
+        <InputDivider />
+        <LabeledTextInput
+          inputStyle={this.state.client.middleName ? {} : this.state.styles.inputStyle}
+          label="Middle Name"
+          value={this.state.client.middleName}
+          onChangeText={(text) => {
+            this.onChangeClientField('middleName', text);
+          }}
+          placeholder=""
+        />
+        <InputDivider />
+        <ValidatableInput
+          validateOnChange
+          inputStyle={this.state.client.lastName ? {} : this.state.styles.inputStyle}
+          validation={this.isValidText}
+          isValid={this.state.isValidLastName}
+          onValidated={this.onValidateLastName}
+          label="Last Name"
+          value={this.state.client.lastName}
+          onChangeText={(text) => {
+            this.onChangeClientField('lastName', text);
+          }}
+          placeholder=""
+        />
+      </InputGroup>
+    );
+  }
+
+  renderBirthSection = () => {
+    return (
+      <InputGroup>
+        {this.state.requiredFields.gender ?
+          <View>
+            <InputPicker
+              label="Gender"
+              placeholder=""
+              required={this.state.requiredFields.gender}
+              isValid={this.state.isValidGender}
+              onValidated={this.onValidateGender}
+              noValueStyle={!this.state.client.gender ? this.state.styles.dateValueStyle : {}}
+              value={this.state.client.gender ? this.state.client.gender : null}
+              onChange={(option) => {
+                this.onChangeClientField('gender', option);
+              }}
+              defaultOption={this.state.client.gender ? this.state.client.gender : null}
+              options={genders}
+            />
+          <InputDivider />
+          </View>
+        : null}
+        <View>
+        <InputPicker
+          label="Age"
+          placeholder=""
+          required={this.state.requiredFields.age}
+          isValid={this.state.isValidAge}
+          onValidated={this.onValidateAge}
+          noValueStyle={!this.state.client.age ? this.state.styles.dateValueStyle : {}}
+          value={this.state.client.age ? this.state.client.age : ages[1]}
+          onChange={(option) => {
+            this.onChangeClientField('age', option);
+            this.setState({
+              isValidBirth: this.handleConditionalsForBirthday(this.state.client.birthday),
+            });
+          }}
+          defaultOption={this.state.client.age ? this.state.client.age : ages[1]}
+          options={ages}
+        />
+        <InputDivider />
+        </View>
+        <SalonTimePicker
+          format="MM/DD/YYYY"
+          label="Birthday"
+          mode="date"
+          placeholder=""
+          noIcon
+          value={this.state.client.birthday}
+          selectedDate={this.state.client.birthday}
+          isOpen={this.state.birthdayPickerOpen}
+          onChange={this.setBirthdayAndAge}
+          toggle={this.pickerToogleBirthday}
+          valueStyle={!this.state.client.birthday ? this.state.styles.dateValueStyle : {}}
+          required={this.state.requiredFields.birthday}
+          isValid={this.state.isValidBirth}
+          onValidated={this.onValidateBirth}
+          validate={this.handleConditionalsForBirthday}
+        />
+      </InputGroup>
+    );
+  }
+
+
+  renderContactsSection = () => {
+    return (
+      <InputGroup>
+        <ValidatableInput
+          keyboardType="email-address"
+          validation={this.isValidEmailRegExp}
+          label="Email"
+          isValid={this.state.isValidEmail}
+          onValidated={this.onValidateEmail}
+          value={this.state.client.email}
+          onChangeText={(text) => {
+            this.onChangeClientField('email', text.toLowerCase());
+          }}
+          placeholder=""
+          inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
+        />
+        <InputDivider />
+        <InputSwitch
+          style={this.state.styles.inputSwitch}
+          textStyle={this.state.styles.inputSwitchText}
+          onChange={this.onChangeDeclineEmailInputSwitch}
+          value={this.state.declineEmail}
+          text="Decline"
+        />
+        <InputDivider />
+        {this.renderPhones()}
+      </InputGroup>
+    );
+  }
+
+  renderLoyaltySection = () => {
+    return (
+      <InputGroup>
+        <LabeledTextInput
+          label="Loyalty Number"
+          value={this.state.client.loyaltyNumber}
+          onChangeText={(text) => {
+            this.onChangeClientField('loyaltyNumber', text);
+          }}
+          placeholder=""
+          keyboardType="number-pad"
+          inputStyle={this.state.client.loyaltyNumber ? {} : this.state.styles.inputStyle}
+        />
+        <InputDivider />
+        <InputPicker
+          label="Confirmation"
+          value={this.state.client.confirmBy ? this.state.client.confirmBy : confirmByTypes[0]}
+          onChange={(option) => {
+            this.onChangeClientField('confirmBy', option);
+          }}
+          defaultOption={this.state.client.confirmBy}
+          options={confirmByTypes}
+        />
+      </InputGroup>
+    );
+  }
+
+  renderAddressSection = () => {
+    return (
+      <InputGroup>
+        <InputSwitch
+          style={this.state.styles.inputSwitch}
+          textStyle={this.state.styles.inputSwitchText}
+          onChange={this.onChangeDeclineAddressInputSwitch}
+          value={this.state.declineAddress}
+          text="Decline"
+        />
+        <InputDivider />
+        <View  pointerEvents={this.props.editionMode ? 'auto' : 'none'}>
+          <ValidatableInput
+            validateOnChange
+            validation={this.isValidText}
+            isValid={this.state.isValidStreet1}
+            onValidated={this.onValidateStreet1}
+            label="Address Line 1"
+            value={this.state.client.street1}
+            onChangeText={(text) => {
+              this.onChangeClientField('street1', text);
+            }}
+            placeholder=""
+            inputStyle={this.state.client.street1 ? {} : this.state.styles.inputStyle}
+          />
+          <InputDivider />
+          <ValidatableInput
+            validateOnChange
+            validation={this.isValidText}
+            isValid={this.state.isValidCity}
+            onValidated={this.onValidateCity}
+            label="City"
+            value={this.state.client.city}
+            onChangeText={(text) => {
+              this.onChangeClientField('city', text);
+            }}
+            placeholder=""
+            inputStyle={this.state.client.city ? {} : this.state.styles.inputStyle}
+          />
+          <InputDivider />
+          <InputPicker
+            label="State"
+            placeholder=""
+            required={this.state.requiredFields.state}
+            isValid={this.state.isValidState}
+            onValidated={this.onValidateState}
+            noValueStyle={!this.state.client.state ? this.state.styles.dateValueStyle : {}}
+            value={this.state.client.state ? this.state.client.state : null}
+            onChange={(option) => {
+              this.onChangeClientField('state', option);
+            }}
+            defaultOption={this.state.client.state}
+            options={usStates}
+          />
+          <InputDivider />
+          <ValidatableInput
+            validateOnChange
+            mask="[00000]"
+            keyboardType="numeric"
+            validation={this.isValidZipCodeRegExp}
+            isValid={this.state.isValidZipCode}
+            onValidated={this.onValidateZipCode}
+            label="ZIP"
+            value={this.state.client.zipCode}
+            onChangeText={(text) => {
+              this.onChangeClientField('zipCode', text);
+            }}
+            placeholder=""
+            inputStyle={
+            !this.props.clientInfoState.isLoadingZipCode && this.state.client.zipCode
+            ? {}
+            : this.state.styles.inputStyle
+            }
+            icon={this.props.clientInfoState.isLoadingZipCode ?
+              <View style={this.state.styles.activityIndicator}>
+                <ActivityIndicator />
+              </View>
+            : null}
+          />
+        </View>
+      </InputGroup>
+    );
+  }
+
+
+  renderReferredSection = () => {
+    return (
+      <InputGroup>
+        <View style={this.state.styles.referredClientView}>
+          <SalonTouchableOpacity
+            onPress={() => {
+              this.setReferredOptionClient(true);
+            }}
+          >
+            <FontAwesome
+              style={
+              this.state.selectedReferredClient === SelectedReferredClientEnum.Client
+              ? this.state.styles.selectedCheck
+              : this.state.styles.unselectedCheck
+              }
+            >
+              {
+              this.state.selectedReferredClient === SelectedReferredClientEnum.Client
+              ? Icons.checkCircle
+              : Icons.circle
+              }
+            </FontAwesome>
+          </SalonTouchableOpacity>
+         <ClientInput
+            label="Select Client"
+            placeholder={false}
+            selectedClient={this.state.selectedClient}
+            style={this.state.styles.clientInput}
+            onPress={this.setReferredOptionClient}
+            navigate={this.props.navigation.navigate}
+            headerProps={{ title: 'Clients', ...this.cancelButton() }}
+            onChange={this.handleClientSelection}
+          />
+        </View>
+        <InputDivider />
+        <View style={this.state.styles.clientReferralTypeContainer}>
+          <SalonTouchableOpacity onPress={this.setReferredOptionOther}>
+          <FontAwesome
+            style={
+            this.state.selectedReferredClient === SelectedReferredClientEnum.Other
+            ? this.state.styles.selectedCheck
+            : this.state.styles.unselectedCheck
+            }
+          >
+          {
+          this.state.selectedReferredClient === SelectedReferredClientEnum.Other
+          ? Icons.checkCircle
+          : Icons.circle
+          }
+          </FontAwesome>
+          </SalonTouchableOpacity>
+          <View style={this.state.styles.clientReferralTypeInput}>
+            <InputPicker
+              label="Other"
+              placeholder=""
+              noValueStyle={!this.state.client.clientReferralType ? this.state.styles.dateValueStyle : {}}
+              value={this.state.client.clientReferralType ?
+              this.state.client.clientReferralType : null}
+              onChange={this.onChangeClientReferralTypes}
+              defaultOption={this.state.client.clientReferralType}
+              options={this.props.clientInfoState.clientReferralTypes}
+              tooglePicker={this.state.tooglePicker}
+            />
+          </View>
+        </View>
+      </InputGroup>
+    );
+  }
 
   render() {
     return (
@@ -790,333 +1209,50 @@ class ClientDetails extends React.Component<Props, State> {
           </View>
           :
 
-          <KeyboardAwareScrollView extraHeight={300} /*enableAutoAutomaticScroll={false}*/>
+          <KeyboardAwareScrollView
+            keyboardShouldPersistTaps={'always'}
+            extraHeight={300}
+          >
             <View pointerEvents={this.state.pointerEvents}>
-              <SectionTitle value="NAME" style={this.state.styles.sectionTitle} />
-              <InputGroup>
-                <ValidatableInput
-                  validateOnChange
-                  validation={this.isValidText}
-                  isValid={this.state.isValidName}
-                  onValidated={this.onValidateName}
-                  label="First Name"
-                  value={this.state.client.name}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('name', text);
-                  }}
-                  placeholder=""
-                  inputStyle={this.state.client.name ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-                <LabeledTextInput
-                  inputStyle={this.state.client.middleName ? {} : this.state.styles.inputStyle}
-                  label="Middle Name"
-                  value={this.state.client.middleName}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('middleName', text);
-                  }}
-                  placeholder=""
-                />
-                <InputDivider />
-                <ValidatableInput
-                  validateOnChange
-                  inputStyle={this.state.client.lastName ? {} : this.state.styles.inputStyle}
-                  validation={this.isValidText}
-                  isValid={this.state.isValidLastName}
-                  onValidated={this.onValidateLastName}
-                  label="Last Name"
-                  value={this.state.client.lastName}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('lastName', text);
-                  }}
-                  placeholder=""
-                />
-              </InputGroup>
-
-              <SectionTitle value="MAIN INFO" style={this.state.styles.sectionTitle} />
-              <InputGroup>
-                <LabeledTextInput
-                  label="Loyalty Number"
-                  value={this.state.client.loyalty}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('loyalty', text);
-                  }}
-                  placeholder=""
-                  keyboardType="number-pad"
-                  inputStyle={this.state.client.loyalty ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-
-                <SalonTimePicker
-                  format="D MMM YYYY"
-                  label="Birthday"
-                  mode="date"
-                  placeholder=""
-                  noIcon
-                  value={this.state.client.birthday}
-                  isOpen={this.state.birthdayPickerOpen}
-                  onChange={(selectedDate) => {
-                    this.onChangeClientField('birthday', selectedDate);
-                  }}
-                  toggle={this.pickerToogleBirthday}
-                  valueStyle={!this.state.client.birthday ? this.state.styles.dateValueStyle : {}}
-                  required={this.state.requiredFields.birthday}
-                  isValid={this.state.isValidBirth}
-                  onValidated={this.onValidateBirth}
-                />
-                <InputDivider />
-                <InputPicker
-                  label="Age"
-                  placeholder=""
-                  required={this.state.requiredFields.age}
-                  isValid={this.state.isValidAge}
-                  onValidated={this.onValidateAge}
-                  noValueStyle={!this.state.client.age ? this.state.styles.dateValueStyle : {}}
-                  value={this.state.client.age ? this.state.client.age : ages[1]}
-                  onChange={(option) => {
-                    this.onChangeClientField('age', option);
-                  }}
-                  defaultOption={this.state.client.age ? this.state.client.age : ages[1]}
-                  options={ages}
-                />
-                <InputDivider />
-
-                <SalonTimePicker
-                  format="D MMM YYYY"
-                  label="Anniversary"
-                  mode="date"
-                  placeholder=""
-                  noIcon
-                  value={this.state.client.anniversary}
-                  isOpen={this.state.anniversaryPickerOpen}
-                  onChange={(selectedDate) => {
-                    this.onChangeClientField('anniversary', selectedDate);
-                  }}
-                  toggle={this.pickerToogleAnniversary}
-                  valueStyle={!this.state.client.anniversary ? this.state.styles.dateValueStyle : {}}
-                />
-
-                <InputDivider />
-                <LabeledTextInput
-                  label="Client ID"
-                  value={this.state.client.clientId}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('clientId', text);
-                  }}
-                  placeholder=""
-                  inputStyle={this.state.client.clientId ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-                <InputPicker
-                  label="Gender"
-                  placeholder=""
-                  required={this.state.requiredFields.gender}
-                  isValid={this.state.isValidGender}
-                  onValidated={this.onValidateGender}
-                  noValueStyle={!this.state.client.gender ? this.state.styles.dateValueStyle : {}}
-                  value={this.state.client.gender ? this.state.client.gender : genders[0]}
-                  onChange={(option) => {
-                    this.onChangeClientField('gender', option);
-                  }}
-                  defaultOption={this.state.client.gender ? this.state.client.gender : genders[0]}
-                  options={genders}
-                />
-              </InputGroup>
+              <SectionDivider />
+                {this.renderNameSection()}
+              <SectionDivider />
+                {this.renderBirthSection()}
               <SectionTitle value="CONTACTS" style={this.state.styles.sectionTitle} />
-              <InputGroup>
-                <ValidatableInput
-                  keyboardType="email-address"
-                  validation={this.isValidEmailRegExp}
-                  label="Email"
-                  isValid={this.state.isValidEmail}
-                  onValidated={this.onValidateEmail}
-                  value={this.state.client.email}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('email', text.toLowerCase());
-                  }}
-                  placeholder=""
-                  inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-
-                <InputSwitch
-                  style={this.state.styles.inputSwitch}
-                  textStyle={this.state.styles.inputSwitchText}
-                  onChange={this.onChangeDeclineInputSwitch}
-                  value={this.state.decline}
-                  text="Decline"
-                />
-                <InputDivider />
-                {this.renderPhones()}
-              </InputGroup>
+                {this.renderContactsSection()}
               <SectionDivider />
-              <InputGroup>
-                <InputPicker
-                  label="Confirmation"
-                  value={this.state.client.confirmBy ? this.state.client.confirmBy : confirmByTypes[0]}
-                  onChange={(option) => {
-                    this.onChangeClientField('confirmBy', option);
-                  }}
-                  defaultOption={this.state.client.confirmBy}
-                  options={confirmByTypes}
-                />
-                <InputDivider />
-                <InputSwitch
-                  style={this.state.styles.inputSwitch}
-                  textStyle={this.state.styles.inputSwitchText}
-                  onChange={this.onChangeInputSwitch}
-                  value={this.state.requireCard}
-                  text="Req. card on file to book"
-                />
-                <InputDivider style={this.state.styles.inputDivider} />
-                <LabeledTextarea
-                  label="Notes"
-                  placeholder=""
-                  onChangeText={(text) => {
-                    this.onChangeClientField('confirmationNote', text);
-                  }}
-                  value={this.state.client.confirmationNote}
-                />
-              </InputGroup>
+                {this.renderLoyaltySection()}
               <SectionTitle value="ADDRESS" style={this.state.styles.sectionTitle} />
-              <InputGroup>
-                <ValidatableInput
-                  validateOnChange
-                  validation={this.isValidText}
-                  isValid={this.state.isValidStreet1}
-                  onValidated={this.onValidateStreet1}
-                  label="Address Line 1"
-                  value={this.state.client.street1}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('street1', text);
-                  }}
-                  placeholder=""
-                  inputStyle={this.state.client.street1 ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-                <ValidatableInput
-                  validateOnChange
-                  validation={this.isValidText}
-                  isValid={this.state.isValidCity}
-                  onValidated={this.onValidateCity}
-                  label="City"
-                  value={this.state.client.city}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('city', text);
-                  }}
-                  placeholder=""
-                  inputStyle={this.state.client.city ? {} : this.state.styles.inputStyle}
-                />
-                <InputDivider />
-                <InputPicker
-                  label="State"
-                  placeholder=""
-                  required={this.state.requiredFields.state}
-                  isValid={this.state.isValidState}
-                  onValidated={this.onValidateState}
-                  noValueStyle={!this.state.client.state ? this.state.styles.dateValueStyle : {}}
-                  value={this.state.client.state ? this.state.client.state : null}
-                  onChange={(option) => {
-                    this.onChangeClientField('state', option);
-                  }}
-                  defaultOption={this.state.client.state}
-                  options={usStates}
-                />
-                <InputDivider />
-                <ValidatableInput
-                  validateOnChange
-                  mask="[00000]"
-                  keyboardType="numeric"
-                  validation={this.isValidZipCodeRegExp}
-                  isValid={this.state.isValidZipCode}
-                  onValidated={this.onValidateZipCode}
-                  label="ZIP"
-                  value={this.state.client.zipCode}
-                  onChangeText={(text) => {
-                    this.onChangeClientField('zipCode', text);
-                  }}
-                  placeholder=""
-                  inputStyle={
-                    !this.props.clientInfoState.isLoadingZipCode && this.state.client.zipCode
-                      ? {}
-                      : this.state.styles.inputStyle
-                  }
-                  icon={this.props.clientInfoState.isLoadingZipCode ?
-
-                    <View style={this.state.styles.activityIndicator}>
-                      <ActivityIndicator />
-                    </View>
-
-                    : null}
-                />
-              </InputGroup>
-
-              <SectionTitle value="REFERRED BY" style={this.state.styles.sectionTitle} />
-              <InputGroup>
-                <View style={this.state.styles.referredClientView}>
-                  <SalonTouchableOpacity onPress={() => {
-                    this.setReferredOptionClient(true);
-                  }}>
-                    <FontAwesome
-                      style={
-                        this.state.selectedReferredClient === SelectedReferredClientEnum.Client
-                          ? this.state.styles.selectedCheck
-                          : this.state.styles.unselectedCheck
-                      }
-                    >
-                      {
-                        this.state.selectedReferredClient === SelectedReferredClientEnum.Client
-                          ? Icons.checkCircle
-                          : Icons.circle
-                      }
-                    </FontAwesome>
-                  </SalonTouchableOpacity>
-
-                  <ClientInput
-                    label="Select Client"
-                    placeholder={false}
-                    selectedClient={this.state.selectedClient}
-                    style={this.state.styles.clientInput}
-                    onPress={this.setReferredOptionClient}
-                    navigate={this.props.navigation.navigate}
-                    headerProps={{ title: 'Clients', ...this.cancelButton() }}
-                    onChange={this.handleClientSelection}
-                  />
-                </View>
-                <InputDivider />
-                <View style={this.state.styles.clientReferralTypeContainer}>
-                  <SalonTouchableOpacity onPress={this.setReferredOptionOther}>
-                    <FontAwesome
-                      style={
-                        this.state.selectedReferredClient === SelectedReferredClientEnum.Other
-                          ? this.state.styles.selectedCheck
-                          : this.state.styles.unselectedCheck
-                      }
-                    >
-                      {
-                        this.state.selectedReferredClient === SelectedReferredClientEnum.Other
-                          ? Icons.checkCircle
-                          : Icons.circle
-                      }
-                    </FontAwesome>
-                  </SalonTouchableOpacity>
-
-                  <View style={this.state.styles.clientReferralTypeInput}>
-                    <InputPicker
-                      label="Other"
-                      placeholder=""
-                      noValueStyle={!this.state.client.clientReferralType ? this.state.styles.dateValueStyle : {}}
-                      value={this.state.client.clientReferralType ?
-                        this.state.client.clientReferralType : null}
-                      onChange={this.onChangeClientReferralTypes}
-                      defaultOption={this.state.client.clientReferralType}
-                      options={this.props.clientInfoState.clientReferralTypes}
-                    />
-                  </View>
-                </View>
-              </InputGroup>
+              {this.renderAddressSection()}
+              <SectionTitle
+                value="REFERRED BY"
+                style={this.state.styles.sectionTitle}
+                sectionTitleStyle={{
+                  color: this.state.isValidReferred ? '#727A8F' : '#D1242A',
+                }}
+              />
+                {this.renderReferredSection()}
               <SectionDivider />
-            </View>
+
+              {this.props.actionType === 'update' ?
+                <View>
+                  <InputGroup>
+                    <InputButton
+                      noIcon
+                      childrenContainerStyle={{
+                        justifyContent: 'center', alignItems: 'center',
+                      }}
+                      onPress={this.deleteClient}
+                    >
+                      <Text style={{ color: '#D1242A', fontFamily: 'Roboto-Medium' }}>Delete Client</Text>
+                    </InputButton>
+                  </InputGroup>
+                  <SectionDivider />
+                </View>
+                : null
+                }
+              </View>
+
           </KeyboardAwareScrollView>}
       </View>
     );
