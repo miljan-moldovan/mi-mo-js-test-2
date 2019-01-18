@@ -260,7 +260,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   }
 
   handelScrollToDefault = () => {
-    this.props.refsSliderPanel && this.props.refsSliderPanel.transitionTo(initialHeightOfHeader);
+    this.props.refsSliderPanel &&
+    this.props.refsSliderPanel.transitionTo(this.props.refsSliderPanel.props.defaultYPosition);
   };
 
   handelHidePanel = () => {
