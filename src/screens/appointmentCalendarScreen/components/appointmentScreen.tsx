@@ -190,6 +190,7 @@ class AppointmentScreen extends React.Component<any, any> {
     crossedAppointments: [],
     crossedAppointmentsIdAfter: [],
     workHeight: 0,
+    isResizing: false,
   };
   private BarsActionSheet: any;
   private refsSliderPanel: any;
@@ -212,6 +213,41 @@ class AppointmentScreen extends React.Component<any, any> {
       this.loadRebookData,
     );
   }
+
+  showCancelResizeAlert = (customLogic) => {
+    const onPressRight = customLogic ? customLogic : () => {
+      const { pickerMode, startDate, endDate } = this.props.appointmentScreenState;
+      this.setState({
+        alert: null,
+      });
+      const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
+      this.props.appointmentCalendarActions.setPickerMode(
+        newPickerMode,
+      );
+      if (
+        startDate.format('YYYY-MM-DD') ===
+        endDate.format('YYYY-MM-DD')
+      ) {
+        this.props.appointmentCalendarActions.setGridView();
+      }
+    };
+    console.warn('show resize alert');
+    const alert = {
+      title: 'Cancel resize?',
+      description: 'Do you really want to cancel resize?',
+      btnLeftText: 'No',
+      btnRightText: 'Cancel',
+      onPressRight,
+      onPressLeft: () => {
+        this.hideAlert();
+      },
+    };
+    this.setState({ alert });
+  };
+
+  setResizing = isResizing => {
+    return this.setState({ isResizing });
+  };
 
   loadRebookData = () => {
     const { rebookData } = this.props.rebookState;
@@ -501,6 +537,18 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   setSelectedProvider = provider => {
+    if (this.state.isResizing) {
+      this.showCancelResizeAlert(() => {
+        this.props.appointmentCalendarActions.setPickerMode('week');
+        this.props.appointmentCalendarActions.setSelectedProvider(provider);
+        this.props.appointmentCalendarActions.setGridView();
+        this.props.navigation.setParams({
+          filterProvider: provider,
+        });
+        this.hideAlert();
+      });
+      return;
+    }
     this.props.appointmentCalendarActions.setPickerMode('week');
     this.props.appointmentCalendarActions.setSelectedProvider(provider);
     this.props.appointmentCalendarActions.setGridView();
@@ -1062,6 +1110,7 @@ class AppointmentScreen extends React.Component<any, any> {
           crossedAppointmentAfter={crossedAppointmentsIdAfter}
           isNeedShowCurrentTime={isNeedShowCurrentTime}
           workHeight={this.state.workHeight}
+          setResizing={this.setResizing}
         />
         {isLoading
           ? <View style={styles.loadingContainer}>
@@ -1075,6 +1124,10 @@ class AppointmentScreen extends React.Component<any, any> {
             }
             pickerMode={pickerMode}
             handlePress={() => {
+              if (this.state.isResizing) {
+                this.showCancelResizeAlert();
+                return;
+              }
               const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
               this.props.appointmentCalendarActions.setPickerMode(
                 newPickerMode,
