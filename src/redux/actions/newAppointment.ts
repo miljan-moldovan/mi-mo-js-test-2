@@ -130,26 +130,27 @@ const resetTimeForServices = (
   index: Maybe<number>,
   initialFromTime: Maybe<string | moment.Moment>,
 ): any => {
-  return items.map((item, i) => {
+  const itemsToReturn: ServiceItem[] = [];
+  items.map((item, i) => {
     if (i > index) {
-      const prevItem: ServiceItem = items[i - 1];
+      const prevItem = itemsToReturn[i - 1];
       let fromTime = moment(initialFromTime);
       if (prevItem) {
         fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
       }
-      return {
+      itemsToReturn.push({
         ...item,
         service: {
           ...item.service,
           fromTime,
-          toTime: moment(fromTime).add(
+          toTime: fromTime.clone().add(
             item.service.length,
           ),
         },
-      };
+      });
     }
-    return item;
   });
+  return itemsToReturn;
 };
 
 const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => async (dispatch, getState: () => AppStore) => {
@@ -1008,12 +1009,9 @@ const newAppointmentActions = {
   getConflictsForService,
   checkIsBookedByFieldEnabled,
   updateServiceItems,
-<<<<<<< HEAD
   changeDateTime,
-=======
   setOrdinalIdAndResourcesId,
   clearOrdinalIdAndResourcesId,
->>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
 };
 
 export interface NewApptActions {
@@ -1046,12 +1044,9 @@ export interface NewApptActions {
   getConflictsForService: typeof newAppointmentActions.getConflictsForService;
   checkIsBookedByFieldEnabled: typeof newAppointmentActions.checkIsBookedByFieldEnabled;
   updateServiceItems: (serviceItems: ServiceItem[]) => any;
-<<<<<<< HEAD
   changeDateTime: (date: moment.Moment, startTime: moment.Moment) => any;
-=======
   setOrdinalIdAndResourcesId: typeof newAppointmentActions.setOrdinalIdAndResourcesId,
   clearOrdinalIdAndResourcesId: typeof newAppointmentActions.clearOrdinalIdAndResourcesId,
->>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
 }
 
 export default newAppointmentActions;

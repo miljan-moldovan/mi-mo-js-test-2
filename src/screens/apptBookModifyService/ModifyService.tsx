@@ -532,10 +532,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       toast,
       date,
       roomOrdinal,
-<<<<<<< HEAD
-=======
       resourceOrdinal,
->>>>>>> 53862b7727a661ba17d2b0453badd09a1eb7a790
     } = this.state;
     const supportsRooms = get(selectedService, 'supportedRooms.length', false);
     const supportsResource = get(selectedService, 'supportedResource', false);
