@@ -1220,17 +1220,16 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   handleMove = (data) => {
     const { id } = data;
     const { buffer } = this.state;
-    const newBuffer = [...buffer];
     const {
       conflictsForPreviousDay: conflicts, dataForConflictsScreen, conflictData,
       oldAppointment, dataForOnDrop, isPreviousDay,
-    } = this.getDataForHandelDropAppointment(data, newBuffer);
+    } = this.getDataForHandelDropAppointment(data, buffer);
 
     if (isPreviousDay) {
       const params = this.generateParamsForConflictScreenAfterDropAppointment(
         conflicts,
         dataForConflictsScreen,
-        newBuffer,
+        buffer,
       );
       this.hideAlert();
       return this.props.navigation.navigate('Conflicts', params);
@@ -1241,11 +1240,11 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
         const params = this.generateParamsForConflictScreenAfterDropAppointment(
           conflicts,
           dataForConflictsScreen,
-          newBuffer,
+          buffer,
         );
         this.props.navigation.navigate('Conflicts', params);
       } else {
-        this.handelDropWithoutConflicts(id, dataForOnDrop, oldAppointment, newBuffer);
+        this.handelDropWithoutConflicts(id, dataForOnDrop, oldAppointment, buffer);
       }
     });
 
@@ -1282,7 +1281,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
             employeeId,
             fromTime: newTime,
             toTime: newToTime,
-            appointmentId: oldAppointment.id,
+            appointmentId: oldAppointment && oldAppointment.id,
           },
         ],
       },
@@ -1293,15 +1292,15 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       bookAnyway: false,
       canBeSkipped: false,
       date: moment(date),
-      duration: oldAppointment.service.duration,
-      employeeFullName: oldAppointment.employee.fullName,
-      fromTime: oldAppointment.fromTime,
+      duration: oldAppointment && oldAppointment.service && oldAppointment.service.duration,
+      employeeFullName: oldAppointment && oldAppointment.employee && oldAppointment.employee.fullName,
+      fromTime: oldAppointment && oldAppointment.fromTime,
       notes: null,
       overlap: null,
       price: 0,
       reason: MASSAGE_OF_DAY_ALREADY_PASSED,
       serviceDescription: null,
-      toTime: oldAppointment.toTime,
+      toTime: oldAppointment && oldAppointment.toTime,
     }];
 
     const dataForOnDrop = {
@@ -1340,9 +1339,10 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   getOldAppointment = (index, id, buffer) => {
     const { appointments } = this.props;
 
+
     if (index > -1) {
-      buffer.splice(index, 1);
-      return buffer[index];
+      const element = buffer.splice(index, 1);
+      return element[0];
     }
 
     return appointments.find(item => item.id === id);
@@ -1528,7 +1528,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     if (this.isTheSamePlace(newAndLodDateObject, employee.id, employeeId)) {
       return this.setState({ activeCard: null });
     }
-
     if (activeCard) {
       this.setState({
         alert: {
