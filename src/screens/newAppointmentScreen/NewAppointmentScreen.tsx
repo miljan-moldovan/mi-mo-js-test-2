@@ -133,13 +133,12 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     };
     this.props.navigation.addListener('willFocus', () => {
       const { client, editType } = this.props.newAppointmentState;
-      if (editType !== 'new') {
+      if (editType !== 'new' && client) {
         this.props.navigation.setParams({ editType });
         this.props.formulaActions.getFormulasAndNotes(client.id);
       }
-      this.shouldUpdateClientInfo();
+
     });
-    this.props.navigation.addListener('willBlur', this.shouldUpdateClientInfo);
   }
 
   componentDidMount() {
@@ -365,7 +364,9 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
   };
 
-  shouldUpdateClientInfo = async () => {
+
+  getClientUpdateObject = () => {
+    const { client } = this.props.newAppointmentState;
     const {
       clientEmail,
       clientPhone,
@@ -373,55 +374,64 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       isValidPhone: phoneValid,
       clientConfirmationType: confirmationType,
     } = this.state;
+
+    if (!client) {
+      // nothing to update;
+      return;
+    }
+
+    const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
+    const hasConfirmationTypeChanged =
+      get(client, 'confirmBy') ? confirmationType !== get(client, 'confirmBy') : false;
+    const hasEmailChanged = clientEmail !== client.email;
+    const hasPhoneChanged = clientPhone !== currentPhone.value;
+    const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
+    const isValidPhone = phoneValid && clientPhone !== '' && hasPhoneChanged;
+    if (!isValidEmail && !isValidPhone) {
+      if (hasConfirmationTypeChanged) {
+        const updateObject = {
+          id: client.id,
+          phones: client.phones,
+          confirmationType: +confirmationType,
+          email: client.email,
+        };
+        return updateObject;
+      }
+      return;
+    }
+    const phones =
+      isValidPhone && hasPhoneChanged
+        ? [
+          {
+            type: ClientPhoneTypes.cell,
+            value: clientPhone,
+          },
+          ...client.phones.filter(
+            phone =>
+              phone.value &&
+              phone.type !== ClientPhoneTypes.cell &&
+              this.isValidPhoneNumberRegExp.test(phone.value),
+          ),
+        ]
+        : client.phones.filter(phone => phone.value && this.isValidPhoneNumberRegExp.test(phone.value));
+
+    const updateObject = {
+      id: client.id,
+      phones,
+      confirmationType: +confirmationType,
+      email: isValidEmail ? clientEmail : client.email,
+    };
+
+
+    return updateObject;
+  }
+
+  shouldUpdateClientInfo = async () => {
+
     const { client } = this.props.newAppointmentState;
 
     try {
-      if (!client) {
-        // nothing to update;
-        return;
-      }
-
-      const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
-      const hasConfirmationTypeChanged =
-        get(client, 'confirmBy') ? confirmationType !== get(client, 'confirmBy') : false;
-      const hasEmailChanged = clientEmail !== client.email;
-      const hasPhoneChanged = clientPhone !== currentPhone.value;
-      const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
-      const isValidPhone = phoneValid && clientPhone !== '' && hasPhoneChanged;
-      if (!isValidEmail && !isValidPhone) {
-        if (hasConfirmationTypeChanged) {
-          const updateObject = {
-            id: client.id,
-            phones: client.phones,
-            confirmationType: +confirmationType,
-            email: client.email,
-          };
-          return await Client.putContactInformation(client.id, updateObject);
-        }
-        return false;
-      }
-      const phones =
-        isValidPhone && hasPhoneChanged
-          ? [
-            {
-              type: ClientPhoneTypes.cell,
-              value: clientPhone,
-            },
-            ...client.phones.filter(
-              phone =>
-                phone.value &&
-                phone.type !== ClientPhoneTypes.cell &&
-                this.isValidPhoneNumberRegExp.test(phone.value),
-            ),
-          ]
-          : client.phones.filter(phone => phone.value && this.isValidPhoneNumberRegExp.test(phone.value));
-
-      const updateObject = {
-        id: client.id,
-        phones,
-        confirmationType: +confirmationType,
-        email: isValidEmail ? clientEmail : client.email,
-      };
+      const updateObject = this.getClientUpdateObject();
       return await Client.putContactInformation(client.id, updateObject);
     } catch (error) {
       console.warn('Error updating client info:', error);
@@ -551,7 +561,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     this.props.newAppointmentActions.setBookedBy(employee);
   };
 
-  onChangeClient = async (client) => {
+  onChangeClient = async (client, handleAddService = true) => {
     const clientDetailed = await Client.getClient(get(client, 'id'));
     const {
       clientEmail,
@@ -574,7 +584,9 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       },
       () => {
         this.checkConflicts();
-        this.handleAddMainService();
+        if (handleAddService) {
+          this.handleAddMainService();
+        }
       },
     );
   };
@@ -635,7 +647,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       if (!this.shouldSelectResources()) {
         this.props.newAppointmentActions.getConflicts(() => {
           this.validate();
-          this.shouldUpdateClientInfo();
         });
       }
     }
@@ -674,6 +685,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const successCallback = () => {
       const { date } = this.props.newAppointmentState;
       this.props.navigation.goBack();
+      this.props.newAppointmentActions.setClient(null);
       this.props.apptBookActions.setProviderScheduleDates(date, date);
       this.props.apptBookActions.setGridView();
       this.props.apptBookActions.setToast({
@@ -699,11 +711,13 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       const {
         selectedAppt: { id },
       } = this.props.newAppointmentState;
-      this.props.newAppointmentActions.modifyAppt(id, successCallback, errorCallback);
+      const clientUpdateObject = this.getClientUpdateObject();
+      this.props.newAppointmentActions.modifyAppt(id, clientUpdateObject, successCallback, errorCallback);
     }
   };
 
   handleCancel = () => {
+    this.shouldUpdateClientInfo();
     const { editType, serviceItems, mainEmployee } = this.props.newAppointmentState;
     const firstService = serviceItems[0] ? get(serviceItems[0].service, 'service', null) : null;
     const serviceTitle = get(firstService, 'name', null);
@@ -739,12 +753,14 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         {
           text: 'Yes, Discard',
           onPress: () => {
+            this.props.newAppointmentActions.setClient(null);
             this.props.navigation.goBack();
             this.props.apptBookActions.setGridView();
           },
         },
       ]);
     } else {
+      this.props.newAppointmentActions.setClient(null);
       this.props.navigation.goBack();
       this.props.apptBookActions.setGridView();
     }
@@ -758,9 +774,6 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     }
 
     const isValid = this[nameValidation].test(target);
-    if (isValid && isNeedUpdate) {
-      this.shouldUpdateClientInfo();
-    }
     return isValid;
   };
 
@@ -910,7 +923,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         navigation={this.props.navigation}
         onDismiss={(client) => {
           if (client) {
-            this.props.newAppointmentActions.setClient(client);
+            this.onChangeClient(client, false);
           }
         }}
         onDonePress={() => {
