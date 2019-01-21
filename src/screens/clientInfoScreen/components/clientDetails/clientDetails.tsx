@@ -786,6 +786,8 @@ class ClientDetails extends React.Component<Props, State> {
       let phone = find(this.state.client.phones, { type: phoneType.type });
       phone = phone || { type: phoneType.type, value: '' };
 
+      const divider = i < phoneTypes.length - 1 ? <InputDivider /> : null;
+
       const element = (
         <React.Fragment>
           <ValidatableInput
@@ -804,7 +806,7 @@ class ClientDetails extends React.Component<Props, State> {
             placeholder=""
             inputStyle={phone.value ? {} : this.state.styles.inputStyle}
           />
-          <InputDivider />
+          {divider}
         </React.Fragment>);
 
       elements.push(element);
@@ -870,7 +872,7 @@ class ClientDetails extends React.Component<Props, State> {
 
   }
 
-  renderNameSection = () => {
+  renderInfoSection = () => {
     return (
       <InputGroup>
         <LabeledTextInput
@@ -920,13 +922,7 @@ class ClientDetails extends React.Component<Props, State> {
           }}
           placeholder=""
         />
-      </InputGroup>
-    );
-  }
-
-  renderBirthSection = () => {
-    return (
-      <InputGroup>
+        <InputDivider />
         {this.state.requiredFields.gender ?
           <View>
             <InputPicker
@@ -987,34 +983,37 @@ class ClientDetails extends React.Component<Props, State> {
     );
   }
 
-
   renderContactsSection = () => {
     return (
-      <InputGroup>
-        <ValidatableInput
-          keyboardType="email-address"
-          validation={this.isValidEmailRegExp}
-          label="Email"
-          isValid={this.state.isValidEmail}
-          onValidated={this.onValidateEmail}
-          value={this.state.client.email}
-          onChangeText={(text) => {
-            this.onChangeClientField('email', text.toLowerCase());
-          }}
-          placeholder=""
-          inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
-        />
-        <InputDivider />
-        <InputSwitch
-          style={this.state.styles.inputSwitch}
-          textStyle={this.state.styles.inputSwitchText}
-          onChange={this.onChangeDeclineEmailInputSwitch}
-          value={this.state.declineEmail}
-          text="Decline"
-        />
-        <InputDivider />
-        {this.renderPhones()}
-      </InputGroup>
+      <View>
+        <InputGroup>
+          <ValidatableInput
+            keyboardType="email-address"
+            validation={this.isValidEmailRegExp}
+            label="Email"
+            isValid={this.state.isValidEmail}
+            onValidated={this.onValidateEmail}
+            value={this.state.client.email}
+            onChangeText={(text) => {
+              this.onChangeClientField('email', text.toLowerCase());
+            }}
+            placeholder=""
+            inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
+          />
+          <InputDivider />
+          <InputSwitch
+            style={this.state.styles.inputSwitch}
+            textStyle={this.state.styles.inputSwitchText}
+            onChange={this.onChangeDeclineEmailInputSwitch}
+            value={this.state.declineEmail}
+            text="Decline"
+          />
+        </InputGroup>
+        <SectionDivider style={ { height:10 } }/>
+        <InputGroup>
+          {this.renderPhones()}
+        </InputGroup>
+      </View>
     );
   }
 
@@ -1214,11 +1213,9 @@ class ClientDetails extends React.Component<Props, State> {
             extraHeight={300}
           >
             <View pointerEvents={this.state.pointerEvents}>
-              <SectionDivider />
-                {this.renderNameSection()}
-              <SectionDivider />
-                {this.renderBirthSection()}
-              <SectionTitle value="CONTACTS" style={this.state.styles.sectionTitle} />
+              <SectionTitle value="INFO" style={this.state.styles.sectionTitle} />
+                {this.renderInfoSection()}
+              <SectionTitle value="CONTACT" style={this.state.styles.sectionTitle} />
                 {this.renderContactsSection()}
               <SectionDivider />
                 {this.renderLoyaltySection()}
