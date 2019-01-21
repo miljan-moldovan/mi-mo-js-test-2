@@ -1,3 +1,5 @@
+
+import { get } from 'lodash';
 import { ServiceItem, RoomType } from '@/models';
 
 export function shouldSelectRoom(itm: ServiceItem) {
@@ -15,7 +17,7 @@ export function shouldSelectRoom(itm: ServiceItem) {
     const { supportedRooms } = itm.service.service;
     if (supportedRooms && supportedRooms.length) {
       if (itm.service.room !== null && itm.service.resource !== undefined) {
-        return itm.service.room.id === null;
+        return get(itm.service.room, 'id') === null;
       }
       return true;
     }
@@ -31,7 +33,7 @@ export function shouldSelectResource(itm: ServiceItem) {
     const { supportedResource } = itm.service.service;
     if (supportedResource) {
       if (itm.service.resource !== null && itm.service.resource !== undefined) {
-        return itm.service.resource.id === null;
+        return get(itm.service.resource, 'id') === null;
       }
       return true;
     }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Text,
 } from 'react-native';
-import { times, flatten, chain, includes } from 'lodash';
+import { times, flatten, chain, includes, get } from 'lodash';
 import SalonFlatList from '@/components/common/SalonFlatList';
 import { Store } from '@/utilities/apiWrapper';
 import { Room, StoreRoom, ServiceItem, Maybe } from '@/models';
@@ -45,7 +45,7 @@ export interface RoomServiceItem {
 }
 
 const convertServiceItem = (itm: ServiceItem) => {
-  const availableRooms = itm.service.service.supportedRooms.map(room => room.id);
+  const availableRooms = itm.service.service.supportedRooms.map(room => get(room, 'id'));
   return {
     availableRooms,
     serviceItem: itm,
@@ -132,7 +132,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
       ? convertServiceItem(this.params.serviceItem)
       : services.find(itm => itm.serviceItem.itemId === currentOpenService);
     const availableRooms = currentService
-      ? rooms.filter(room => includes(currentService.availableRooms, room.id))
+      ? rooms.filter(room => includes(currentService.availableRooms, get(room, 'id')))
       : rooms;
     const roomOptions = flatten(
       availableRooms.map(room => {
