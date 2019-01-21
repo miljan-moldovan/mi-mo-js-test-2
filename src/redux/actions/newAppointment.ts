@@ -930,7 +930,7 @@ const messageProvidersClients = (
     });
 };
 // tslint:disable-next-line
-const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, errorCallback: Maybe<Function> = null): any => (
+const modifyAppt = (apptId: number, clientUpdateObject:any, successCallback: Maybe<Function> = null, errorCallback: Maybe<Function> = null): any => (
   dispatch,
   getState,
 ) => {
@@ -954,6 +954,7 @@ const modifyAppt = (apptId: number, successCallback: Maybe<Function> = null, err
     existingServices.includes(id),
   );
   requestBody.deletedIds = deletedIds.length || idForDel;
+  requestBody.clientInfo = clientUpdateObject || requestBody.clientInfo;
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
       return dispatch(bookNewApptSuccess(successCallback));
