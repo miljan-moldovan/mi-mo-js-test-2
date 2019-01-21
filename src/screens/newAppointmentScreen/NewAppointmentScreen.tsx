@@ -31,7 +31,17 @@ import { Store, Client, Services } from '@/utilities/apiWrapper';
 import ServiceCard from './components/ServiceCard';
 import Guest from './components/Guest';
 import styles from './styles';
-import { NewAppointmentScreenProps, NewAppointmentScreenState, Service, Room, ServiceItem, Maybe, ConfirmationType, ClientDetailed, Client } from '@/models';
+import {
+  NewAppointmentScreenProps,
+  NewAppointmentScreenState,
+  Service,
+  Room,
+  ServiceItem,
+  Maybe,
+  ConfirmationType,
+  ClientDetailed,
+  Client,
+} from '@/models';
 import { shouldSelectRoom, shouldSelectResource } from './helpers';
 import SalonPicker from '@/components/formHelpers/components/SalonPicker';
 
@@ -175,7 +185,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         ...this.getClientInfo(clientDetailed as ClientDetailed),
       });
     }
-  }
+  };
   addService = (service, provider = null, guestId: string = undefined) => {
     const {
       client,
@@ -343,7 +353,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     } else {
       return false;
     }
-  }
+  };
 
   shouldSelectResources = () => {
     const { newAppointmentState: { serviceItems } } = this.props;
@@ -353,7 +363,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     } else {
       return false;
     }
-  }
+  };
 
   shouldUpdateClientInfo = async () => {
     const {
@@ -562,7 +572,10 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         clientPhoneType,
         clientConfirmationType,
       },
-      this.checkConflicts,
+      () => {
+        this.checkConflicts();
+        this.handleAddMainService();
+      },
     );
   };
 
@@ -626,7 +639,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         });
       }
     }
-  }
+  };
 
   handleAddGuestService = guestId => {
     const { date, mainEmployee } = this.props.newAppointmentState;
@@ -696,8 +709,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const serviceTitle = get(firstService, 'name', null);
     const employeeName =
       `${get(mainEmployee, 'name', get(mainEmployee, 'firstName', ''))} ${
-      get(mainEmployee, 'lastName', '')[0]
-      }.`;
+        get(mainEmployee, 'lastName', '')[0]
+        }.`;
     let alertBody = '';
     let alertTitle = '';
     switch (editType) {
@@ -858,7 +871,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     this.setState({
       clientConfirmationType,
     }, this.shouldUpdateClientInfo);
-  }
+  };
 
   resetTimeForServices = (items, index, initialFromTime) => {
     items.forEach((item, i) => {
