@@ -1040,7 +1040,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
                           conflicts={this.getConflictsForService(addon.itemId)}
                           onPressDelete={addonDelete}
                           onPressConflicts={addonConflicts}
-                          g />
+                        />
                       );
                     })
                   }
