@@ -44,6 +44,8 @@ export type NewAppointmentScreenState = {
   selectedAddons: Service[];
   selectedRequired: Service[] | Maybe<Service>;
   selectedRecommended: Service[];
+  confirmationTypePickerOpen: boolean;
+  clientConfirmationType: number;
   clientEmail: string;
   clientPhone: string;
   isValidEmail: boolean;
@@ -73,3 +75,10 @@ export type ServiceItem = {
     resourceOrdinal: Maybe<number>;
   };
 };
+
+export enum ConfirmationType {
+  Email = 1,
+  Sms = 5,
+  DoNotConfirm = 7,
+  EmailAndSms = 6,
+}
