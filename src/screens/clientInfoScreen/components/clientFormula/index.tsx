@@ -376,7 +376,6 @@ class ClientFormula extends React.Component<Props, State> {
           this.state.isLoading) &&
           <LoadingOverlay />}
         <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="always"
           ref="scroll"
           extraHeight={300}
         >
