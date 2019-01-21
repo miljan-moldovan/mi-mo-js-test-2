@@ -269,7 +269,7 @@ export default class ModifyServiceScreen extends React.Component {
     const isFirstAvailable = get(employee, 'isFirstAvailable', false);
     return (
       <View style={styles.container}>
-        {(isLoading || isLoadingState) && <LoadingOverlay />}
+        {!!(isLoading || isLoadingState) && <LoadingOverlay />}
         <InputGroup style={styles.marginTop}>
           <ServiceInput
             noPlaceholder
@@ -317,7 +317,7 @@ export default class ModifyServiceScreen extends React.Component {
           <InputLabel label="Price" value={priceLabelValue} />
         </InputGroup>
         <SectionDivider />
-        {this.canRemove &&
+        {!!this.canRemove &&
         <InputGroup>
           <SalonTouchableOpacity
             style={styles.removeButton}

@@ -73,6 +73,7 @@ interface ModifyApptServiceScreenState {
 const durationToFormat = (duration) => {
   return moment.utc(duration.as('milliseconds')).format('HH:mm:ss');
 };
+
 class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenProps, ModifyApptServiceScreenState> {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
@@ -505,14 +506,14 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       serviceItem: this.props.navigation.getParam('serviceItem', undefined),
       onChange: ({ room, roomOrdinal }) => this.setState({ room, roomOrdinal }, this.checkConflicts),
     });
-  }
+  };
 
   selectResource = () => {
     this.props.navigation.navigate('SelectResource', {
       serviceItem: this.props.navigation.getParam('serviceItem', undefined),
       onChange: ({ resource, resourceOrdinal }) => this.setState({ resource, resourceOrdinal }, this.checkConflicts),
     });
-  }
+  };
 
   render() {
     const {
@@ -613,7 +614,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
               this.setState({ bookBetween: !bookBetween })}
           />
           {
-            bookBetween &&
+            !!bookBetween &&
             <View>
               <InputDivider />
               <InputNumber
@@ -637,13 +638,13 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           }
         </InputGroup>
         {
-          (supportsResource || supportsRooms) &&
+          !!(supportsResource || supportsRooms) &&
           (
             <React.Fragment>
               <SectionTitle value="Room & Resource" />
               <InputGroup>
                 {
-                  supportsRooms && (
+                  !!supportsRooms && (
                     <React.Fragment>
                       <InputButton
                         onPress={this.selectRoom}
@@ -655,7 +656,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
                   )
                 }
                 {
-                  supportsResource &&
+                  !!supportsResource &&
                   <InputButton
                     onPress={this.selectResource}
                     label="Assigned Resource"
@@ -667,22 +668,23 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           )
         }
         {this.renderConflictsBox()}
-        {canRemove &&
-          <RemoveButton
-            disabled={this.props.navigation.state.params.isOnlyMainService}
-            title="Remove Service"
-            onPress={this.onPressRemove}
-          />}
+        {!!canRemove &&
+        <RemoveButton
+          disabled={this.props.navigation.state.params.isOnlyMainService}
+          title="Remove Service"
+          onPress={this.onPressRemove}
+        />}
         <SectionDivider />
-        {toast &&
-          <SalonToast
-            description={toast.description}
-            type={toast.type}
-            btnRightText={toast.btnRight}
-            hide={this.hideToast}
-          />}
+        {!!toast &&
+        <SalonToast
+          description={toast.description}
+          type={toast.type}
+          btnRightText={toast.btnRight}
+          hide={this.hideToast}
+        />}
       </ScrollView>
     );
   }
 }
+
 export default ModifyApptServiceScreen;
