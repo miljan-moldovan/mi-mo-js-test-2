@@ -199,7 +199,7 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
         waitingLogin: false,
         error: commonErrorMessage,
         urlError: err.error.response.data.urlError,
-        loginError: err.error.response.data.loginError,
+        loginError: true,
         errors: [],
       });
     } else {
@@ -215,7 +215,8 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
 
   isItCommonError = (err) => {
     return err && (err.message !== errorWithUndefiend
-    || err.message !== errorPasswordIsRequired || err.message !== errorUserNaameIsRequired);
+    || err.message !== errorPasswordIsRequired || err.message !== errorUserNaameIsRequired)
+    || (err.error && err.error.response && err.error.response.data && err.error.response.data.urlError);
   };
 
   handleModalConfirmFingerprint = () => {
