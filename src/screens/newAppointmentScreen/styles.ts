@@ -86,8 +86,15 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   containerForTrashButton: {
-    width: 22,
     alignItems: 'flex-end',
+    position: 'absolute',
+    bottom: -10,
+    right: -10,
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    paddingRight: 10,
+    width: 32,
+    height: 35,
   },
   containerForServiceInfo: {
     flexDirection: 'row',
