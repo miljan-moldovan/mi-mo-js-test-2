@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import moment from 'moment';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import {
   InputGroup,
@@ -10,31 +10,48 @@ import {
   SalonTimePicker,
   SchedulePicker,
 } from '../../../components/formHelpers';
-import newAppointmentActions from '../../../redux/actions/newAppointment';
+import newAppointmentActions, { NewApptActions } from '../../../redux/actions/newAppointment';
 import {
   appointmentCalendarActions,
 } from '../../../redux/actions/appointmentBook';
 import SalonTouchableOpacity from '../../../components/SalonTouchableOpacity';
 import headerStyles from '../../../constants/headerStyles';
 import SalonHeader from '../../../components/SalonHeader';
+import { NavigationScreenProp } from 'react-navigation';
+import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  marginTop: {marginTop: 16},
+  marginTop: { marginTop: 16 },
   headerButton: {
     fontSize: 14,
     color: 'white',
   },
-  mediumBold: {fontFamily: 'Roboto-Medium'},
-  rightButton: {paddingRight: 10},
-  leftButton: {paddingLeft: 10},
+  mediumBold: { fontFamily: 'Roboto-Medium' },
+  rightButton: { paddingRight: 10 },
+  leftButton: { paddingLeft: 10 },
 });
 
-class ChangeDateTimeScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    const rightButtonOnPress = () => navigation.state.params.handleSave ();
+interface ChangeDateTimeScreenProps {
+  navigation: NavigationScreenProp<{
+    handleSave: () => void;
+  }>;
+  newApptState: NewAppointmentReducer;
+  newApptActions: NewApptActions;
+}
+
+interface ChangeDateTimeScreenState {
+  date: moment.Moment;
+  startTime: moment.Moment;
+  isOpenDatePicker: boolean;
+  isOpenTimePicker: boolean;
+}
+
+class ChangeDateTimeScreen extends React.Component<ChangeDateTimeScreenProps, ChangeDateTimeScreenState> {
+  static navigationOptions = ({ navigation }) => {
+    const rightButtonOnPress = () => navigation.state.params.handleSave();
     return {
       header: (
         <SalonHeader
@@ -60,47 +77,45 @@ class ChangeDateTimeScreen extends React.Component {
     };
   };
 
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
 
-    this.props.navigation.setParams ({handleSave: this.handleSave});
-    const {date, startTime} = this.props.newApptState;
+    this.props.navigation.setParams({ handleSave: this.handleSave });
+    const { date, startTime } = this.props.newApptState;
     this.state = {
-      date: moment (date),
-      startTime: moment (startTime),
+      date: moment(date),
+      startTime: moment(startTime),
       isOpenDatePicker: false,
       isOpenTimePicker: false,
     };
   }
 
-  onChangeDate = date => this.setState ({date});
+  onChangeDate = date => this.setState({ date: moment(date) });
 
-  onChangeTime = startTime => this.setState ({startTime});
+  onChangeTime = startTime => this.setState({ startTime: moment(startTime) });
 
   toggleDatePicker = () =>
-    this.setState (({isOpenDatePicker}) => ({
+    this.setState(({ isOpenDatePicker }) => ({
       isOpenTimePicker: false,
       isOpenDatePicker: !isOpenDatePicker,
     }));
 
   toggleTimePicker = () =>
-    this.setState (({isOpenTimePicker}) => ({
+    this.setState(({ isOpenTimePicker }) => ({
       isOpenDatePicker: false,
       isOpenTimePicker: !isOpenTimePicker,
     }));
 
   handleSave = () => {
-    const {date, startTime} = this.state;
-    setTimeout (() => {
-      this.props.newApptActions.setDate (moment (date));
-      this.props.newApptActions.setStartTime (moment (startTime, 'hh:mm A'));
-      this.props.newApptActions.getConflicts ();
-      this.props.navigation.goBack ();
+    const { date, startTime } = this.state;
+    setTimeout(() => {
+      this.props.newApptActions.changeDateTime(date, startTime);
+      this.props.navigation.goBack();
     });
   };
 
-  render () {
-    const {date, startTime, isOpenDatePicker, isOpenTimePicker} = this.state;
+  render() {
+    const { date, startTime, isOpenDatePicker, isOpenTimePicker } = this.state;
     return (
       <View style={styles.container}>
         <InputGroup style={styles.marginTop}>
@@ -108,11 +123,11 @@ class ChangeDateTimeScreen extends React.Component {
             mode="date"
             label="Date"
             format="ddd, MM/DD/YYYY"
-            value={date}
+            value={date.toDate()}
             isOpen={isOpenDatePicker}
             toggle={this.toggleDatePicker}
             onChange={this.onChangeDate}
-            minimumDate={moment ().toDate ()}
+            minimumDate={moment().toDate()}
           />
           <InputDivider />
           <SchedulePicker
@@ -132,8 +147,6 @@ const mapStateToProps = state => ({
   newApptState: state.newAppointmentReducer,
 });
 const mapActionToProps = dispatch => ({
-  newApptActions: bindActionCreators ({...newAppointmentActions}, dispatch),
+  newApptActions: bindActionCreators({ ...newAppointmentActions }, dispatch),
 });
-export default connect (mapStateToProps, mapActionToProps) (
-  ChangeDateTimeScreen
-);
+export default connect(mapStateToProps, mapActionToProps)(ChangeDateTimeScreen);

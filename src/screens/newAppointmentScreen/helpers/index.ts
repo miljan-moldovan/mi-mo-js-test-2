@@ -1,11 +1,19 @@
+
 import { get } from 'lodash';
-import { ServiceItem } from '@/models';
+import { ServiceItem, RoomType } from '@/models';
 
 export function shouldSelectRoom(itm: ServiceItem) {
-  if (!itm.service.service || itm.service.room) {
+  if (!itm.service.service || itm.service.room || itm.hasSelectedRoom) {
     return false;
   }
-  if (itm.service.service.requireRoom && itm.service.service.requireRoom >= 1) {
+  if (
+    !(
+      itm.service.service.requireRoom === RoomType.NULL ||
+      itm.service.service.requireRoom === RoomType.Nothing ||
+      !itm.service.service.supportedRooms ||
+      !itm.service.service.supportedRooms.length
+    )
+  ) {
     const { supportedRooms } = itm.service.service;
     if (supportedRooms && supportedRooms.length) {
       if (itm.service.room !== null && itm.service.resource !== undefined) {
@@ -18,7 +26,7 @@ export function shouldSelectRoom(itm: ServiceItem) {
 }
 
 export function shouldSelectResource(itm: ServiceItem) {
-  if (!itm.service.service || itm.service.resource) {
+  if (!itm.service.service || itm.service.resource || itm.hasSelectedResource) {
     return false;
   }
   if (itm.service.service.requireResource) {

@@ -30,6 +30,7 @@ import {
   SET_MAIN_EMPLOYEE,
   IS_BOOKED_BY_FIELD_ENABLED,
   UPDATE_SERVICE_ITEMS,
+  CHANGE_DATE_TIME,
   SET_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
   CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
 } from '../actions/newAppointment';
@@ -222,6 +223,13 @@ export default function newAppointmentReducer(
             client: item.guestId ? item.service.clients : data.client,
           },
         })),
+      };
+    case CHANGE_DATE_TIME:
+      return {
+        ...state,
+        date: data.date,
+        startTime: data.startTime,
+        serviceItems: data.serviceItems,
       };
     case SET_DATE:
       return {
