@@ -73,6 +73,7 @@ export default class ClientInput extends React.Component<any, any> {
       headerProps: this.props.headerProps,
       onChangeWithNavigation: this.props.onChangeWithNavigation || null,
       onChangeClient: client => this.handleClientSelection(client),
+      hideAddButton: this.props.hideAddButton,
     });
   };
 

@@ -1,3 +1,5 @@
+import { orderBy } from 'lodash';
+
 import clientInfoActions, {
   GET_CLIENT,
   GET_CLIENT_SUCCESS,
@@ -39,13 +41,17 @@ export interface ClientInfoReducer {
 }
 
 const renameClientReferralTypes = clientReferralTypes => {
-  const renamedClientReferralTypes = [];
+  let renamedClientReferralTypes = [];
   for (let i = 0; i < clientReferralTypes.length; i += 1) {
     renamedClientReferralTypes.push({
       key: clientReferralTypes[i].id,
       value: clientReferralTypes[i].name,
     });
   }
+
+
+  renamedClientReferralTypes = orderBy(renamedClientReferralTypes, [option => option.value.toLowerCase()], ['asc']);
+
   return renamedClientReferralTypes;
 };
 
