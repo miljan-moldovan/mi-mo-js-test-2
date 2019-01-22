@@ -77,7 +77,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         />
       ),
     };
-  }
+  };
 
   leftButton = (
     <SalonTouchableOpacity
@@ -161,7 +161,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     const { onNavigateBack } = this.props.navigation.state.params;
     onNavigateBack && onNavigateBack();
     this.props.navigation.goBack();
-  }
+  };
 
   previousService = () => {
     const { services, currentOpenService } = this.state;
@@ -177,7 +177,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     } else {
       this.props.navigation.setParams({ leftButton: undefined });
     }
-  }
+  };
 
   onPressItem = (item: { room: StoreRoom, roomOrdinal: number, name: string }) => {
     const { currentOpenService } = this.state;
@@ -189,6 +189,9 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
       return this.goBack();
     }
     const services = [...this.state.services];
+    if (services.length === 0) {
+      return this.goBack();
+    }
     const currentIndex = services.findIndex(itm => itm.serviceItem.itemId === currentOpenService);
     const nextService = services[currentIndex + 1];
     services[currentIndex].serviceItem.hasSelectedRoom = true;
@@ -209,7 +212,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         this.goBack();
       }
     });
-  }
+  };
 
   renderItem = ({ item }) => {
     const onPress = () => this.onPressItem(item);
@@ -219,7 +222,7 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
         onPress={onPress}
       />
     );
-  }
+  };
 
   render() {
     return (
@@ -230,4 +233,5 @@ class SelectRoomScreen extends React.Component<SelectRoomScreenProps, SelectRoom
     );
   }
 }
+
 export default SelectRoomScreen;
