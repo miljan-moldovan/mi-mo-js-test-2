@@ -61,6 +61,7 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate, c
   let timeSplit;
   let minutesSplit;
   let style;
+
   const isCellDisabled = moment().isAfter(startDate, 'day');
   if (item && item.totalSlots > 0) {
     startTime = moment(item.startTime, 'HH:mm').add(15, 'm').format('HH:mm');
@@ -92,6 +93,7 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate, c
       key={startTime}
       style={style}
       disabled={isCellDisabled}
+      onLongPress={() => onLongPress(item.startTime, startDate, onPress, createAlert, hideAlert)}
     >
       <Text style={styles.disabledTextStyle}>No Availability</Text>
     </SalonTouchableOpacity>

@@ -49,11 +49,17 @@ export default class SalonModalPicker extends React.Component {
   state = {
     isAnimating: false,
     height: new Animated.Value(0),
+    selectedValue: null,
   };
 
   componentWillReceiveProps(newProps) {
     if (!this.props.visible && newProps.visible) {
       this.showPanel();
+      if (this.props.handleAfterDone) {
+        this.setState({
+          selectedValue: newProps.selectedValue,
+        });
+      }
     } else if (this.props.visible && !newProps.visible) {
       this.hidePanel();
     }
@@ -66,22 +72,56 @@ export default class SalonModalPicker extends React.Component {
     });
 
   plusOne = () => {
-    const { selectedValue, pickerData, onValueChange } = this.props;
-    const currentIndex = pickerData.findIndex(item => item === selectedValue);
-    if (currentIndex + 1 > pickerData.length) {
-      onValueChange(pickerData[0]);
-    } else {
-      onValueChange(pickerData[currentIndex + 1]);
+    const { pickerData } = this.props;
+    if (pickerData) {
+      if (this.props.handleAfterDone) {
+        const { selectedValue } = this.state;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex + 1 > pickerData.length) {
+          this.setState({
+            selectedValue: pickerData[0],
+          });
+        } else {
+          this.setState({
+            selectedValue: pickerData[currentIndex + 1],
+          });
+        }
+      } else {
+        const { selectedValue, onValueChange } = this.props;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex + 1 > pickerData.length) {
+          onValueChange(pickerData[0]);
+        } else {
+          onValueChange(pickerData[currentIndex + 1]);
+        }
+      }
     }
   };
 
   minusOne = () => {
-    const { selectedValue, pickerData, onValueChange } = this.props;
-    const currentIndex = pickerData.findIndex(item => item === selectedValue);
-    if (currentIndex - 1 < 0) {
-      onValueChange(pickerData[pickerData.length - 1]);
-    } else {
-      onValueChange(pickerData[currentIndex - 1]);
+    const { pickerData } = this.props;
+    if (pickerData) {
+      if (this.props.handleAfterDone) {
+        const { selectedValue } = this.state;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex - 1 < 0) {
+          this.setState({
+            selectedValue: pickerData[pickerData.length - 1],
+          });
+        } else {
+          this.setState({
+            selectedValue: pickerData[currentIndex - 1],
+          });
+        }
+      } else {
+        const { selectedValue, onValueChange } = this.props;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex - 1 < 0) {
+          onValueChange(pickerData[pickerData.length - 1]);
+        } else {
+          onValueChange(pickerData[currentIndex - 1]);
+        }
+      }
     }
   };
 
@@ -102,15 +142,28 @@ export default class SalonModalPicker extends React.Component {
       this.setState({ isAnimating: true }, () => {
         this.animateHeight(0).start(() => {
           this.props.hide();
+          if (this.props.handleAfterDone) {
+            this.props.onValueChange(this.state.selectedValue);
+          }
           this.setState(
             { isAnimating: false },
-            () => (isFunction(callback) ? callback() : null)
+            () => (isFunction(callback) ? callback() : null),
           );
         });
       });
     }
 
     return this;
+  };
+
+  changeValue = value => {
+    if (this.props.handleAfterDone) {
+      this.setState({
+        selectedValue: value,
+      });
+    } else {
+      this.props.onValueChange(value);
+    }
   };
 
   render() {
@@ -121,8 +174,8 @@ export default class SalonModalPicker extends React.Component {
         style={{ marginBottom: 60 }}
       >
         <View style={[styles.container]}>
-          <TouchableWithoutFeedback onPress={() => this.hidePanel()}>
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+          <TouchableWithoutFeedback onPress={this.hidePanel}>
+            <View style={{ flex: 1, backgroundColor: 'transparent' }}/>
           </TouchableWithoutFeedback>
           <Animated.View style={{ maxHeight: this.state.height }}>
             <View style={styles.header}>
@@ -150,7 +203,7 @@ export default class SalonModalPicker extends React.Component {
                   />
                 </SalonTouchableOpacity>
               </View>
-              <SalonTouchableOpacity onPress={() => this.hidePanel()}>
+              <SalonTouchableOpacity onPress={this.hidePanel}>
                 <Text
                   style={{
                     color: '#007AFF',
@@ -168,8 +221,8 @@ export default class SalonModalPicker extends React.Component {
               <Picker
                 style={{ height: 200, backgroundColor: 'white' }}
                 pickerData={this.props.pickerData}
-                selectedValue={this.props.selectedValue}
-                onValueChange={value => this.props.onValueChange(value)}
+                selectedValue={this.props.handleAfterDone ? this.state.selectedValue : this.props.selectedValue}
+                onValueChange={this.changeValue}
               />
             </View>
           </Animated.View>
