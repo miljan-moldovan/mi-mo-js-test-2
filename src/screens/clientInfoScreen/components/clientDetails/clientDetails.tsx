@@ -1160,6 +1160,7 @@ class ClientDetails extends React.Component<Props, State> {
             </FontAwesome>
           </SalonTouchableOpacity>
          <ClientInput
+            clientDetails
             label="Select Client"
             placeholder={false}
             selectedClient={this.state.selectedClient}

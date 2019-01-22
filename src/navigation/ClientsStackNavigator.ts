@@ -54,6 +54,9 @@ const ClientsStackNavigator = StackNavigator(
     Providers: {
       screen: ProvidersScreen,
     },
+    ReferredClients: {
+      screen: ClientsScreen,
+    },
   },
   {
     initialRouteName: 'ChangeClient',
