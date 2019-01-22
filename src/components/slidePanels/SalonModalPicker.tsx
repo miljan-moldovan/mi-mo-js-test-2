@@ -72,51 +72,55 @@ export default class SalonModalPicker extends React.Component {
     });
 
   plusOne = () => {
-    if (this.props.handleAfterDone) {
-      const { pickerData } = this.props;
-      const { selectedValue } = this.state;
-      const currentIndex = pickerData.findIndex(item => item === selectedValue);
-      if (currentIndex + 1 > pickerData.length) {
-        this.setState({
-          selectedValue: pickerData[0],
-        });
+    const { pickerData } = this.props;
+    if (pickerData) {
+      if (this.props.handleAfterDone) {
+        const { selectedValue } = this.state;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex + 1 > pickerData.length) {
+          this.setState({
+            selectedValue: pickerData[0],
+          });
+        } else {
+          this.setState({
+            selectedValue: pickerData[currentIndex + 1],
+          });
+        }
       } else {
-        this.setState({
-          selectedValue: pickerData[currentIndex + 1],
-        });
-      }
-    } else {
-      const { selectedValue, pickerData, onValueChange } = this.props;
-      const currentIndex = pickerData.findIndex(item => item === selectedValue);
-      if (currentIndex + 1 > pickerData.length) {
-        onValueChange(pickerData[0]);
-      } else {
-        onValueChange(pickerData[currentIndex + 1]);
+        const { selectedValue, onValueChange } = this.props;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex + 1 > pickerData.length) {
+          onValueChange(pickerData[0]);
+        } else {
+          onValueChange(pickerData[currentIndex + 1]);
+        }
       }
     }
   };
 
   minusOne = () => {
-    if (this.props.handleAfterDone) {
-      const { pickerData } = this.props;
-      const { selectedValue } = this.state;
-      const currentIndex = pickerData.findIndex(item => item === selectedValue);
-      if (currentIndex - 1 < 0) {
-        this.setState({
-          selectedValue: pickerData[pickerData.length - 1],
-        });
+    const { pickerData } = this.props;
+    if (pickerData) {
+      if (this.props.handleAfterDone) {
+        const { selectedValue } = this.state;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex - 1 < 0) {
+          this.setState({
+            selectedValue: pickerData[pickerData.length - 1],
+          });
+        } else {
+          this.setState({
+            selectedValue: pickerData[currentIndex - 1],
+          });
+        }
       } else {
-        this.setState({
-          selectedValue: pickerData[currentIndex - 1],
-        });
-      }
-    } else {
-      const { selectedValue, pickerData, onValueChange } = this.props;
-      const currentIndex = pickerData.findIndex(item => item === selectedValue);
-      if (currentIndex - 1 < 0) {
-        onValueChange(pickerData[pickerData.length - 1]);
-      } else {
-        onValueChange(pickerData[currentIndex - 1]);
+        const { selectedValue, onValueChange } = this.props;
+        const currentIndex = pickerData.findIndex(item => item === selectedValue);
+        if (currentIndex - 1 < 0) {
+          onValueChange(pickerData[pickerData.length - 1]);
+        } else {
+          onValueChange(pickerData[currentIndex - 1]);
+        }
       }
     }
   };
