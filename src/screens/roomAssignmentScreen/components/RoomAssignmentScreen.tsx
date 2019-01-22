@@ -26,6 +26,7 @@ import { durationToMoment } from '@/utilities/helpers/durationToMoment';
 import { DateRange, MomentRange } from 'moment-range';
 import { RoomAssignmentScreenProps, RoomAssignmentScreenState, RoomItem } from '../interfaces';
 import AssignmentForm from './AssignmentForm';
+import SalonAlert from '@/components/SalonAlert';
 
 
 const maxAssignments = 4;
@@ -78,6 +79,7 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
       isModalPickerVisible: false,
       employeeScheduledIntervals: [],
       currentOpenAssignment: '',
+      alert: null,
     };
     this.props.navigation.setParams({ handleSave: this.handleSave });
   }
@@ -93,11 +95,11 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
         Store.getSchedule(date.format(DateTime.date)),
       ])
         .then(([
-          assignments,
-          schedule,
-          rooms,
-          storeSchedule,
-        ]) => {
+                 assignments,
+                 schedule,
+                 rooms,
+                 storeSchedule,
+               ]) => {
           const roomItems: RoomItem[] = times(maxAssignments, number => {
             const assignment = assignments[number];
             if (!assignment) {
@@ -166,13 +168,13 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
     this.setState(
       { currentOpenAssignment: roomId, pickerType: 'fromTime' },
       this.openModal,
-    )
+    );
 
   onPressToTime = (roomId: string) =>
     this.setState(
       { currentOpenAssignment: roomId, pickerType: 'toTime' },
       this.openModal,
-    )
+    );
 
   onPickerChange = value => {
     const {
@@ -317,7 +319,9 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
           (isMoment(item.fromTime) && item.fromTime.isValid()) &&
           (isMoment(item.toTime) && item.toTime.isValid())
         ))
-        .map(item => { return extendedMoment.range(item.fromTime, item.toTime); })
+        .map(item => {
+          return extendedMoment.range(item.fromTime, item.toTime);
+        })
         .value();
 
       return chain(employeeScheduledIntervals)
@@ -359,22 +363,72 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
     });
 
     this.setState({ availableIntervals: zipObject(keys, _values) }, this.canSave);
-  }
+  };
 
   hideToast = () => this.setState({ toast: null });
 
   canSave = () => {
     const { roomItems } = this.state;
-    const canSave = roomItems
+    let canSave = roomItems
       .map(assignment => this.isValidAssignment(assignment))
       .reduce((agg, ass) => agg || ass, false);
+    const conflicts = this.checkOverlap(roomItems);
+    if (conflicts.length > 0) {
+      this.createConflictsAlert(conflicts);
+      canSave = false;
+    }
     this.props.navigation.setParams({ canSave });
     return canSave;
   };
 
-  closeModal = () => this.setState({ isModalPickerVisible: false }, this.canSave);
+  createConflictsAlert = conflicts => {
+    const message = conflicts.join('\n');
+    const alert = {
+      title: 'Conflicts found!',
+      description: message,
+      btnLeftText: 'Ok',
+    };
+    this.showAlert(alert);
+  };
 
-  openModal = () => this.setState({ isModalPickerVisible: true }, this.canSave);
+  checkOverlap = (roomItems) => {
+    const conflicts = [];
+    for (let i = 0; i < roomItems.length - 1; i = i + 1) {
+      const origin: RoomItem = roomItems[i];
+      if (origin.room === null || origin.fromTime === null || origin.toTime === null) {
+        continue;
+      }
+      const leftover = roomItems.slice(i + 1);
+      for (let j = 0; j < leftover.length; j = j + 1) {
+        const room: RoomItem = leftover[j];
+        if (room.room === null || room.fromTime === null || room.toTime === null) {
+          continue;
+        }
+        let isConflict = false;
+        if (room.toTime.isBefore(origin.toTime) && room.toTime.isAfter(origin.fromTime)) {
+          isConflict = true;
+        } else if (room.fromTime.isBefore(origin.toTime) && room.fromTime.isAfter(origin.fromTime)) {
+          isConflict = true;
+        } else if (room.fromTime.isAfter(origin.fromTime) && room.toTime.isBefore(origin.toTime)) {
+          isConflict = true;
+        } else if (room.fromTime.isBefore(origin.fromTime) && room.toTime.isAfter(origin.toTime)) {
+          isConflict = true;
+        }
+        if (isConflict) {
+          conflicts.push(`Conflict: ${room.room.name} #${room.roomOrdinal} overlaps with ${origin.room.name} #${origin.roomOrdinal}`);
+        }
+      }
+    }
+    return conflicts;
+  };
+
+  closeModal = () => this.setState({ isModalPickerVisible: false });
+
+  openModal = () => this.setState({ isModalPickerVisible: true });
+
+  showAlert = alert => this.setState({ alert });
+
+  hideAlert = () => this.setState({ alert: null });
 
   handleSave = () => {
     if (this.canSave()) {
@@ -460,15 +514,24 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
 
   render() {
     const { isLoading } = this.props.roomAssignmentState;
-    const { toast, isModalPickerVisible } = this.state;
+    const { toast, alert, isModalPickerVisible } = this.state;
     return (
       <View style={styles.container}>
+        <SalonAlert
+          visible={Boolean(alert)}
+          title={alert && alert.title ? alert.title : ''}
+          description={alert && alert.description ? alert.description : ''}
+          btnLeftText={alert && alert.btnLeftText ? alert.btnLeftText : ''}
+          btnRightText={alert && alert.btnRightText ? alert.btnRightText : ''}
+          onPressLeft={alert && alert.onPressLeft ? alert.onPressLeft : this.hideAlert}
+          onPressRight={alert && alert.onPressRight ? alert.onPressRight : null}
+        />
         {
           isLoading &&
-          <LoadingOverlay />
+          <LoadingOverlay/>
         }
         <ScrollView>
-          <SectionTitle value="ASSIGNED TO ROOM" />
+          <SectionTitle value="ASSIGNED TO ROOM"/>
           {
             this.renderRoomData()
           }
@@ -480,6 +543,7 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
           pickerData={this.pickerData}
           onValueChange={this.onPickerChange}
           selectedValue={this.selectedValue}
+          handleAfterDone
         />
         {
           toast &&
@@ -494,4 +558,5 @@ class RoomAssignmentScreen extends React.Component<RoomAssignmentScreenProps, Ro
     );
   }
 }
+
 export default RoomAssignmentScreen;

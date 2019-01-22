@@ -52,6 +52,16 @@ export interface RoomAssignmentScreenState {
   isModalPickerVisible: boolean;
   currentOpenAssignment: string;
   employeeScheduledIntervals: Moment[];
+  alert: Alert;
+}
+
+export interface Alert {
+  title: string,
+  description: string,
+  btnLeftText: string,
+  btnRightText: string,
+  onPressLeft: Function,
+  onPressRight: Function,
 }
 
 export interface AssignmentFormProps {
