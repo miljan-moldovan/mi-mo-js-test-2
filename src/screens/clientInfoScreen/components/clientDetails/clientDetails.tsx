@@ -153,6 +153,7 @@ class ClientDetails extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      birthday:null,
       pointerEvents: '',
       client: JSON.parse(JSON.stringify(defaultClient)),
       loadingClient: true,
@@ -257,9 +258,9 @@ class ClientDetails extends React.Component<Props, State> {
     }, this.checkValidation);
   };
 
-  onValidateEmail = isValid => {
+  onValidateEmail = (isValid, isFirstValidation) => {
 
-    const isValidEmail = this.state.requiredFields.email ? isValid : true;
+    const isValidEmail = this.state.requiredFields.email && !isFirstValidation ? isValid : true;
     this.setState({
       isValidEmail,
     }, this.checkValidation);
@@ -280,55 +281,61 @@ class ClientDetails extends React.Component<Props, State> {
   };
 
 
-  onValidatePhoneWork = isValid => {
+  onValidatePhoneWork = (isValid, isFirstValidation)  => {
 
     const phone = find(this.state.client.phones, { type: 0 });
-    const isValidPhoneWork = phone !== undefined ? isValid : true;
+    const isValidPhoneWork = phone !== undefined && !isFirstValidation ? isValid : true;
     this.setState({
       isValidPhoneWork,
     }, this.checkValidation);
   };
 
-  onValidatePhoneHome = isValid => {
+  onValidatePhoneHome = (isValid, isFirstValidation)  => {
     const phone = find(this.state.client.phones, { type: 1 });
-    const isValidPhoneHome = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
+    const isValidPhoneHome = phone !== undefined && phone.value &&
+    phone.value.length > 0 && !isFirstValidation ? isValid : true;
     this.setState({
       isValidPhoneHome,
     }, this.checkValidation);
   };
 
-  onValidatePhoneCell = isValid => {
+  onValidatePhoneCell = (isValid, isFirstValidation)  => {
     const phone = find(this.state.client.phones, { type: 2 });
-    const isValidPhoneCell = phone !== undefined && phone.value && phone.value.length > 0 ? isValid : true;
+    const isValidPhoneCell = phone !== undefined && phone.value &&
+    phone.value.length > 0 && !isFirstValidation ? isValid : true;
     this.setState({
       isValidPhoneCell,
     }, this.checkValidation);
   };
 
 
-  onValidateName = isValid => {
-    const isValidName = this.state.client.name !== undefined ? isValid : true;
+  onValidateName = (isValid, isFirstValidation) => {
+    const isValidName = this.state.client.name !== undefined && !isFirstValidation
+    && !isFirstValidation ? isValid : true;
     this.setState({
       isValidName,
     }, this.checkValidation);
   };
 
-  onValidateLastName = isValid => {
-    const isValidLastName = this.state.client.lastName !== undefined ? isValid : true;
+  onValidateLastName = (isValid, isFirstValidation)  => {
+    const isValidLastName = this.state.client.lastName !== undefined
+    && !isFirstValidation ? isValid : true;
     this.setState({
       isValidLastName,
     }, this.checkValidation);
   };
 
-  onValidateStreet1 = isValid => {
-    const isValidStreet1 = this.state.requiredFields.address ? isValid : true;
+  onValidateStreet1 = (isValid, isFirstValidation)  => {
+    const isValidStreet1 = this.state.requiredFields.address
+    && !isFirstValidation ? isValid : true;
     this.setState({
       isValidStreet1,
     }, this.checkValidation);
   };
 
-  onValidateCity = isValid => {
-    const isValidCity = this.state.requiredFields.city ? isValid : true;
+  onValidateCity = (isValid, isFirstValidation)  => {
+    const isValidCity = this.state.requiredFields.city
+    && !isFirstValidation ? isValid : true;
     this.setState({
       isValidCity,
     }, this.checkValidation);
@@ -341,8 +348,8 @@ class ClientDetails extends React.Component<Props, State> {
     }, this.checkValidation);
   };
 
-  onValidateBirth = isValid => {
-    const isValidBirth = this.state.requiredFields.birthday ? isValid : true;
+  onValidateBirth = (isValid, isFirstValidation) => {
+    const isValidBirth = this.state.requiredFields.birthday && !isFirstValidation ? isValid : true;
     this.setState({
       isValidBirth,
     }, this.checkValidation);
@@ -786,6 +793,8 @@ class ClientDetails extends React.Component<Props, State> {
       let phone = find(this.state.client.phones, { type: phoneType.type });
       phone = phone || { type: phoneType.type, value: '' };
 
+      const divider = i < phoneTypes.length - 1 ? <InputDivider /> : null;
+
       const element = (
         <React.Fragment>
           <ValidatableInput
@@ -804,7 +813,7 @@ class ClientDetails extends React.Component<Props, State> {
             placeholder=""
             inputStyle={phone.value ? {} : this.state.styles.inputStyle}
           />
-          <InputDivider />
+          {divider}
         </React.Fragment>);
 
       elements.push(element);
@@ -870,7 +879,7 @@ class ClientDetails extends React.Component<Props, State> {
 
   }
 
-  renderNameSection = () => {
+  renderInfoSection = () => {
     return (
       <InputGroup>
         <LabeledTextInput
@@ -893,7 +902,7 @@ class ClientDetails extends React.Component<Props, State> {
           onChangeText={(text) => {
             this.onChangeClientField('name', text);
           }}
-          placeholder=""
+          placeholder="Required"
           inputStyle={this.state.client.name ? {} : this.state.styles.inputStyle}
         />
         <InputDivider />
@@ -918,20 +927,14 @@ class ClientDetails extends React.Component<Props, State> {
           onChangeText={(text) => {
             this.onChangeClientField('lastName', text);
           }}
-          placeholder=""
+          placeholder="Required"
         />
-      </InputGroup>
-    );
-  }
-
-  renderBirthSection = () => {
-    return (
-      <InputGroup>
+        <InputDivider />
         {this.state.requiredFields.gender ?
           <View>
             <InputPicker
               label="Gender"
-              placeholder=""
+              placeholder={this.state.requiredFields.gender ? 'Required' : ''}
               required={this.state.requiredFields.gender}
               isValid={this.state.isValidGender}
               onValidated={this.onValidateGender}
@@ -949,7 +952,7 @@ class ClientDetails extends React.Component<Props, State> {
         <View>
         <InputPicker
           label="Age"
-          placeholder=""
+          placeholder={this.state.requiredFields.age ? 'Required' : ''}
           required={this.state.requiredFields.age}
           isValid={this.state.isValidAge}
           onValidated={this.onValidateAge}
@@ -970,7 +973,7 @@ class ClientDetails extends React.Component<Props, State> {
           format="MM/DD/YYYY"
           label="Birthday"
           mode="date"
-          placeholder=""
+          placeholder={this.state.requiredFields.birthday ? 'Required' : ''}
           noIcon
           value={this.state.client.birthday}
           selectedDate={this.state.client.birthday}
@@ -987,34 +990,37 @@ class ClientDetails extends React.Component<Props, State> {
     );
   }
 
-
   renderContactsSection = () => {
     return (
-      <InputGroup>
-        <ValidatableInput
-          keyboardType="email-address"
-          validation={this.isValidEmailRegExp}
-          label="Email"
-          isValid={this.state.isValidEmail}
-          onValidated={this.onValidateEmail}
-          value={this.state.client.email}
-          onChangeText={(text) => {
-            this.onChangeClientField('email', text.toLowerCase());
-          }}
-          placeholder=""
-          inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
-        />
-        <InputDivider />
-        <InputSwitch
-          style={this.state.styles.inputSwitch}
-          textStyle={this.state.styles.inputSwitchText}
-          onChange={this.onChangeDeclineEmailInputSwitch}
-          value={this.state.declineEmail}
-          text="Decline"
-        />
-        <InputDivider />
-        {this.renderPhones()}
-      </InputGroup>
+      <View>
+        <InputGroup>
+          <ValidatableInput
+            keyboardType="email-address"
+            validation={this.isValidEmailRegExp}
+            label="Email"
+            isValid={this.state.isValidEmail}
+            onValidated={this.onValidateEmail}
+            value={this.state.client.email}
+            onChangeText={(text) => {
+              this.onChangeClientField('email', text.toLowerCase());
+            }}
+            placeholder="Required"
+            inputStyle={this.state.client.email ? {} : this.state.styles.inputStyle}
+          />
+          <InputDivider />
+          <InputSwitch
+            style={this.state.styles.inputSwitch}
+            textStyle={this.state.styles.inputSwitchText}
+            onChange={this.onChangeDeclineEmailInputSwitch}
+            value={this.state.declineEmail}
+            text="Decline"
+          />
+        </InputGroup>
+        <SectionDivider style={ { height:10 } }/>
+        <InputGroup>
+          {this.renderPhones()}
+        </InputGroup>
+      </View>
     );
   }
 
@@ -1067,7 +1073,7 @@ class ClientDetails extends React.Component<Props, State> {
             onChangeText={(text) => {
               this.onChangeClientField('street1', text);
             }}
-            placeholder=""
+            placeholder={this.state.requiredFields.address ? 'Required' : ''}
             inputStyle={this.state.client.street1 ? {} : this.state.styles.inputStyle}
           />
           <InputDivider />
@@ -1081,13 +1087,13 @@ class ClientDetails extends React.Component<Props, State> {
             onChangeText={(text) => {
               this.onChangeClientField('city', text);
             }}
-            placeholder=""
+            placeholder={this.state.requiredFields.address ? 'Required' : ''}
             inputStyle={this.state.client.city ? {} : this.state.styles.inputStyle}
           />
           <InputDivider />
           <InputPicker
             label="State"
-            placeholder=""
+            placeholder={this.state.requiredFields.address ? 'Required' : ''}
             required={this.state.requiredFields.state}
             isValid={this.state.isValidState}
             onValidated={this.onValidateState}
@@ -1112,7 +1118,7 @@ class ClientDetails extends React.Component<Props, State> {
             onChangeText={(text) => {
               this.onChangeClientField('zipCode', text);
             }}
-            placeholder=""
+            placeholder={this.state.requiredFields.address ? 'Required' : ''}
             inputStyle={
             !this.props.clientInfoState.isLoadingZipCode && this.state.client.zipCode
             ? {}
@@ -1162,6 +1168,7 @@ class ClientDetails extends React.Component<Props, State> {
             navigate={this.props.navigation.navigate}
             headerProps={{ title: 'Clients', ...this.cancelButton() }}
             onChange={this.handleClientSelection}
+            hideAddButton
           />
         </View>
         <InputDivider />
@@ -1184,7 +1191,7 @@ class ClientDetails extends React.Component<Props, State> {
           <View style={this.state.styles.clientReferralTypeInput}>
             <InputPicker
               label="Other"
-              placeholder=""
+              placeholder="None"
               noValueStyle={!this.state.client.clientReferralType ? this.state.styles.dateValueStyle : {}}
               value={this.state.client.clientReferralType ?
               this.state.client.clientReferralType : null}
@@ -1214,11 +1221,9 @@ class ClientDetails extends React.Component<Props, State> {
             extraHeight={300}
           >
             <View pointerEvents={this.state.pointerEvents}>
-              <SectionDivider />
-                {this.renderNameSection()}
-              <SectionDivider />
-                {this.renderBirthSection()}
-              <SectionTitle value="CONTACTS" style={this.state.styles.sectionTitle} />
+              <SectionTitle value="INFO" style={this.state.styles.sectionTitle} />
+                {this.renderInfoSection()}
+              <SectionTitle value="CONTACT" style={this.state.styles.sectionTitle} />
                 {this.renderContactsSection()}
               <SectionDivider />
                 {this.renderLoyaltySection()}
