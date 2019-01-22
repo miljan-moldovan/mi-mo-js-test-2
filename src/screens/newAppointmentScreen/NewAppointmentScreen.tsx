@@ -1158,7 +1158,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
                           isGotAddon={addonItems.length}
                         />
                         {addonItems.map(addon => (
-                           <ServiceCard
+                          <ServiceCard
                             isAddon
                             key={addon.itemId}
                             data={addon.service}
