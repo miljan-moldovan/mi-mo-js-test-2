@@ -17,6 +17,9 @@ const appointmentButtons = (props) => {
     disabledModify, disabledCancel, appointment,
   } = props;
 
+
+  debugger //eslint-disable-line
+
   const { badgeData } = appointment;
 
   const  { isWaiting } =  badgeData;
@@ -106,13 +109,11 @@ const mapStateToProps = (state, { appointment }) => {
     isGridLoading: state.appointmentBookReducer.isLoading,
     isCheckInDisabled: state.appointmentReducer.isCheckingIn
     || appointment.queueStatus === ApptQueueStatus.CheckedOut ||
-    appointment.status === ApptQueueStatus.CheckedOut ||
     appointment.queueStatus === ApptQueueStatus.Waiting ||
-    appointment.status === ApptQueueStatus.Waiting || appointment.isNoShow,
+    appointment.isNoShow,
     isCheckOutDisabled: state.appointmentReducer.isCheckingOut ||
       appointment.queueStatus === ApptQueueStatus.CheckedOut ||
-      appointment.status === ApptQueueStatus.CheckedOut
-      || appointment.isNoShow || appointment.isFirstAvailable,
+      appointment.isNoShow || appointment.isFirstAvailable,
   };
 };
 
