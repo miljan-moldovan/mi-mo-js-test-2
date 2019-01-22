@@ -163,19 +163,19 @@ const ServiceCard = (props) => {
                 {showSelectExtras && (
                   <SetExtras onPress={props.onSetExtras} />
                 )}
-                <SalonTouchableOpacity
-                  style={styles.containerForTrashButton}
-                  disabled={props.isOnlyMainService}
-                  onPress={props.onPressDelete}
-                >
-                  <Icon
-                    name="trashAlt"
-                    size={16}
-                    color="#D1242A"
-                    type="regular"
-                  />
-                </SalonTouchableOpacity>
               </View>
+              <SalonTouchableOpacity
+                style={styles.containerForTrashButton}
+                disabled={props.isOnlyMainService}
+                onPress={props.onPressDelete}
+              >
+                <Icon
+                  name="trashAlt"
+                  size={16}
+                  color="#D1242A"
+                  type="regular"
+                />
+              </SalonTouchableOpacity>
             </View>
           }
         />

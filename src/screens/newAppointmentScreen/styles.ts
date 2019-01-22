@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   removeGuestContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    // marginHorizontal: 12,
     alignSelf: 'flex-end',
+    marginRight: 32,
   },
   removeGuestText: {
     color: Colors.defaultRed,
