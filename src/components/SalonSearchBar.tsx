@@ -103,7 +103,6 @@ class SalonSearchBar extends React.Component {
   setRef = ref => this.textInput = ref;
 
   onBlur = () => {
-    this.clearSearchText();
     this.props.onBlur();
   };
 
