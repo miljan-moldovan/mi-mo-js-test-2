@@ -311,7 +311,7 @@ class ProviderScreen extends React.Component<ProvidersScreenProps, ProvidersScre
     const { navigation: { state }, availability } = this.props;
     const params = state.params || {};
     let showFirstAvailable = get(params, 'showFirstAvailable', null);
-    showFirstAvailable = isNull(showFirstAvailable) ? !!availability : showFirstAvailable;
+    showFirstAvailable = !!availability && showFirstAvailable;
     const showAllProviders = get(params, 'showAllProviders', false);
     const checkProviderStatus = get(params, 'checkProviderStatus', false);
     const showEstimatedTime = get(params, 'showEstimatedTime', true);
