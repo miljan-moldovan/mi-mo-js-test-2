@@ -123,6 +123,9 @@ const AppointmentStackNavigator = createStackNavigator(
     ApptBookClient: {
       screen: ClientsScreen,
     },
+    ReferredClients: {
+      screen: ClientsScreen,
+    },
     ApptBookService: {
       screen: ServicesScreen,
     },
