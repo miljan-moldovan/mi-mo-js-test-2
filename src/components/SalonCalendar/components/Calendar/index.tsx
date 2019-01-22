@@ -159,7 +159,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     if (this.state.activeCard || this.state.activeBlock) {
       if (this.state.isResizeing) {
         this.handleResizeCard();
-      } else if (this.moveX && this.moveY) {
+      } else {
         this.handleCardDrop();
       }
     }
