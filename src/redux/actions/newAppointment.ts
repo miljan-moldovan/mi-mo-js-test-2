@@ -9,6 +9,7 @@ import {
   isNumber,
   includes,
   reject,
+  unset,
 } from 'lodash';
 import uuid from 'uuid/v4';
 
@@ -33,6 +34,7 @@ import {
   AppStore,
   ShortProvider,
   StoreRoom,
+  RoomType,
 } from '@/models';
 import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
@@ -351,23 +353,27 @@ const updateServiceItem = (
     };
     newServiceItems.splice(serviceIndex, 1, serviceItem);
 
-    if ((serviceItemToUpdate &&
-      serviceItemToUpdate.service &&
-      serviceItemToUpdate.service.employee &&
-      serviceItemToUpdate.service.employee.id) !==
-      (
-        updatedService &&
-        updatedService.employee &&
-        updatedService.employee.id
-      )) {
+    if (!updatedService.service.requireResource) {
+      unset(serviceItem, 'service.resource');
+      unset(serviceItem, 'service.resourceOrdinal');
+      unset(serviceItem, 'hasSelectedResource');
+    }
+    if (updatedService.service.requireRoom === RoomType.Nothing ||
+      updatedService.service.requireRoom === RoomType.NULL) {
+      unset(serviceItem, 'service.room');
+      unset(serviceItem, 'service.roomOrdinal');
+      unset(serviceItem, 'hasSelectedRoom');
+    }
+
+    if (get(serviceItemToUpdate, 'service.employee.id', null) !== get(updatedService, 'employee.id', null)) {
       newServiceItems = newServiceItems.map((item) => {
         if (item.parentId === serviceId) {
           return { ...item, service: { ...item.service, employee: updatedService.employee } };
         }
         return item;
       });
-
     }
+
     const newServiceItemsWithResetTime = resetTimeForServices(
       newServiceItems,
       serviceIndex - 1,
