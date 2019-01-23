@@ -28,16 +28,6 @@ class BlockTimesReasonsScreen extends React.Component {
             <Text style={{ fontSize: 14, color: 'white' }}>Back</Text>
           </SalonTouchableOpacity>
         }
-        headerRight={
-          <SalonTouchableOpacity
-            onPress={() => { }}
-            style={{ paddingRight: 10 }}
-          >
-            <Text style={{ fontSize: 14, color: 'white' }}>
-              Modify List
-            </Text>
-          </SalonTouchableOpacity>
-        }
       />
     ),
   })
