@@ -17,9 +17,6 @@ const appointmentButtons = (props) => {
     disabledModify, disabledCancel, appointment,
   } = props;
 
-
-  debugger //eslint-disable-line
-
   const { badgeData } = appointment;
 
   const  { isWaiting } =  badgeData;
