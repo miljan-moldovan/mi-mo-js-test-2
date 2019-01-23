@@ -54,6 +54,7 @@ export default StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: 'transparent',
     textAlign: 'right',
+    paddingRight: 16,
   },
   rightButtonContainer: {
     flexDirection: 'row',
