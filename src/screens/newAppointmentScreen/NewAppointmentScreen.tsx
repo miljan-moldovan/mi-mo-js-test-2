@@ -150,6 +150,10 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   }
 
   componentDidUpdate(prevProps: NewAppointmentScreenProps, prevState) {
+    if (prevProps.newAppointmentState.serviceItems !== this.props.newAppointmentState.serviceItems) {
+      this.shouldSelectResources();
+      this.shouldSelectRooms();
+    }
     const {
       isValidAppointment,
       newAppointmentState: { client, isPopulatingState, guests, editType },
