@@ -65,6 +65,7 @@ export default class ServiceInput extends React.Component<any, any> {
     if (isFunction(onPress)) {
       onPress();
     }
+    selectedProvider.id = selectedProvider.id === -1 ? null : selectedProvider.id;
     const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookService' : screenService, {
       actionType,
