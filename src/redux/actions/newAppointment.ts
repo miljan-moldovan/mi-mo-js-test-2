@@ -38,6 +38,8 @@ import { NewAppointmentReducer } from '../reducers/newAppointment';
 import { ServiceItem } from '@/models/new-appointment';
 import { RoomServiceItem } from '@/screens/SelectRoomScreen/SelectRoomScreen';
 import { SET_GRID_ROOM_VIEW_SUCCESS } from './appointmentBook';
+import servicesActions from './service';
+
 
 export const SET_SELECTED_APPT = 'newAppointment/SET_SELECTED_APPT';
 export const POPULATE_STATE_FROM_APPT =
@@ -756,6 +758,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     (agg, currentAppt) => [...agg, currentAppt.client],
     [],
   );
+  const primaryServiceId = get(appt, 'service.id', null);
   const primaryClientId = isParty
     ? get(primaryClient, 'id', null)
     : get(appt.client, 'id', null);
@@ -773,9 +776,20 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       }
       return [...agg, guest];
     }, []);
+
+  const allFetchedServices = await dispatch(servicesActions.getServices({})).then((resp) => {
+    return resp.data.services.reduce((resultArr, category) => {
+      return [...resultArr, ...category.services];
+    }, []);
+  });
+  const fetchedPrimaryService = allFetchedServices.find(item => item.id === primaryServiceId);
+  const primaryServiceAddons = fetchedPrimaryService.addons;
+  const primaryServiceRequired = fetchedPrimaryService.requiredServices;
+  const primaryServiceRecommended = fetchedPrimaryService.recommendedServices;
+
   const serviceItems = groupData.reduce((services, appointment) => {
     const isGuest = isParty && appointment.client.id !== primaryClientId;
-    let guest = false;
+    let guest = null;
     if (isGuest) {
       guest = guests.find(itm => itm.client.id === appointment.client.id);
     }
@@ -783,13 +797,29 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime));
     const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+
+    const currentService = get(appointment, 'service', null);
+    const currentEmployee = get(appointment, 'employee', null);
+
+    const missingProperties = allFetchedServices.find(item => item.id === currentService.id);
+    const service = { ...currentService, ...missingProperties };
+
+    const room = get(appointment, 'room', null);
+    const roomOrdinal = get(appointment, 'roomOrdinal', null);
+    const resource = get(appointment, 'resource', null);
+    const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
+
     const newService = {
       id: get(appointment, 'id', null),
       length,
-      service: get(appointment, 'service', null),
+      service,
+      room,
+      roomOrdinal,
+      resource,
+      resourceOrdinal,
       requested: get(appointment, 'requested', true),
       client: serviceClient,
-      employee: get(appointment, 'employee', null),
+      employee: currentEmployee,
       fromTime,
       toTime,
       bookBetween: get(appointment, 'bookBetween', false),
@@ -797,11 +827,38 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       afterTime: moment.duration(get(appointment, 'afterTime', 0)),
     };
 
-    const newServiceItem = {
+    const newServiceItem:any = {
       itemId: uuid(),
       guestId: guest ? get(guest, 'guestId', false) : false,
       service: newService,
+      hasSelectedRoom: !!room,
+      hasSelectedResource: !!resource,
+      isRequired: false,
     };
+
+    const parentId = get(
+      services.find(item => get(item, 'service.service.id', null) === primaryServiceId),
+      'itemId',
+      null,
+    );
+
+    if (service.isAddon && primaryServiceAddons && primaryServiceAddons.some(item => item.id === service.id)) {
+      newServiceItem.type = 'addon';
+    }
+
+    if (primaryServiceRequired && primaryServiceRequired.some(item => item.id === service.id)) {
+      newServiceItem.type = 'required';
+      newServiceItem.isRequired = true;
+    }
+
+    if (primaryServiceRecommended && primaryServiceRecommended.some(item => item.id === service.id)) {
+      newServiceItem.type = 'recommended';
+    }
+
+    if (parentId) {
+      newServiceItem.parentId = parentId;
+    }
+
     return [...services, newServiceItem];
   }, []);
 
