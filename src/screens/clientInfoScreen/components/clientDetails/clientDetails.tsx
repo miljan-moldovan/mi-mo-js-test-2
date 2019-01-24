@@ -172,7 +172,7 @@ class ClientDetails extends React.Component<Props, State> {
       isValidState: true,
       isValidGender: true,
       isValidBirth: true,
-      isValidReferred: false,
+      isValidReferred: true,
       birthdayPickerOpen: false,
       maxChildAge: null,
       maxAdultAge: null,
@@ -469,13 +469,13 @@ class ClientDetails extends React.Component<Props, State> {
       requiredFields.homePhone = false;
       requiredFields.cellPhone = false;
       requiredFields.referred = forceClientReferralQuestion;
-
       this.setState({
         isValidGender: !requiredFields.gender,
         isValidBirth: !requiredFields.birthday,
         isValidPhoneWork: !requiredFields.workPhone,
         isValidPhoneHome: !requiredFields.homePhone,
         isValidPhoneCell: !requiredFields.cellPhone,
+        isValidReferred: !requiredFields.referred,
         requiredFields,
         maxChildAge,
         maxAdultAge,
@@ -557,12 +557,13 @@ class ClientDetails extends React.Component<Props, State> {
   handlePressClient = () => {
     const { navigate } = this.props.navigation;
 
-    navigate('ChangeClient', {
+    navigate('ReferredClients', {
       selectedClient: this.state.selectedClient,
       actionType: 'update',
       dismissOnSelect: true,
       headerProps: { title: 'Clients', ...this.cancelButton() },
       onChangeClient: client => this.handleClientSelection(client),
+      hideAddButton: true,
     });
   };
 
@@ -670,7 +671,6 @@ class ClientDetails extends React.Component<Props, State> {
     const isOtherValid = get(this.state.client, 'clientReferralType', null);
     const isValid = this.state.selectedReferredClient === SelectedReferredClientEnum.Other ?
     isOtherValid !== null : isClientValid  !== null;
-
     this.onValidateReferred(isValid);
   }
 
@@ -1208,6 +1208,10 @@ class ClientDetails extends React.Component<Props, State> {
   }
 
   render() {
+    let title = 'REFERRED BY';
+    if (!this.state.isValidReferred) {
+      title += ' (Required)';
+    }
     return (
       <View style={this.state.styles.container}>
 
@@ -1231,11 +1235,8 @@ class ClientDetails extends React.Component<Props, State> {
               <SectionTitle value="ADDRESS" style={this.state.styles.sectionTitle} />
               {this.renderAddressSection()}
               <SectionTitle
-                value="REFERRED BY"
+                value={title}
                 style={this.state.styles.sectionTitle}
-                sectionTitleStyle={{
-                  color: this.state.isValidReferred ? '#727A8F' : '#D1242A',
-                }}
               />
                 {this.renderReferredSection()}
               <SectionDivider />
