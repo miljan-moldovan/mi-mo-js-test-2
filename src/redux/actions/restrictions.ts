@@ -15,4 +15,13 @@ export const checkRestrictionsModifyBlockTime = (callback): any => async (dispat
   await restrictionsHelper(Tasks.Appt_ModifyBlock, callback, dispatch, getState);
 };
 
+export const checkRestrictionsRoomAssignment = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Salon_RoomAssign, callback, dispatch, getState);
+};
+
+export const checkRestrictionsEditSchedule = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Salon_EmployeeEdit, callback, dispatch, getState);
+};
+
+
 

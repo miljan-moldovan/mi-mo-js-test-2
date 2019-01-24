@@ -33,7 +33,11 @@ import { UserInfoReducer } from '@/redux/reducers/userInfo';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
 import { connect } from 'react-redux';
-import { checkRestrictionsBlockTime } from '@/redux/actions/restrictions';
+import {
+  checkRestrictionsBlockTime,
+  checkRestrictionsEditSchedule,
+  checkRestrictionsRoomAssignment,
+} from '@/redux/actions/restrictions';
 import { Tasks } from '@/constants/Tasks';
 import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
 
@@ -771,30 +775,52 @@ class NewApptSlide extends React.Component<IProps, IState> {
           icon={false}
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={() => {
+          disabled={this.props.apptEditScheduleIsDisabled}
+          onPress={() => this.props.checkRestrictionsEditSchedule(() => {
             this.hidePanel();
             this.props.navigation.navigate('EditSchedule', {
               date,
               employee,
             });
-          }}
+          })}
           label="Edit Schedule"
         >
-          <View style={styles.iconContainer}>
-            <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
-          </View>
+          {this.props.apptEditScheduleIsLoading ?
+            (
+              <View style={styles.iconContainer}>
+                <ActivityIndicator />
+              </View>
+            )
+            :
+            (
+              <View style={styles.iconContainer}>
+                <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
+              </View>
+            )
+          }
         </InputButton>
 
         <InputButton
           icon={false}
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={this.goToRoomAssignment}
+          disabled={this.props.apptRoomAssignmentIsDisabled}
+          onPress={() => this.props.checkRestrictionsRoomAssignment(this.goToRoomAssignment)}
           label="Room Assignment"
         >
-          <View style={styles.iconContainer}>
-            <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
-          </View>
+          {this.props.apptRoomAssignmentIsLoading ?
+            (
+              <View style={styles.iconContainer}>
+                <ActivityIndicator />
+              </View>
+            )
+            :
+            (
+              <View style={styles.iconContainer}>
+                <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
+              </View>
+            )
+          }
         </InputButton>
 
         <InputButton
@@ -1129,11 +1155,17 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
 const mapActionsToProps = dispatch => ({
   checkRestrictionsBlockTime: (callback) => dispatch(checkRestrictionsBlockTime(callback)),
+  checkRestrictionsRoomAssignment: (callback) => dispatch(checkRestrictionsRoomAssignment(callback)),
+  checkRestrictionsEditSchedule: (callback) => dispatch(checkRestrictionsEditSchedule(callback)),
 });
 
 const mapStateToProps = state => ({
   apptEnterBlockIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterBlock),
   apptEnterBlockIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_EnterBlock),
+  apptRoomAssignmentIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_RoomAssign),
+  apptRoomAssignmentIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_RoomAssign),
+  apptEditScheduleIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_EmployeeEdit),
+  apptEditScheduleIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_EmployeeEdit),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);
