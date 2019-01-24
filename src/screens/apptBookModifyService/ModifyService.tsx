@@ -187,9 +187,9 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       gapTime: moment.duration(get(serviceItem.service, 'gapTime', 0)),
       afterTime: moment.duration(get(serviceItem.service, 'afterTime', 0)),
       room: get(serviceItem.service, 'room', null),
-      roomOrdinal: get(serviceItem.service, 'roomOrdinal', 1),
+      roomOrdinal: get(serviceItem.service, 'roomOrdinal', null),
       resource: get(serviceItem.service, 'resource', null),
-      resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', 1),
+      resourceOrdinal: get(serviceItem.service, 'resourceOrdinal', null),
       serviceId: serviceItem && serviceItem.itemId || null,
       supportedRooms: get(serviceItem.service.service, 'supportedRooms', []),
       supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
@@ -228,12 +228,12 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     if (requireResource) {
       resourceToSet = {
         ...supportedResource,
-        name: supportedResource ? `${supportedResource.name}#1` : 'None',
+        name: supportedResource ? `${supportedResource.name}` : 'None',
       };
     }
     roomToSet = {
       ...roomToSet,
-      name: roomToSet ? `${roomToSet.name}#1` : 'None',
+      name: roomToSet ? `${roomToSet.name}` : 'None',
     };
     return {
       resource: resourceToSet,
