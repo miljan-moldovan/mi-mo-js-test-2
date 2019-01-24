@@ -7,3 +7,12 @@ export const checkRestrictionsBlockTime = (callback): any => async (dispatch, ge
   await restrictionsHelper(Tasks.Appt_EnterBlock, callback, dispatch, getState);
 };
 
+export const checkRestrictionsCancelBlockTime = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Appt_CancelBlock, callback, dispatch, getState);
+};
+
+export const checkRestrictionsModifyBlockTime = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Appt_ModifyBlock, callback, dispatch, getState);
+};
+
+

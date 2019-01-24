@@ -34,8 +34,8 @@ import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
 import { connect } from 'react-redux';
 import { checkRestrictionsBlockTime } from '@/redux/actions/restrictions';
-import { AccessState, Tasks } from '@/constants/Tasks';
-import LoadingOverlay from '@/components/LoadingOverlay';
+import { Tasks } from '@/constants/Tasks';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
 
 const { height: screenHeight } = Dimensions.get('window');
 const MAX_HEIGHT_FOR_CONTENT = screenHeight * 0.8;
@@ -755,7 +755,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                 <ActivityIndicator />
               </View>
             )
-          :
+            :
             (
               <View style={styles.iconContainer}>
                 <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular" />
@@ -1132,9 +1132,8 @@ const mapActionsToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  apptEnterBlockIsDisabled: state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Denied ||
-    state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Loading,
-  apptEnterBlockIsLoading: state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Loading,
+  apptEnterBlockIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterBlock),
+  apptEnterBlockIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_EnterBlock),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);
