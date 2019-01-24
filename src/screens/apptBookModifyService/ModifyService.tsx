@@ -25,7 +25,17 @@ import SalonHeader from '@/components/SalonHeader';
 import { ConflictBox } from '@/components/slidePanels/SalonNewAppointmentSlide';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import { NavigationScreenProp } from 'react-navigation';
-import { Maybe, Client, ServiceItem, Provider, Service, PureProvider, StoreRoom, StoreResource } from '@/models';
+import {
+  Maybe,
+  Client,
+  ServiceItem,
+  Provider,
+  Service,
+  PureProvider,
+  StoreRoom,
+  StoreResource,
+  RoomType,
+} from '@/models';
 import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 
 interface ModifyApptServiceScreenNavigationParams {
@@ -67,6 +77,8 @@ interface ModifyApptServiceScreenState {
   resource: Maybe<StoreResource>;
   resourceOrdinal: Maybe<number>;
   serviceId: string;
+  requireRoom: Maybe<number>;
+  requireResource: Maybe<number>;
   initialConflicts: NewAppointmentReducer['conflicts'];
 }
 
@@ -193,6 +205,8 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       serviceId: serviceItem && serviceItem.itemId || null,
       supportedRooms: get(serviceItem.service.service, 'supportedRooms', []),
       supportedResource: get(serviceItem.service.service, 'supportedResource', {}),
+      requireRoom: get(serviceItem.service.service, 'requireRoom', null),
+      requireResource: get(serviceItem.service.service, 'requireResource', null),
       ...roomAndResource,
     };
     state.length = moment.duration(state.endTime.diff(state.startTime));
@@ -228,12 +242,12 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
     if (requireResource) {
       resourceToSet = {
         ...supportedResource,
-        name: supportedResource ? `${supportedResource.name}#1` : 'None',
+        name: supportedResource ? `${supportedResource.name}` : 'None',
       };
     }
     roomToSet = {
       ...roomToSet,
-      name: roomToSet ? `${roomToSet.name}#1` : 'None',
+      name: roomToSet ? `${roomToSet.name}` : 'None',
     };
     return {
       resource: resourceToSet,
@@ -490,7 +504,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
 
   renderConflictsBox() {
     if (!this.conflictsForThisService().length) {
-      return <SectionDivider />;
+      return <SectionDivider/>;
     }
 
     return (
@@ -534,12 +548,13 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
       date,
       roomOrdinal,
       resourceOrdinal,
+      requireResource,
+      requireRoom,
     } = this.state;
-    const supportsRooms = get(selectedService, 'supportedRooms.length', false);
-    const supportsResource = get(selectedService, 'supportedResource', false);
+
     return (
       <ScrollView style={styles.container}>
-        {this.props.newAppointmentState.isLoading ? <LoadingOverlay /> : null}
+        {this.props.newAppointmentState.isLoading ? <LoadingOverlay/> : null}
         <InputGroup style={{ marginTop: 16 }}>
           <ServiceInput
             apptBook
@@ -551,7 +566,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
             onChange={this.handleSelectService}
             headerProps={{ title: 'Services', ...this.cancelButton() }}
           />
-          <InputDivider />
+          <InputDivider/>
           <ProviderInput
             date={date}
             mode="newAppointment"
@@ -563,16 +578,16 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
             navigate={this.props.navigation.navigate}
             headerProps={{ title: 'Providers', ...this.cancelButton() }}
           />
-          <InputDivider />
+          <InputDivider/>
           <InputSwitch
             text="Provider is requested"
             value={requested}
             onChange={this.handleRequested}
           />
-          <InputDivider />
-          <InputLabel label="Price" value={`$ ${price}`} />
+          <InputDivider/>
+          <InputLabel label="Price" value={`$ ${price}`}/>
         </InputGroup>
-        <SectionTitle value="Time" />
+        <SectionTitle value="Time"/>
         <InputGroup>
           <SchedulePicker
             date={date}
@@ -582,7 +597,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
             onChange={this.handleChangeStartTime}
             toggle={this.toggleStartTimePicker}
           />
-          <InputDivider />
+          <InputDivider/>
           <SchedulePicker
             date={date}
             label="Ends"
@@ -591,7 +606,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
             onChange={this.handleChangeEndTime}
             toggle={this.toggleEndTimePicker}
           />
-          <InputDivider />
+          <InputDivider/>
           <InputLabel
             label="Length"
             value={
@@ -606,7 +621,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
               </Text>
             }
           />
-          <InputDivider />
+          <InputDivider/>
           <InputSwitch
             text="Gap"
             value={bookBetween}
@@ -616,7 +631,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           {
             !!bookBetween &&
             <View>
-              <InputDivider />
+              <InputDivider/>
               <InputNumber
                 value={gapTime.asMinutes()}
                 onChange={this.handleChangeGapTime}
@@ -625,7 +640,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
                 singularText="min"
                 pluralText="min"
               />
-              <InputDivider />
+              <InputDivider/>
               <InputNumber
                 value={afterTime.asMinutes()}
                 onChange={this.handleChangeAfterTime}
@@ -638,25 +653,28 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           }
         </InputGroup>
         {
-          !!(supportsResource || supportsRooms) &&
+          !(requireRoom === RoomType.NULL ||
+            requireRoom === RoomType.Nothing) ||
+          Boolean(requireResource) ?
           (
             <React.Fragment>
-              <SectionTitle value="Room & Resource" />
+              <SectionTitle value="Room & Resource"/>
               <InputGroup>
                 {
-                  !!supportsRooms && (
+                  !(requireRoom === RoomType.NULL ||
+                    requireRoom === RoomType.Nothing) && (
                     <React.Fragment>
                       <InputButton
                         onPress={this.selectRoom}
                         label="Assigned Room"
                         value={room ? `${room.name} #${roomOrdinal || 1}` : 'None'}
                       />
-                      <InputDivider />
+                      <InputDivider/>
                     </React.Fragment>
                   )
                 }
                 {
-                  !!supportsResource &&
+                  Boolean(requireResource) &&
                   <InputButton
                     onPress={this.selectResource}
                     label="Assigned Resource"
@@ -665,7 +683,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
                 }
               </InputGroup>
             </React.Fragment>
-          )
+          ) : null
         }
         {this.renderConflictsBox()}
         {!!canRemove &&
@@ -674,7 +692,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
           title="Remove Service"
           onPress={this.onPressRemove}
         />}
-        <SectionDivider />
+        <SectionDivider/>
         {!!toast &&
         <SalonToast
           description={toast.description}
