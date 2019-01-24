@@ -47,7 +47,7 @@ const getApiInstance = async () => {
         error.response &&
         error.response.status === 401;
 
-      if (sessionExpired && store.getState().auth.loggedIn) {
+      if (sessionExpired && store.getState().auth.loggedIn && !/^((.*)(\/SignIn$))/.test(error.request.responseURL)) {
         const onPress = () => store.dispatch(logout());
         const text = {
           title: 'Session expired',
@@ -67,6 +67,11 @@ const resetApiInstance = () => {
   axiosInstance = null;
 };
 
+const updateJWT = (jwt) => {
+  axiosInstance.defaults.headers['X-AuthToken'] = jwt;
+};
+
+
 const getEmployeePhoto = employeeId => `${BASEURL}Employees/${employeeId}/Photo`;
 
-export { getApiInstance, getEmployeePhoto, resetApiInstance };
+export { getApiInstance, getEmployeePhoto, resetApiInstance, updateJWT };

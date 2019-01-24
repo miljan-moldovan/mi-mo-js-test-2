@@ -13,6 +13,8 @@ const initialState: AuthReducer = {
   employeeId: 0,
   storeKey: 0,
   baseHost: '',
+  loginUrl: '',
+  loginUserName: '',
   currentEmployee: null,
   jws: null,
 };
@@ -25,7 +27,9 @@ export interface AuthReducer {
   guardUserId: number;
   centralEmployeeId: number;
   employeeId: number;
+  loginUserName: string,
   storeKey: number;
+  loginUrl: string;
   baseHost: string;
   currentEmployee: Maybe<PureProvider>;
   jws: Maybe<any>;
@@ -37,6 +41,13 @@ function auth(state: AuthReducer = initialState, action): AuthReducer {
       return {
         ...state,
         loggedIn: true,
+        jws: action.data.jws,
+        loginUserName: action.data.username,
+        loginUrl: action.data.url,
+      };
+    case AT.RELOGIN_SUCCESS:
+      return {
+        ...state,
         jws: action.data.jws,
       };
     case AT.LOGIN_FAILURE:

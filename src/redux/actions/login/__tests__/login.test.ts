@@ -51,7 +51,8 @@ describe('login_actions', () => {
     const expectedActions = [
       {
         type: AT.LOGIN_SUCCESS,
-        data: { jws: response.response },
+        data: { jws: response.response, username, url  },
+
       },
     ];
     return store.dispatch(selectActions.login(url, username, password, callback)).then(() => {
