@@ -18,6 +18,7 @@ import serviceReducer from './service';
 import providersReducer from './providers';
 import productsReducer from './products';
 import appointmentReducer from './appointment';
+import restrictionsReducer from './restrictions';
 import newAppointmentReducer from './newAppointment';
 import apptBookViewOptionsReducer from './apptBookViewOptions';
 import apptBookSetEmployeeOrderReducer from './apptBookSetEmployeeOrder';
@@ -61,6 +62,7 @@ const appReducer = combineReducers ({
   apptBookSetEmployeeOrderReducer,
   newAppointmentReducer,
   modifyApptReducer,
+  restrictionsReducer,
   formulasAndNotesReducer,
   roomAssignmentReducer,
   employeeScheduleReducer,

@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { View, Text, Modal, ScrollView, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  ScrollView,
+  Animated,
+  TouchableWithoutFeedback,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import moment from 'moment';
 import { isNumber, get, isNull, isFunction } from 'lodash';
 
@@ -16,7 +25,6 @@ import ConflictBox from './components/ConflictBox';
 import AddonsContainer from './components/AddonsContainer';
 import SalonToast, { SalonToastObject } from '../../screens/appointmentCalendarScreen/components/SalonToast';
 import TrackRequestSwitch from '../TrackRequestSwitch';
-
 import styles from './styles';
 import { Maybe } from '@/models';
 import { NewApptActions, ServiceWithAddons } from '@/redux/actions/newAppointment';
@@ -24,6 +32,10 @@ import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 import { UserInfoReducer } from '@/redux/reducers/userInfo';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
+import { connect } from 'react-redux';
+import { checkRestrictionsBlockTime } from '@/redux/actions/restrictions';
+import { AccessState, Tasks } from '@/constants/Tasks';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 const { height: screenHeight } = Dimensions.get('window');
 const MAX_HEIGHT_FOR_CONTENT = screenHeight * 0.8;
@@ -725,7 +737,8 @@ class NewApptSlide extends React.Component<IProps, IState> {
           icon={false}
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={() => {
+          disabled={this.props.apptEnterBlockIsDisabled}
+          onPress={() => this.props.checkRestrictionsBlockTime(() => {
             this.hidePanel();
             this.props.navigation.navigate('BlockTime', {
               date,
@@ -733,15 +746,25 @@ class NewApptSlide extends React.Component<IProps, IState> {
               fromTime: startTime,
               bookedByEmployee,
             });
-          }}
+          })}
           label="Block Time"
         >
-          <View style={styles.iconContainer}>
-            <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular"/>
-            <View style={styles.banIconContainer}>
-              <Icon style={styles.subIcon} name="ban" size={9} color={Colors.defaultBlue} type="solid"/>
-            </View>
-          </View>
+          {this.props.apptEnterBlockIsLoading ?
+            (
+              <View style={styles.iconContainer}>
+                <ActivityIndicator />
+              </View>
+            )
+          :
+            (
+              <View style={styles.iconContainer}>
+                <Icon name="clockO" size={16} color={Colors.defaultBlue} type="regular" />
+                <View style={styles.banIconContainer}>
+                  <Icon style={styles.subIcon} name="ban" size={9} color={Colors.defaultBlue} type="solid" />
+                </View>
+              </View>
+            )
+          }
         </InputButton>
 
         <InputButton
@@ -758,7 +781,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           label="Edit Schedule"
         >
           <View style={styles.iconContainer}>
-            <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular"/>
+            <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
           </View>
         </InputButton>
 
@@ -770,7 +793,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           label="Room Assignment"
         >
           <View style={styles.iconContainer}>
-            <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid"/>
+            <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
           </View>
         </InputButton>
 
@@ -790,7 +813,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           label="Turn Away"
         >
           <View style={styles.iconContainer}>
-            <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid"/>
+            <Icon name="ban" size={16} color={Colors.defaultBlue} type="solid" />
           </View>
         </InputButton>
 
@@ -802,7 +825,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           label="Message Provider's Clients"
         >
           <View style={styles.iconContainer}>
-            <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular"/>
+            <Icon name="userAlt" size={16} color={Colors.defaultBlue} type="regular" />
           </View>
         </InputButton>
         <InputButton
@@ -813,7 +836,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
           label="Message All Clients"
         >
           <View style={styles.iconContainer}>
-            <Icon name="group" size={16} color={Colors.defaultBlue} type="regular"/>
+            <Icon name="group" size={16} color={Colors.defaultBlue} type="regular" />
           </View>
         </InputButton>
       </React.Fragment>
@@ -847,9 +870,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
   handleDoneConflicts = (canBeSkipped) => {
     this.showPanel();
     if (canBeSkipped) {
-      this.setState({ createAniwayWithConflicts : true });
+      this.setState({ createAniwayWithConflicts: true });
     }
-  }
+  };
 
   renderBookingTab = () => {
     const { navigation, selectedFilter } = this.props;
@@ -1104,4 +1127,14 @@ class NewApptSlide extends React.Component<IProps, IState> {
   }
 }
 
-export default NewApptSlide;
+const mapActionsToProps = dispatch => ({
+  checkRestrictionsBlockTime: (callback) => dispatch(checkRestrictionsBlockTime(callback)),
+});
+
+const mapStateToProps = state => ({
+  apptEnterBlockIsDisabled: state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Denied ||
+    state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Loading,
+  apptEnterBlockIsLoading: state.restrictionsReducer[Tasks.Appt_EnterBlock] === AccessState.Loading,
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);

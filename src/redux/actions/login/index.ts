@@ -21,6 +21,7 @@ export type ErrorObj =
 
 export const AT = {
   LOGIN_SUCCESS: 'login/LOGIN_SUCCESS',
+  RELOGIN_SUCCESS: 'login/RELOGIN_SUCCESS',
   LOGIN_FAILURE: 'login/LOGIN_FAILURE',
   LOGOUT: 'login/LOGOUT',
   FINGERPRINT_ENABLE: 'login/FINGERPRINT_ENABLE',
@@ -67,7 +68,7 @@ export const login = (url, username, password, callback) => async dispatch => {
       await AsyncStorage.setItem(JWTKEY, data.response);
       dispatch({
         type: AT.LOGIN_SUCCESS,
-        data: userToken,
+        data: { ...userToken, username, url },
       });
       callback(true);
     }
@@ -85,6 +86,31 @@ export const login = (url, username, password, callback) => async dispatch => {
       data: { errorMessage: e.message },
     });
     callback(false, e, error);
+  }
+};
+
+export const checkPasswordCorrect = (password, callback) => async (dispatch, getState) => {
+  try {
+    const loginUserName = getState().auth.loginUserName;
+    const loginUrl = getState().auth.loginUrl;
+
+    const data = await Login.reSignIn(loginUrl, loginUserName, password);
+
+    if (data.result === 1) {
+      // Need update JWT
+      /*
+      const userToken = { jws: data.response };
+      await AsyncStorage.setItem(JWTKEY, data.response);
+      dispatch({
+        type: AT.RELOGIN_SUCCESS,
+        data: userToken,
+      });
+      */
+      return callback(true);
+    }
+    return callback(false);
+  } catch (error) {
+    return callback(false);
   }
 };
 
