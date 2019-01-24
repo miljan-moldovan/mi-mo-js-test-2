@@ -12,8 +12,13 @@ import {
   isValidAppointment,
 } from '@/redux/selectors/newAppt';
 import { filteredProviders } from '@/redux/selectors/providersSelector';
+import { checkRestrictionsAddService, checkRestrictionsBlockTime } from '@/redux/actions/restrictions';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
 
 const mapStateToProps = state => ({
+  apptAddServiceIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_MultiServiceAppt),
+  apptAddServiceIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_MultiServiceAppt),
   newAppointmentState: state.newAppointmentReducer,
   apptBookState: state.appointmentBookReducer,
   settingState: state.settings,
@@ -29,6 +34,7 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = dispatch => ({
+  checkRestrictionsAddService: (callback) => dispatch(checkRestrictionsAddService(callback)),
   newAppointmentActions: bindActionCreators(
     { ...newAppointmentActions },
     dispatch,
