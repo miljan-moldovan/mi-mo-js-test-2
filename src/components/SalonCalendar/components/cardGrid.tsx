@@ -24,12 +24,12 @@ import DateTime from '@/constants/DateTime';
 
 export default class CardGrid extends React.Component {
 
-  renderCards = (cards, headerIndex, headerId) => {
+  renderCards = (cards, headerIndex, headerId, showAvailability) => {
     if (cards && cards.length) {
       return cards.map(
         card =>
           card.isBlockTime
-            ? this.props.renderBlock(card, headerIndex, headerId)
+            ? this.props.renderBlock(card, headerIndex, headerId, showAvailability)
             : this.props.renderCard(card, headerIndex, headerId),
       );
     }
@@ -37,7 +37,7 @@ export default class CardGrid extends React.Component {
   };
 
   render() {
-    const { cardsArray, headerData, selectedFilter, selectedProvider, overlappingCardsMap } = this.props;
+    const { cardsArray, headerData, selectedFilter, selectedProvider, overlappingCardsMap, showAvailability } = this.props;
     const isCanBeOnlyUser = selectedFilter === 'providers' || selectedFilter === 'deskStaff';
     const gridCard = headerData.map((item, index) => {
       let headerId = item.id;
@@ -58,6 +58,7 @@ export default class CardGrid extends React.Component {
           .value(),
         index,
         headerId,
+        showAvailability,
       );
     });
     return <React.Fragment>{gridCard}</React.Fragment>;

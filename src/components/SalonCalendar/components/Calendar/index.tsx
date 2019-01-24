@@ -1695,7 +1695,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
   };
 
   // render blocks inthe grid
-  renderBlock = (blockTime, headerIndex, headerId) => {
+  renderBlock = (blockTime, headerIndex, headerId, showAvailability) => {
     const {
       apptGridSettings,
       selectedProvider,
@@ -1736,7 +1736,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       activeCard
         ? null
         : this.panResponder;
-      const firstCellWidth = isAllProviderView ? 130 : 0;
+      const firstCellWidth = showAvailability && isAllProviderView ? 130 : 0;
 
       // the gap is the space at the left of the card, card have this gap when they overlaps other ones.
       const gap =
@@ -2099,6 +2099,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       activeCard,
       activeBlock,
       cardsArray,
+      overlappingCardsMap,
     } = this.state;
 
     const startTime = moment(apptGridSettings.minStartTime, DateTime.timeOld);
@@ -2179,6 +2180,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               renderCard={this.renderCard}
               renderBlock={this.renderBlock}
               cardActive={this.state.activeBlock || this.state.activeCard}
+              overlappingCardsMap={overlappingCardsMap}
+              showAvailability={showAvailability}
             />
             {/* resize cards goes inside the grid becuase we want it to be relative positioned to it
             this makes the card to not move it original while resizeing and scrolling thorugh the grid */}
