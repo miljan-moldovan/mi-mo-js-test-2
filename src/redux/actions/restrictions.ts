@@ -23,5 +23,9 @@ export const checkRestrictionsEditSchedule = (callback): any => async (dispatch,
   await restrictionsHelper(Tasks.Salon_EmployeeEdit, callback, dispatch, getState);
 };
 
+export const checkRestrictionsModifyAppt = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Appt_ModifyAppt, callback, dispatch, getState);
+};
+
 
 

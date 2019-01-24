@@ -23,6 +23,13 @@ import toPeriodFormat from './helpers/toPeriodFormatHelper';
 import HeightHelper from './helpers/heightHelper';
 import PanelbottomAppt from './components/appointment/panelBottom';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import {
+  checkRestrictionsBlockTime,
+  checkRestrictionsEditSchedule, checkRestrictionsModifyAppt,
+  checkRestrictionsRoomAssignment,
+} from '@/redux/actions/restrictions';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
 
 const notImplemented = () => Alert.alert('Not implemented');
 
@@ -358,7 +365,7 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
 
   renderContent = () => {
     const { appointment, auditAppt } = this.state;
-    const disabledModify = this.modifyIsDisabled(appointment);
+    const disabledModify = this.props.modifyApptIsDisabled || this.modifyIsDisabled(appointment);
     const disabledCancel = this.cancelIsDisabled(appointment);
 
     return (
@@ -369,7 +376,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
               appointment.isBlockTime
                 ? (
                     <BlockTimeBtn
-                      handleModify={this.handleModify}
+                      handleModify={() => this.props.checkRestrictionsModifyAppt(this.handleModify)}
+                      modifyApptIsLoading={this.props.modifyApptIsLoading}
                       handleNewAppt={this.handleNewAppt}
                       handleCancel={this.handleCancel}
                     />
@@ -379,7 +387,8 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
                       appointment={appointment}
                       handleCheckin={this.handleCheckin}
                       handleCheckout={this.handleCheckout}
-                      handleModify={this.handleModify}
+                      modifyApptIsLoading={this.props.modifyApptIsLoading}
+                      handleModify={() => this.props.checkRestrictionsModifyAppt(this.handleModify)}
                       handleCancel={this.handleCancel}
                       disabledModify={disabledModify}
                       disabledCancel={disabledCancel}
@@ -450,8 +459,14 @@ class SalonCardDetailsSlide extends React.Component<any, any> {
   }
 }
 
-const mapStateToProps = (state, props) => ({
-  appointment: getSelectedAppt(state, props),
+const mapActionsToProps = dispatch => ({
+  checkRestrictionsModifyAppt: (callback) => dispatch(checkRestrictionsModifyAppt(callback)),
 });
 
-export default connect(mapStateToProps)(SalonCardDetailsSlide);
+const mapStateToProps = (state, props) => ({
+  appointment: getSelectedAppt(state, props),
+  modifyApptIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_ModifyAppt),
+  modifyApptIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_ModifyAppt),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(SalonCardDetailsSlide);

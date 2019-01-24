@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 
 import SalonTouchableOpacity from '../../../../../SalonTouchableOpacity';
@@ -7,8 +7,9 @@ import Icon from '@/components/common/Icon';
 import styles from './styles';
 
 const blockButtons = ({
-  handleNewAppt, handleModify, handleCancel,
-}) => (
+                        handleNewAppt, handleModify, handleCancel,
+                        modifyApptIsLoading,
+                      }) => (
   <React.Fragment>
     <View style={styles.panelIcon}>
       <SalonTouchableOpacity
@@ -41,7 +42,10 @@ const blockButtons = ({
         style={styles.panelIconBtn}
         onPress={handleModify}
       >
-        <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+        {
+          modifyApptIsLoading ? <ActivityIndicator /> :
+            <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+        }
       </SalonTouchableOpacity>
       <Text style={styles.panelIconText}>Modifiy</Text>
     </View>
@@ -52,6 +56,7 @@ blockButtons.propTypes = {
   handleModify: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired,
   handleNewAppt: PropTypes.func.isRequired,
+  modifyApptIsLoading: PropTypes.bool,
 };
 
 export default blockButtons;
