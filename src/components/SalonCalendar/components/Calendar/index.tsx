@@ -2097,6 +2097,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
       activeCard,
       activeBlock,
       cardsArray,
+      overlappingCardsMap,
     } = this.state;
 
     const startTime = moment(apptGridSettings.minStartTime, DateTime.timeOld);
@@ -2177,6 +2178,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               renderCard={this.renderCard}
               renderBlock={this.renderBlock}
               cardActive={this.state.activeBlock || this.state.activeCard}
+              overlappingCardsMap={overlappingCardsMap}
             />
             {/* resize cards goes inside the grid becuase we want it to be relative positioned to it
             this makes the card to not move it original while resizeing and scrolling thorugh the grid */}
