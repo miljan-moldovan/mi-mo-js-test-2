@@ -71,9 +71,10 @@ const getEmployeeScheduleException = (
 const getEmployeeSchedule = (employeeId, date, callback) => dispatch => {
   dispatch({ type: GET_EMPLOYEE_SCHEDULE });
 
-  return AppointmentBook.getAppointmentBookEmployees(date, employeeId)
+  return AppointmentBook.getAppointmentBookEmployees(date, {})
     .then(response => {
-      dispatch(getEmployeeScheduleSuccess(response));
+      const schedule = response.filter(scheduleItem => scheduleItem.id === employeeId);
+      dispatch(getEmployeeScheduleSuccess(schedule));
       callback(true);
     })
     .catch(error => {
