@@ -129,33 +129,6 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
   });
 };
 
-const resetTimeForServices = (
-  items: ServiceItem[],
-  index: Maybe<number>,
-  initialFromTime: Maybe<string | moment.Moment>,
-): any => {
-  const itemsToReturn: ServiceItem[] = [];
-  items.map((item, i) => {
-    if (i > index) {
-      const prevItem = itemsToReturn[i - 1];
-      let fromTime = moment(initialFromTime);
-      if (prevItem) {
-        fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
-      }
-      itemsToReturn.push({
-        ...item,
-        service: {
-          ...item.service,
-          fromTime,
-          toTime: fromTime.clone().add(
-            item.service.length,
-          ),
-        },
-      });
-    }
-  });
-  return itemsToReturn;
-};
 
 const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => async (dispatch, getState: () => AppStore) => {
   dispatch({
@@ -1043,6 +1016,38 @@ const clearOrdinalIdAndResourcesId = () => ({
   type: CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
 });
 
+const resetTimeForServices = (
+  items: ServiceItem[],
+  index: Maybe<number>,
+  initialFromTime: Maybe<string | moment.Moment>,
+): any => {
+  const itemsToReturn: ServiceItem[] = [];
+  items.map((item, i) => {
+    if (i > index) {
+      const prevItem = itemsToReturn[i - 1];
+      let fromTime = moment(initialFromTime);
+      if (prevItem) {
+        fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
+      }
+      itemsToReturn.push({
+        ...item,
+        service: {
+          ...item.service,
+          fromTime,
+          toTime: fromTime.clone().add(
+            item.service.length,
+          ),
+        },
+      });
+    } else {
+      itemsToReturn.push({
+        ...item,
+      });
+    }
+  });
+  return itemsToReturn;
+};
+
 const newAppointmentActions = {
   cleanForm,
   setBookedBy,
@@ -1069,6 +1074,7 @@ const newAppointmentActions = {
   populateStateFromAppt,
   populateStateFromRebookAppt,
   modifyAppt,
+  resetTimeForServices,
   setMainEmployee,
   getConflictsForService,
   checkIsBookedByFieldEnabled,

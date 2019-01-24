@@ -593,7 +593,7 @@ class ClientDetails extends React.Component<Props, State> {
         state: this.state.client.state ? this.state.client.state.value : null,
         zipCode: this.state.client.zipCode ? this.state.client.zipCode : null,
       },
-      gender: this.state.client.gender ? this.state.client.gender.value : null,
+      gender: this.state.client.gender ? this.state.client.gender.key : null,
       loyaltyNumber: this.state.client.loyaltyNumber,
       confirmBy: this.state.client.confirmBy ? this.state.client.confirmBy.key : null,
       referredByClientId: this.state.selectedClient ? this.state.selectedClient.id : null,
@@ -731,8 +731,9 @@ class ClientDetails extends React.Component<Props, State> {
       if (client.clientReferralType) {
         this.setReferredOptionOther(false);
       }
-
-      client.gender = client.gender ? client.gender : genders[0];
+      
+      const gender = find(genders, { key: client.gender });
+      client.gender = gender ? gender : genders[0];
 
       const selectedClient = client.referredByClient ? client.referredByClient : null;
 
