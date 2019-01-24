@@ -54,7 +54,9 @@ class BookAnother extends React.Component {
   render() {
     const { height } = this.state;
     const { client } = this.props;
-    const clientName = `${client.name.toUpperCase()} ${client.lastName.toUpperCase()}`;
+    const clientName = client && client.name && client.name.toUpperCase();
+    const clientLastName = client && client.lastName && client.lastName.toUpperCase();
+    const clientName = `${clientName} ${clientLastName}`;
     return (
       <Animated.View style={[styles.container, { height }]}>
         <View style={{ flex: 1 }}>
