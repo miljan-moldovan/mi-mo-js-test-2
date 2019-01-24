@@ -56,6 +56,7 @@ export const SET_DATE = 'newAppointment/SET_DATE';
 export const SET_START_TIME = 'newAppointment/SET_START_TIME';
 export const SET_BOOKED_BY = 'newAppointment/SET_BOOKED_BY';
 export const SET_MAIN_EMPLOYEE = 'newAppointment/SET_MAIN_EMPLOYEE';
+export const SET_APPT_INITIAL_CLIENT = 'newAppointment/SET_APPT_INITIAL_CLIENT';
 export const SET_CLIENT = 'newAppointment/SET_CLIENT';
 export const SET_QUICK_APPT_REQUESTED =
   'newAppointment/SET_QUICK_APPT_REQUESTED';
@@ -608,6 +609,12 @@ const setMainEmployee = (mainEmployee: Maybe<PureProvider | ShortProvider>): any
   data: { mainEmployee },
 });
 
+
+const setApptInitialClient = (initialApptClient: Maybe<ClientModel>): any => ({
+  type: SET_APPT_INITIAL_CLIENT,
+  data: { initialApptClient },
+});
+
 const setDate = (date: any): any => ({
   type: SET_DATE,
   data: { date },
@@ -1067,6 +1074,7 @@ const newAppointmentActions = {
   messageAllClients,
   messageProvidersClients,
   populateStateFromAppt,
+  setApptInitialClient,
   populateStateFromRebookAppt,
   modifyAppt,
   setMainEmployee,
@@ -1102,6 +1110,7 @@ export interface NewApptActions {
   messageAllClients: typeof newAppointmentActions.messageAllClients;
   messageProvidersClients: typeof newAppointmentActions.messageProvidersClients;
   populateStateFromAppt: typeof newAppointmentActions.populateStateFromAppt;
+  setApptInitialClient: typeof newAppointmentActions.setApptInitialClient;
   populateStateFromRebookAppt: typeof newAppointmentActions.populateStateFromRebookAppt;
   modifyAppt: typeof newAppointmentActions.modifyAppt;
   setMainEmployee: typeof newAppointmentActions.setMainEmployee;

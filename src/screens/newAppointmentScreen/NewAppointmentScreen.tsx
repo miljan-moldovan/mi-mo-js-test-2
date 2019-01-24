@@ -107,15 +107,13 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     super(props);
     const { client, editType } = props.newAppointmentState;
 
-    const {
-      clientConfirmationType,
-    } = this.getClientInfo(client as ClientDetailed);
     props.navigation.setParams({
       editType,
       handleSave: debounce(this.handleSave, 500),
       handleCancel: debounce(this.handleCancel, 500),
     });
-    const { clientEmail, clientPhone, clientPhoneType, isValidEmail, isValidPhone } = this.getClientInfo(client);
+    const { clientEmail, clientPhone, clientPhoneType,
+      isValidEmail, isValidPhone, clientConfirmationType } = this.getClientInfo(client as ClientDetailed);
     this.state = {
       toast: null,
       clientEmail,
@@ -142,11 +140,12 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   }
 
   componentDidMount() {
-    this.getClientDetailed();
     this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
-    this.setState({
-      ...this.getClientInfo(this.props.newAppointmentState.client),
-    }, this.checkConflicts);
+    if (this.props.newAppointmentState.client) {
+      this.setState({
+        ...this.getClientInfo(this.props.newAppointmentState.client),
+      }, this.checkConflicts);
+    }
   }
 
   componentDidUpdate(prevProps: NewAppointmentScreenProps, prevState) {
@@ -169,7 +168,12 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     if (
       isPopulatingState !== prevProps.newAppointmentState.isPopulatingState
     ) {
-      this.setState({ ...this.getClientInfo(client) });
+      if (client) {
+        this.setState({ ...this.getClientInfo(client) }, () => {
+          this.getClientDetailed();
+        });
+      }
+
     }
     if (
       remarksChanged ||
@@ -184,6 +188,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const { client } = this.props.newAppointmentState;
     if (get(client, 'id')) {
       const clientDetailed = await Client.getClient(client.id);
+      this.props.newAppointmentActions.setClient(clientDetailed);
+      this.props.newAppointmentActions.setApptInitialClient(clientDetailed);
       this.setState({
         ...this.getClientInfo(clientDetailed as ClientDetailed),
       });
@@ -376,7 +382,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       clientPhone,
       isValidEmail: emailValid,
       isValidPhone: phoneValid,
-      clientConfirmationType: confirmationType,
+      clientConfirmationType,
     } = this.state;
 
     if (!client) {
@@ -386,7 +392,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
     const currentPhone = client.phones.find(phone => phone.type === ClientPhoneTypes.cell);
     const hasConfirmationTypeChanged =
-      get(client, 'confirmBy') ? confirmationType !== get(client, 'confirmBy') : false;
+      get(client, 'contactType') ? clientConfirmationType !== get(client, 'contactType') : clientConfirmationType;
     const hasEmailChanged = clientEmail !== client.email;
     const hasPhoneChanged = clientPhone !== currentPhone.value;
     const isValidEmail = emailValid && clientEmail !== '' && hasEmailChanged;
@@ -395,8 +401,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       if (hasConfirmationTypeChanged) {
         const updateObject = {
           id: client.id,
-          phones: client.phones,
-          confirmationType: +confirmationType,
+          phones: client.phones.filter(item => item.value !== null),
+          confirmationType: +clientConfirmationType,
           email: client.email,
         };
         return updateObject;
@@ -502,7 +508,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const clientEmail = get(client, 'email', '') || '';
     const clientPhone = get(phone, 'value', '') || '';
     const clientPhoneType = get(phone, 'type', ClientPhoneTypes.cell);
-    const clientConfirmationType = get(client, 'confirmBy', ConfirmationType.Email);
+    const clientConfirmationType = get(client, 'contactType', ConfirmationType.Email);
     return {
       clientPhoneType,
       clientConfirmationType,
@@ -825,17 +831,18 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       bookedByEmployee,
       guests,
       serviceItems,
+      initialApptClient,
     } = this.props.newAppointmentState;
     const { clientEmail, clientPhone, clientConfirmationType } = this.state;
     const diffDate = !date.isSame(initialState.date);
     const diffTime = !startTime.isSame(initialState.startTime);
-
+    const initialClientInfo = this.getClientInfo(initialApptClient as ClientDetailed);
     const diffRemarks = remarks !== initialState.remarks;
-    const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
-    const diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
-    const diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
+    const diffClient = get(client, 'id', -1) !== get(initialApptClient, 'id', -1);
+    const diffEmail = clientEmail !== initialClientInfo.clientEmail;
+    const diffPhone = clientPhone !== initialClientInfo.clientPhone;
     const diffConfirmationType =
-      clientConfirmationType !== this.getClientInfo(initialState.client).clientConfirmationType;
+      clientConfirmationType !== initialClientInfo.clientConfirmationType;
     const diffBookedByEmployee = get(bookedByEmployee, 'id', -1) !== get(initialState.bookedByEmployee, 'id', -1);
     const diffGuests = !deepEqual(guests, initialState.guests, { strict: true });
     const diffServices = !deepEqual(serviceItems, initialState.serviceItems, {

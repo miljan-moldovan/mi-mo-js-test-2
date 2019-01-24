@@ -26,6 +26,7 @@ import {
   SET_REMARKS,
   SET_SELECTED_APPT,
   POPULATE_STATE_FROM_APPT,
+  SET_APPT_INITIAL_CLIENT,
   POPULATE_STATE_FROM_REBOOKED_APPT,
   SET_MAIN_EMPLOYEE,
   IS_BOOKED_BY_FIELD_ENABLED,
@@ -85,6 +86,7 @@ export interface NewAppointmentReducer {
   selectedAppt: Maybe<AppointmentCard | PureAppointment>;
   ordinalId: number | null,
   id: number | null,
+  initialApptClient: Maybe<Client>;
 }
 
 export default function newAppointmentReducer(
@@ -164,6 +166,11 @@ export default function newAppointmentReducer(
           remarks: data.newState.remarks,
         },
       };
+    case SET_APPT_INITIAL_CLIENT:
+    return {
+      ...state,
+      initialApptClient: data.initialApptClient,
+    };
     case IS_BOOKING_QUICK_APPT:
       return {
         ...state,
