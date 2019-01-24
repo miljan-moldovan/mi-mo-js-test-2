@@ -795,6 +795,8 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
 
   handleCardPressed = (appt, left, top) => {
     // this is the height of the detials slide
+    this.resetMove();
+    this.setState({ activeCard: null });
     const height = HeightHelper.setPositionToMinimalOption();
     const fixHeight = 118;
     this.props.onCardPressed(appt);

@@ -100,26 +100,8 @@ export default function newAppointmentReducer(
       };
     case CLEAN_FORM:
       return {
-        ...state,
-        isLoading: false,
-        isBooking: false,
-        editType: 'new',
-        isBookingQuickAppt: false,
-        isQuickApptRequested: true,
-        isBookedByFieldEnabled: false,
-        client: null,
-        date: moment(),
-        startTime: moment(),
+        ...defaultState,
         bookedByEmployee: data.bookedByEmployee || null,
-        deletedIds: [],
-        guests: [],
-        conflicts: [],
-        serviceItems: [],
-        mainEmployee: null,
-        remarks: '',
-        rebooked: true,
-        initialState: null,
-        selectedAppt: null,
       };
     case SET_SELECTED_APPT:
       return {

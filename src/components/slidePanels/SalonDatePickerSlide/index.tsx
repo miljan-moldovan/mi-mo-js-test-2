@@ -63,6 +63,7 @@ LocaleConfig.defaultLocale = 'en';
 type IState = {
   visible: boolean,
   selected?: string,
+  current: any,
 };
 type IProps = {
   visible: boolean,
@@ -97,23 +98,51 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
     visible: false,
     selected: '',
     markedWeekends: {},
+    current: '',
   };
 
-  componentWillReceiveProps(nextProps) {
+  componentDidMount() {
+    const nextCurrent = this.current();
     this.setState({
-      visible: nextProps.visible,
-      selected: nextProps.selectedDate,
+      current: nextCurrent,
     });
   }
 
-  get current() {
+  componentWillReceiveProps(nextProps) {
+    const nextCurrent = this.current();
+    this.setState({
+      visible: nextProps.visible,
+      selected: nextProps.selectedDate,
+      current: nextCurrent,
+    });
+  }
+
+  current = () => {
     const dateFromProps = moment(this.props.currentDate);
     if (dateFromProps.isValid()) {
       return dateFromProps.format();
     }
 
     return moment().format();
-  }
+  };
+
+  chooseNextMonth = () => {
+    const nextDate = moment(this.state.selected).add(1, 'months');
+    this.setState({
+      selected: nextDate.format('YYYY-MM-DD'),
+      markedWeekends: getCalendarMarksForWeekends(nextDate),
+      current: nextDate.format(),
+    });
+  };
+
+  choosePreviousMonth = () => {
+    const nextDate = moment(this.state.selected).subtract(1, 'months');
+    this.setState({
+      selected: nextDate.format('YYYY-MM-DD'),
+      markedWeekends: getCalendarMarksForWeekends(nextDate),
+      current: nextDate.format(),
+    });
+  };
 
   hidePanel = () => {
     this.setState({ visible: false });
@@ -189,7 +218,7 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
                 ref={calendar => {
                   this.calendar = calendar;
                 }}
-                current={this.current}
+                current={this.state.current}
                 onDayPress={this.onDayPress}
                 monthFormat="MMMM yyyy"
                 style={{ width: '95%' }}
@@ -244,8 +273,8 @@ export default class SalonDatePickerSlide extends React.Component<IProps, IState
                     markedWeekends: getCalendarMarksForWeekends(moment(month.dateString)),
                   });
                 }}
-                onPressArrowLeft={this.props.onPressArrowLeft}
-                onPressArrowRight={this.props.onPressArrowRight}
+                onPressArrowLeft={this.choosePreviousMonth}
+                onPressArrowRight={this.chooseNextMonth}
               />
             </View>
             <View style={styles.panelBottomSection}>

@@ -216,12 +216,10 @@ const getEndTime = createSelector(
 );
 
 const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
-  console.log(appointment)
   const service = get(serviceItem, 'service', null);
   if (!service) {
     return null;
   }
-  console.log(service, 'service')
   const isFirstAvailable = get(service.employee, 'id', 0) === 0;
   const itemData = {
     clientId: serviceItem.guestId

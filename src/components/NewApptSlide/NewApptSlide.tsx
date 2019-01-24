@@ -207,7 +207,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                   addServiceItemExtras(itemId, 'addon', selectedAddons);
                   addServiceItemExtras(itemId, 'recommended', selectedRecommended);
                   this.props.servicesActions.setSelectingExtras(false);
-                  this.showPanel().checkConflicts();
+                  this.showPanel(() => this.checkConflicts());
                 }),
               );
             }),
@@ -227,7 +227,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
     this.showRequired(service, [get(required, 'id', null)]).then(selectedRequired =>
       this.setState({ selectedRequired }, () => {
         addServiceItemExtras(itemId, 'required', this.state.selectedRequired);
-        this.showPanel().checkConflicts();
+        this.showPanel(() => this.checkConflicts());
       }),
     );
   };
@@ -238,7 +238,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
       newApptActions: { addServiceItemExtras },
     } = this.props;
     addServiceItemExtras(itemId, 'required', []);
-    this.showPanel().checkConflicts();
+    this.showPanel(() => this.checkConflicts());
   };
 
   get shouldShowExtras() {
@@ -332,7 +332,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                         recommended,
                       });
                       this.props.servicesActions.setSelectingExtras(false);
-                      !preventCheckConflicts && this.showPanel().checkConflicts();
+                      !preventCheckConflicts && this.showPanel(() => this.checkConflicts());
                     });
                   })
                   .catch(err => {
@@ -340,7 +340,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
                       service,
                     } as ServiceWithAddons);
                     this.props.servicesActions.setSelectingExtras(false);
-                    !preventCheckConflicts && this.showPanel().checkConflicts();
+                    !preventCheckConflicts && this.showPanel(() => this.checkConflicts());
                   });
               },
             );
@@ -352,12 +352,12 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
   setProvider = provider => {
     this.props.newApptActions.setMainEmployee(provider);
-    return this.showPanel().checkConflicts();
+    return this.showPanel(() => this.checkConflicts());
   };
 
   setBookedBy = (provider) => {
     this.props.newApptActions.setBookedBy(provider);
-    return this.showPanel().checkConflicts();
+    return this.showPanel(() => this.checkConflicts());
   };
 
   getService = (withExtras = false) => {

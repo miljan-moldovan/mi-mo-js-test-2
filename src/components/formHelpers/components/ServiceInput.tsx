@@ -65,6 +65,8 @@ export default class ServiceInput extends React.Component<any, any> {
     if (isFunction(onPress)) {
       onPress();
     }
+    const selProvider = { ...selectedProvider };
+    selProvider.id = selectedProvider.id === -1 ? null : selectedProvider.id;
     const nav = walkin ? push : navigate;
     nav(apptBook ? 'ApptBookService' : screenService, {
       actionType,
@@ -73,8 +75,8 @@ export default class ServiceInput extends React.Component<any, any> {
       dismissOnSelect: true,
       // filterByProvider: !!selectedProvider,
       clientId: get(selectedClient, 'id', null),
-      employeeId: get(selectedProvider, 'id', null),
-      selectedProvider,
+      employeeId: get(selProvider, 'id', null),
+      selProvider,
       onChangeService: service => this.handleServiceSelection(service),
     });
   };
