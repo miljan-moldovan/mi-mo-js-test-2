@@ -9,7 +9,7 @@ export const restrictionsHelper = async (taskType, allowed, dispatch, getState,
                                          denied = deniedDefault) => {
   try {
     let taskStatus;
-    // not send request if data alre3ady exist in store
+    // not send request if data already exist in store
     // taskStatus = getState().restrictionsReducer[Tasks.Appt_EnterBlock];
 
     // if (taskStatus === null) {
