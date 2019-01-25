@@ -1115,7 +1115,6 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     const { buffer } = this.state;
     const resultIds = result.map(item => item.id);
     const itemIds = buffer.map(item => item.id);
-    console.log(state)
     switch (state) {
       case addToBufferState.checkExistenceInMoveBar: {
         if (!itemIds.includes(appointment.id)) {
@@ -1136,7 +1135,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
             && !itemIds.includes(item.id)
             && !resultIds.includes(item.id)
             && !item.isFirstAvailable
-            && item.client && item.client.id === appointment.client && appointment.client.id;
+            && item.client && appointment.client && item.client.id === appointment.client.id;
         });
 
         if (!clientAppointments[0]) {
