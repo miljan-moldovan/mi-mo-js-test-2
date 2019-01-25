@@ -46,3 +46,11 @@ export const checkRestrictionsLongPress = (callback): any => async (dispatch, ge
 export const checkRestrictionsDragDrop = (callback): any => async (dispatch, getState) => {
   await restrictionsHelper(Tasks.Appt_DragDrop, callback, dispatch, getState);
 };
+
+export const checkRestrictionsClientInfo = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Clients_Info, callback, dispatch, getState);
+};
+
+export const checkRestrictionsClientMaintenance = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Clients_Maintain, callback, dispatch, getState);
+};

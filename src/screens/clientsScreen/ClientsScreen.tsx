@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { get, isFunction } from 'lodash';
 import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
 
@@ -46,6 +46,7 @@ export interface Props {
   storeActions: {
     reselectMainStore: Function;
   };
+  clientMaintainIsLoading: boolean;
 }
 
 export interface State {
@@ -222,9 +223,6 @@ class ClientsScreen extends React.Component<Props, State> {
   };
 
   onChangeClient = client => {
-
-    
-
     const {
       navigation,
       salonSearchHeaderActions: { setShowFilter },
