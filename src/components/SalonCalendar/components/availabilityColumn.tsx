@@ -38,28 +38,26 @@ const styles = StyleSheet.create({
 
 
 const onLongPress = (startTime, startDate, onPress, createAlert, hideAlert) => {
-  this.props.checkRestrictionsLongPress(() => {
-    const alert = {
-      title: 'Question',
-      description: 'The selected time is in the past. Do you want to book the appointment anyway?',
-      btnLeftText: 'No',
-      btnRightText: 'Yes',
-      onPressRight: () => {
-        onPress(startTime);
-        hideAlert();
-      },
-    };
-    const time = moment(
-      `${startDate.format('YYYY-MM-DD')} ${startTime}`,
-      'YYYY-MM-DD HH:mm',
-    );
+  const alert = {
+    title: 'Question',
+    description: 'The selected time is in the past. Do you want to book the appointment anyway?',
+    btnLeftText: 'No',
+    btnRightText: 'Yes',
+    onPressRight: () => {
+      onPress(startTime);
+      hideAlert();
+    },
+  };
+  const time = moment(
+    `${startDate.format('YYYY-MM-DD')} ${startTime}`,
+    'YYYY-MM-DD HH:mm',
+  );
 
-    const showBookingPastAlert = moment().isAfter(time, 'minute');
-    if (showBookingPastAlert) {
-      return createAlert(alert);
-    }
-    return onPress(startTime);
-  });
+  const showBookingPastAlert = moment().isAfter(time, 'minute');
+  if (showBookingPastAlert) {
+    return createAlert(alert);
+  }
+  return onPress(startTime);
 };
 
 const renderItems = (item, index, apptGridSettings, onPress = null, startDate, createAlert, hideAlert) => {
@@ -98,7 +96,7 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate, c
       wait={3000}
       key={startTime}
       style={style}
-      disabled={isCellDisabled || this.props.longPressIsDisabled}
+      disabled={isCellDisabled}
       onLongPress={() => onLongPress(item.startTime, startDate, onPress, createAlert, hideAlert)}
     >
       <Text style={styles.disabledTextStyle}>No Availability</Text>
@@ -114,12 +112,5 @@ const availabilityColumn = ({ availability, apptGridSettings, onPress, startDate
     }
   </View>
 );
-const mapStateToProps = state => ({
-  longPressIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterAppt),
-});
 
-const mapActionsToProps = dispatch => ({
-  checkRestrictionsLongPress: (callback) => dispatch(checkRestrictionsLongPress(callback)),
-});
-
-export default connect(mapStateToProps, mapActionsToProps)(availabilityColumn);
+export default availabilityColumn;

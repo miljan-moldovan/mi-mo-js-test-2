@@ -41,7 +41,7 @@ export const checkRestrictionsAddService = (callback): any => async (dispatch, g
 };
 
 export const checkRestrictionsBookAppt = (callback): any => async (dispatch, getState) => {
-  await restrictionsHelper(Tasks.Appt_ApptBook, callback, dispatch, getState);
+  await restrictionsHelper(Tasks.Appt_EnterAppt, callback, dispatch, getState);
 };
 
 export const checkRestrictionsLongPress = (callback): any => async (dispatch, getState) => {

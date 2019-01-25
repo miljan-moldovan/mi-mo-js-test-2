@@ -539,7 +539,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
     if (!this.canBook()) {
       return false;
     }
-    return this.props.handleBook(true);
+    this.props.checkRestrictionsBookAppt(() => {
+      return this.props.handleBook(true);
+    });
   };
 
   handleBook = bookAnother => {
@@ -624,9 +626,11 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   goToFullForm = () => {
-    const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
-    this.props.newApptActions.isBookingQuickAppt(false);
-    return this.hidePanel(navigateCallback);
+    this.props.checkRestrictionsBookAppt(() => {
+      const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
+      this.props.newApptActions.isBookingQuickAppt(false);
+      return this.hidePanel(navigateCallback);
+    });
   };
 
   goToRoomAssignment = () => {
@@ -1067,13 +1071,14 @@ class NewApptSlide extends React.Component<IProps, IState> {
               style={{ flex: 8 / 17 }}
               onPress={this.goToFullForm}
               backgroundColor="white"
+              disabled={this.props.apptBookIsDisabled}
               color={Colors.defaultBlue}
               text="MORE OPTIONS"
             />
             <Button
               style={{ flex: 8 / 17 }}
               onPress={this.handleBookAnother}
-              disabled={!this.canBook()}
+              disabled={!this.canBook() || this.props.apptBookIsDisabled}
               backgroundColor="white"
               color={!this.canBook() ? '#fff' : Colors.defaultBlue}
               text="BOOK ANOTHER"
