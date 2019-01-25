@@ -14,12 +14,12 @@ const appointmentButtons = (props) => {
   const {
     isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
     isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-    disabledModify, disabledCancel, appointment,
+    disabledModify, disabledCancel, appointment, modifyApptIsLoading,
   } = props;
 
   const { badgeData } = appointment;
 
-  const  { isWaiting } =  badgeData;
+  const { isWaiting } = badgeData;
 
   const checkOut = isWaiting ? alertStartServiceFirst : handleCheckout;
 
@@ -77,7 +77,10 @@ const appointmentButtons = (props) => {
           style={disabledModify ? styles.panelIconBtnDisabled : styles.panelIconBtn}
           onPress={handleModify}
         >
-          <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+          {
+            modifyApptIsLoading ? <ActivityIndicator /> :
+              <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+          }
         </SalonTouchableOpacity>
         <Text style={styles.panelIconText}>Modifiy</Text>
       </View>

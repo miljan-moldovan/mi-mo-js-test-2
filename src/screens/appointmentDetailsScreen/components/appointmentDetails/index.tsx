@@ -1,11 +1,11 @@
 import * as React from 'react';
-import {View, ScrollView, Text, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import FontAwesome, {Icons} from 'react-native-fontawesome';
+import { View, ScrollView, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import FontAwesome, { Icons } from 'react-native-fontawesome';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import {get, includes, cloneDeep} from 'lodash';
+import { get, includes, cloneDeep } from 'lodash';
 import uuid from 'uuid/v4';
 
 import {
@@ -23,7 +23,7 @@ import {
   SectionDivider,
   ClientInput,
 } from '../../../../components/formHelpers';
-import {SalonFixedBottom} from '../../../../components/SalonBtnFixedBottom';
+import { SalonFixedBottom } from '../../../../components/SalonBtnFixedBottom';
 import SalonTouchableOpacity
   from '../../../../components/SalonTouchableOpacity';
 import QueueTimeNote from '../../../queueScreen/queueTimeNote';
@@ -31,7 +31,7 @@ import Icon from '@/components/common/Icon';
 import StatusEnum from '../../../../constants/Status';
 import QueueTypes from '../../../../constants/QueueTypes';
 import PromotionType from '../../../../constants/PromotionType';
-import {ServiceCard, ProductCard} from '../Cards';
+import { ServiceCard, ProductCard } from '../Cards';
 import styles from './styles';
 import LoadingOverlay from '../../../../components/LoadingOverlay';
 import Colors from '../../../../constants/Colors';
@@ -77,6 +77,7 @@ CircularIcon.defaultProps = {
 
 export const AddButton = props => (
   <SalonTouchableOpacity
+    disabled={props.disabled}
     onPress={props.onPress}
     style={[
       {
@@ -89,7 +90,16 @@ export const AddButton = props => (
       props.style,
     ]}
   >
-    <CircularIcon style={props.iconStyle} />
+    {
+      props.isLoading ?
+        (
+          <ActivityIndicator style={props.iconStyle} />
+        )
+        :
+        (
+          <CircularIcon style={props.iconStyle} />
+        )
+    }
     <Text style={styles.addButtonText}> {props.title}</Text>
   </SalonTouchableOpacity>
 );
@@ -105,7 +115,7 @@ const BottomButton = props => (
     disabled={props.disabled}
   >
     <Icon
-      style={{marginTop: 2}}
+      style={{ marginTop: 2 }}
       name={props.icon}
       size={15}
       color={props.disabled ? '#4D5067' : '#FFFFFF'}
@@ -114,7 +124,7 @@ const BottomButton = props => (
     <Text
       style={[
         styles.bottomButtonText,
-        {color: props.disabled ? '#4D5067' : '#FFFFFF'},
+        { color: props.disabled ? '#4D5067' : '#FFFFFF' },
       ]}
     >
       {props.title}
@@ -123,80 +133,80 @@ const BottomButton = props => (
 );
 
 class AppointmentDetails extends React.Component {
-  constructor (props) {
-    super (props);
+  constructor(props) {
+    super(props);
 
-    this.state = this.getStateFromProps (props);
+    this.state = this.getStateFromProps(props);
   }
 
-  componentWillReceiveProps (nextProps) {
-    const {queueDetailState: {isLoading: nextIsLoading}} = nextProps;
-    const {queueDetailState: {isLoading: prevIsLoading}} = this.props;
+  componentWillReceiveProps(nextProps) {
+    const { queueDetailState: { isLoading: nextIsLoading } } = nextProps;
+    const { queueDetailState: { isLoading: prevIsLoading } } = this.props;
     if (nextIsLoading !== prevIsLoading) {
-      this.setState ({...this.getStateFromProps (nextProps)});
+      this.setState({ ...this.getStateFromProps(nextProps) });
     }
   }
 
-  get totalPrice () {
-    const {serviceItems, productItems} = this.state;
-    const servicesTotal = serviceItems.reduce ((total, itm) => {
-      const promo = get (itm, 'promotion', null);
-      const price = get (itm.service || {}, 'price', 0);
+  get totalPrice() {
+    const { serviceItems, productItems } = this.state;
+    const servicesTotal = serviceItems.reduce((total, itm) => {
+      const promo = get(itm, 'promotion', null);
+      const price = get(itm.service || {}, 'price', 0);
       if (promo) {
         return (
           total +
-          this.calculatePriceDiscount (promo, 'serviceDiscountAmount', price)
+          this.calculatePriceDiscount(promo, 'serviceDiscountAmount', price)
         );
       }
       return total + price;
     }, 0);
-    const productsTotal = productItems.reduce ((total, itm) => {
-      const promo = get (itm, 'promotion', null);
-      const price = get (itm.product || {}, 'price', 0);
+    const productsTotal = productItems.reduce((total, itm) => {
+      const promo = get(itm, 'promotion', null);
+      const price = get(itm.product || {}, 'price', 0);
       if (promo) {
         return (
           total +
-          this.calculatePriceDiscount (promo, 'retailDiscountAmount', price)
+          this.calculatePriceDiscount(promo, 'retailDiscountAmount', price)
         );
       }
       return total + price;
     }, 0);
-    return Number (servicesTotal + productsTotal).toFixed (2);
+    return Number(servicesTotal + productsTotal).toFixed(2);
   }
 
   getStateFromProps = props => {
-    const {queueDetailState: {appointment}} = props;
-    const client = get (appointment, 'client', null);
-    const services = get (appointment, 'services', []);
-    const products = get (appointment, 'products', []);
-    const productItems = products.map (product => ({
-      itemId: uuid (),
-      id: get (product, 'product.id', null),
-      isDeleted: get (product, 'isDeleted', false),
-      product: get (product, 'product', null),
-      employee: get (product, 'employee', null),
-      promotion: get (product, 'promotion', null),
+    const { queueDetailState: { appointment } } = props;
+    const client = get(appointment, 'client', null);
+    const services = get(appointment, 'services', []);
+    const products = get(appointment, 'products', []);
+    const productItems = products.map(product => ({
+      itemId: uuid(),
+      id: get(product, 'product.id', null),
+      isDeleted: get(product, 'isDeleted', false),
+      product: get(product, 'product', null),
+      employee: get(product, 'employee', null),
+      promotion: get(product, 'promotion', null),
     }));
-    const serviceItems = services.map (service => ({
-      itemId: uuid (),
-      id: get (service, 'id', null),
-      price: get (service, 'priceEntered', get (service, 'price', 0)),
+    const serviceItems = services.map(service => ({
+      itemId: uuid(),
+      id: get(service, 'id', null),
+      price: get(service, 'priceEntered', get(service, 'price', 0)),
       service: {
-        id: get (service, 'serviceId', null),
-        name: get (service, 'serviceName', ''),
-        price: get (service, 'price', 0),
+        id: get(service, 'serviceId', null),
+        name: get(service, 'serviceName', ''),
+        price: get(service, 'price', 0),
       },
-      isDeleted: get (service, 'isDeleted', false),
-      isProviderRequested: get (service, 'isProviderRequested', false),
+      isDeleted: get(service, 'isDeleted', false),
+      isProviderRequested: get(service, 'isProviderRequested', false),
       employee: service.isFirstAvailable
         ? {
-            name: 'First',
-            lastName: 'Available',
-            isFirstAvailable: true,
-          }
-        : get (service, 'employee', null),
+          name: 'First',
+          lastName: 'Available',
+          isFirstAvailable: true,
+        }
+        : get(service, 'employee', null),
       isFirstAvailable: service.isFirstAvailable,
-      promotion: get (service, 'promotion', null),
+      promotion: get(service, 'promotion', null),
     }));
     return {
       client,
@@ -207,7 +217,7 @@ class AppointmentDetails extends React.Component {
   };
 
   getGroupLeaderName = item => {
-    const {groups} = this.props;
+    const { groups } = this.props;
     if (groups && groups[item.groupId]) {
       return groups[item.groupId].groupLeadName;
     }
@@ -215,19 +225,19 @@ class AppointmentDetails extends React.Component {
   };
 
   getLabel = () => {
-    const {getLabel = null} = this.props.navigation.state.params || {};
-    return getLabel (styles.circularCountdown);
+    const { getLabel = null } = this.props.navigation.state.params || {};
+    return getLabel(styles.circularCountdown);
   };
 
   getDiscountAmount = promotion => {
-    switch (get (promotion, 'promotionType', null)) {
+    switch (get(promotion, 'promotionType', null)) {
       case PromotionType.ServiceProductPercentOff:
       case PromotionType.GiftCardPercentOff:
-        return `${get (promotion, 'prod', 0)} %`;
+        return `${get(promotion, 'prod', 0)} %`;
       case PromotionType.ServiceProductDollarOff:
       case PromotionType.GiftCardDollarOff:
       case PromotionType.ServiceProductFixedPrice:
-        return `$ ${get (promotion, 'prod', 0)}`;
+        return `$ ${get(promotion, 'prod', 0)}`;
       default:
         return '';
     }
@@ -243,12 +253,12 @@ class AppointmentDetails extends React.Component {
       isProviderRequested,
     },
     onSuccess,
-    onFailed
+    onFailed,
   ) => {
-    const serviceItems = cloneDeep (this.state.serviceItems);
+    const serviceItems = cloneDeep(this.state.serviceItems);
     // const price = get(service, 'price', 0);
-    serviceItems.push ({
-      itemId: uuid (),
+    serviceItems.push({
+      itemId: uuid(),
       price,
       service,
       employee,
@@ -256,41 +266,41 @@ class AppointmentDetails extends React.Component {
       isFirstAvailable,
       isProviderRequested,
     });
-    return this.setState ({serviceItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    return this.setState({ serviceItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
-  addProductItem = ({product, employee, promotion}, onSuccess, onFailed) => {
-    const productItems = cloneDeep (this.state.productItems);
-    productItems.push ({
-      itemId: uuid (),
+  addProductItem = ({ product, employee, promotion }, onSuccess, onFailed) => {
+    const productItems = cloneDeep(this.state.productItems);
+    productItems.push({
+      itemId: uuid(),
       product,
       employee,
       promotion,
     });
-    this.setState ({productItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    this.setState({ productItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
   calculatePercentFromPrice = (price, percent) =>
-    Number ((percent ? price - percent / 100 * price : price).toFixed (2));
+    Number((percent ? price - percent / 100 * price : price).toFixed(2));
 
   calculatePriceDiscount = (promo, prop, price = null) => {
     if (price === null) {
       return 0;
     }
 
-    switch (get (promo, 'promotionType', null)) {
+    switch (get(promo, 'promotionType', null)) {
       case PromotionType.ServiceProductPercentOff:
       case PromotionType.GiftCardPercentOff:
-        return this.calculatePercentFromPrice (price, get (promo, prop, 0));
+        return this.calculatePercentFromPrice(price, get(promo, prop, 0));
       case PromotionType.ServiceProductDollarOff:
       case PromotionType.GiftCardDollarOff:
-        return price - get (promo, prop, 0);
+        return price - get(promo, prop, 0);
       case PromotionType.ServiceProductFixedPrice:
-        return get (promo, prop, 0);
+        return get(promo, prop, 0);
       default:
         return price;
     }
@@ -298,31 +308,31 @@ class AppointmentDetails extends React.Component {
 
   cancelButton = () => ({
     leftButton: <Text style={styles.headerButton}>Cancel</Text>,
-    leftButtonOnPress: navigation => navigation.goBack (),
+    leftButtonOnPress: navigation => navigation.goBack(),
   });
 
   handleChangeClient = client => {
-    this.props.onChangeClient (client);
-    this.setState ({client}, this.updateQueue);
+    this.props.onChangeClient(client);
+    this.setState({ client }, this.updateQueue);
   };
 
   handleAddService = () => {
-    const {client} = this.state;
-    const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Services', {
+    const { client } = this.state;
+    const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
+    this.props.navigation.navigate('Services', {
       mode: 'queue',
       onChangeWithNavigation: (service, serviceNav) => {
-        serviceNav.navigate ('Providers', {
+        serviceNav.navigate('Providers', {
           selectedService: service,
           showFirstAvailable: !!this.props.isWaiting,
           checkProviderStatus: true,
           mode: 'queue',
-          headerProps: {title: 'Providers', ...this.cancelButton ()},
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           onChangeWithNavigation: (employee, employeeNav) => {
-            employeeNav.goBack ();
-            serviceNav.goBack ();
-            const isFirstAvailable = get (employee, 'isFirstAvailable', false);
-            const price = get (service, 'price', 0);
+            employeeNav.goBack();
+            serviceNav.goBack();
+            const isFirstAvailable = get(employee, 'isFirstAvailable', false);
+            const price = get(service, 'price', 0);
             const serviceItem = {
               service,
               employee,
@@ -330,14 +340,14 @@ class AppointmentDetails extends React.Component {
               isFirstAvailable,
               isProviderRequested: !isFirstAvailable,
             };
-            this.props.navigation.navigate ('Service', {
+            this.props.navigation.navigate('Service', {
               clientName,
               serviceItem,
               dismissOnSelect: true,
               updateQueue: this.updateQueue,
               isInService: !this.props.isWaiting,
               onSave: (data, onSuccess = false, onFailed = false) =>
-                this.addServiceItem (data, onSuccess, onFailed),
+                this.addServiceItem(data, onSuccess, onFailed),
             });
           },
         });
@@ -346,30 +356,30 @@ class AppointmentDetails extends React.Component {
         title: 'Services',
         rightButton: null,
         rightButtonOnPress: navigation => null,
-        ...this.cancelButton (),
+        ...this.cancelButton(),
       },
     });
   };
 
   handlePressService = serviceItem => {
-    const {client} = this.state;
-    const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Services', {
+    const { client } = this.state;
+    const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
+    this.props.navigation.navigate('Services', {
       mode: 'queue',
-      selectedService: get (serviceItem, 'service', null),
+      selectedService: get(serviceItem, 'service', null),
       onChangeWithNavigation: (service, serviceNav) => {
-        serviceNav.navigate ('Providers', {
+        serviceNav.navigate('Providers', {
           selectedService: service,
-          selectedProvider: get (serviceItem, 'employee', null),
+          selectedProvider: get(serviceItem, 'employee', null),
           showFirstAvailable: !!this.props.isWaiting,
           checkProviderStatus: true,
           mode: 'queue',
-          headerProps: {title: 'Providers', ...this.cancelButton ()},
+          headerProps: { title: 'Providers', ...this.cancelButton() },
           onChangeWithNavigation: (employee, employeeNav) => {
-            employeeNav.goBack ();
-            serviceNav.goBack ();
-            const isFirstAvailable = get (employee, 'isFirstAvailable', false);
-            const price = get (service, 'price', 0);
+            employeeNav.goBack();
+            serviceNav.goBack();
+            const isFirstAvailable = get(employee, 'isFirstAvailable', false);
+            const price = get(service, 'price', 0);
             const newServiceItem = {
               ...serviceItem,
               service,
@@ -377,20 +387,20 @@ class AppointmentDetails extends React.Component {
               price,
               isFirstAvailable,
               isProviderRequested: isFirstAvailable ||
-                get (serviceItem, 'isProviderRequested', false),
+                get(serviceItem, 'isProviderRequested', false),
             };
-            this.props.navigation.navigate ('Service', {
+            this.props.navigation.navigate('Service', {
               clientName,
               serviceItem: newServiceItem,
               dismissOnSelect: true,
               onSave: (data, onSuccess, onFailed) =>
-                this.updateServiceItem (
+                this.updateServiceItem(
                   serviceItem.itemId,
                   data,
                   onSuccess,
-                  onFailed
+                  onFailed,
                 ),
-              onRemove: () => this.removeServiceItem (serviceItem.itemId),
+              onRemove: () => this.removeServiceItem(serviceItem.itemId),
               updateQueue: this.updateQueue,
             });
           },
@@ -400,35 +410,35 @@ class AppointmentDetails extends React.Component {
         title: 'Services',
         rightButton: null,
         rightButtonOnPress: navigation => null,
-        ...this.cancelButton (),
+        ...this.cancelButton(),
       },
     });
   };
 
   handleAddProduct = () => {
-    const {client} = this.state;
-    const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Products', {
+    const { client } = this.state;
+    const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
+    this.props.navigation.navigate('Products', {
       onChangeWithNavigation: (product, productsNav) => {
-        productsNav.navigate ('Providers', {
+        productsNav.navigate('Providers', {
           showFirstAvailable: false,
           checkProviderStatus: true,
           mode: 'employees',
           onChangeWithNavigation: (employee, employeeNav) => {
-            employeeNav.goBack ();
-            productsNav.goBack ();
+            employeeNav.goBack();
+            productsNav.goBack();
             const productItem = {
               product,
               employee,
             };
-            this.props.navigation.navigate ('Product', {
+            this.props.navigation.navigate('Product', {
               clientName,
               productItem,
               dismissOnSelect: true,
               updateQueue: this.updateQueue,
               isInService: !this.props.isWaiting,
               onSave: (data, onSuccess, onFailed) =>
-                this.addProductItem (data, onSuccess, onFailed),
+                this.addProductItem(data, onSuccess, onFailed),
             });
           },
         });
@@ -438,27 +448,27 @@ class AppointmentDetails extends React.Component {
 
   handlePressCheckOut = () => {
     const {
-      navigation: {goBack},
-      onPressSummary: {checkOut},
-      queueDetailState: {appointment},
+      navigation: { goBack },
+      onPressSummary: { checkOut },
+      queueDetailState: { appointment },
     } = this.props;
-    checkOut (get (appointment, 'id', null));
-    goBack ();
+    checkOut(get(appointment, 'id', null));
+    goBack();
   };
 
   handlePressProduct = productItem => {
-    const {client} = this.state;
-    const clientName = `${get (client, 'name', '')} ${get (client, 'lastName', '')}`;
-    this.props.navigation.navigate ('Products', {
+    const { client } = this.state;
+    const clientName = `${get(client, 'name', '')} ${get(client, 'lastName', '')}`;
+    this.props.navigation.navigate('Products', {
       onChangeWithNavigation: (product, productsNav) => {
-        productsNav.navigate ('Providers', {
+        productsNav.navigate('Providers', {
           showFirstAvailable: false,
           checkProviderStatus: true,
           mode: 'employees',
           onChangeWithNavigation: (employee, employeeNav) => {
-            employeeNav.goBack ();
-            productsNav.goBack ();
-            this.props.navigation.navigate ('Product', {
+            employeeNav.goBack();
+            productsNav.goBack();
+            this.props.navigation.navigate('Product', {
               clientName,
               productItem: {
                 ...productItem,
@@ -469,13 +479,13 @@ class AppointmentDetails extends React.Component {
               updateQueue: this.updateQueue,
               isInService: !this.props.isWaiting,
               onSave: (data, onSuccess, onFailed) =>
-                this.updateProductItem (
+                this.updateProductItem(
                   productItem.itemId,
                   data,
                   onSuccess,
-                  onFailed
+                  onFailed,
                 ),
-              onRemove: () => this.removeProductItem (productItem.itemId),
+              onRemove: () => this.removeProductItem(productItem.itemId),
             });
           },
         });
@@ -484,28 +494,28 @@ class AppointmentDetails extends React.Component {
   };
 
   updateServiceItem = (id, data, onSuccess, onFailed) => {
-    const serviceItems = cloneDeep (this.state.serviceItems);
-    const index = serviceItems.findIndex (itm => itm.itemId === id);
-    serviceItems.splice (index, 1, {
+    const serviceItems = cloneDeep(this.state.serviceItems);
+    const index = serviceItems.findIndex(itm => itm.itemId === id);
+    serviceItems.splice(index, 1, {
       itemId: id,
       ...serviceItems[index],
       ...data,
     });
-    return this.setState ({serviceItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    return this.setState({ serviceItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
   updateProductItem = (id, data, onSuccess, onFailed) => {
-    const productItems = cloneDeep (this.state.productItems);
-    const index = productItems.findIndex (itm => itm.itemId === id);
-    productItems.splice (index, 1, {
+    const productItems = cloneDeep(this.state.productItems);
+    const index = productItems.findIndex(itm => itm.itemId === id);
+    productItems.splice(index, 1, {
       itemId: id,
       ...productItems[index],
       ...data,
     });
-    this.setState ({productItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    this.setState({ productItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
@@ -519,11 +529,11 @@ class AppointmentDetails extends React.Component {
   };
 
   removeProductItem = (id, onSuccess, onFailed) => {
-    const productItems = cloneDeep (this.state.productItems);
-    const index = productItems.findIndex (itm => itm.itemId === id);
-    productItems.splice (index, 1);
-    this.setState ({productItems}, () =>
-      this.updateQueue (onSuccess, onFailed)
+    const productItems = cloneDeep(this.state.productItems);
+    const index = productItems.findIndex(itm => itm.itemId === id);
+    productItems.splice(index, 1);
+    this.setState({ productItems }, () =>
+      this.updateQueue(onSuccess, onFailed),
     );
   };
 
@@ -587,7 +597,7 @@ class AppointmentDetails extends React.Component {
     let isActiveUnCheckin = false;
     let isDisabledStart = true;
 
-    const {queueDetailState: {appointment}} = this.props;
+    const { queueDetailState: { appointment } } = this.props;
 
     if (appointment) {
       returned = appointment.status === StatusEnum.returningLater;
@@ -635,27 +645,27 @@ class AppointmentDetails extends React.Component {
         >
           {isActiveUnCheckin
             ? <BottomButton
-                icon="check"
-                onPress={() => {
-                  this.props.onPressSummary.checkIn (isActiveCheckin);
-                  this.props.navigation.goBack ();
-                }}
-                title="Uncheck In"
-              />
+              icon="check"
+              onPress={() => {
+                this.props.onPressSummary.checkIn(isActiveCheckin);
+                this.props.navigation.goBack();
+              }}
+              title="Uncheck In"
+            />
             : <BottomButton
-                disabled={!isActiveCheckin}
-                icon="check"
-                onPress={() => {
-                  this.props.onPressSummary.checkIn (isActiveCheckin);
-                  this.props.navigation.goBack ();
-                }}
-                title="Check In"
-              />}
+              disabled={!isActiveCheckin}
+              icon="check"
+              onPress={() => {
+                this.props.onPressSummary.checkIn(isActiveCheckin);
+                this.props.navigation.goBack();
+              }}
+              title="Check In"
+            />}
           <BottomButton
             disabled={false}
             icon="signOut"
             onPress={() => {
-              this.props.onPressSummary.walkOut (isActiveWalkOut);
+              this.props.onPressSummary.walkOut(isActiveWalkOut);
             }}
             title={isActiveWalkOut ? 'Walk-out' : 'No Show'}
           />
@@ -663,8 +673,8 @@ class AppointmentDetails extends React.Component {
             disabled={isDisabledReturnLater}
             icon="history"
             onPress={() => {
-              this.props.onPressSummary.returning (returned);
-              this.props.navigation.goBack ();
+              this.props.onPressSummary.returning(returned);
+              this.props.navigation.goBack();
             }}
             title={returned ? 'Returned' : 'Return later'}
           />
@@ -672,8 +682,8 @@ class AppointmentDetails extends React.Component {
             disabled={isDisabledStart}
             icon="play"
             onPress={() => {
-              this.props.onPressSummary.toService ();
-              this.props.navigation.goBack ();
+              this.props.onPressSummary.toService();
+              this.props.navigation.goBack();
             }}
             title="To Service"
           />
@@ -682,14 +692,14 @@ class AppointmentDetails extends React.Component {
     }
     return (
       <View
-        style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}
+        style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}
       >
         <BottomButton
           disabled={!isActiveWaiting}
           icon="hourglassHalf"
           onPress={() => {
-            this.props.onPressSummary.toWaiting ();
-            this.props.navigation.goBack ();
+            this.props.onPressSummary.toWaiting();
+            this.props.navigation.goBack();
           }}
           title="To Waiting"
         />
@@ -697,8 +707,8 @@ class AppointmentDetails extends React.Component {
           disabled={false}
           icon="undo"
           onPress={() => {
-            this.props.onPressSummary.rebook ();
-            this.props.navigation.goBack ();
+            this.props.onPressSummary.rebook();
+            this.props.navigation.goBack();
           }}
           title="Rebook"
         />
@@ -706,8 +716,8 @@ class AppointmentDetails extends React.Component {
           disabled={false}
           icon="checkSquare"
           onPress={() => {
-            this.props.onPressSummary.finish (isActiveFinish);
-            this.props.navigation.goBack ();
+            this.props.onPressSummary.finish(isActiveFinish);
+            this.props.navigation.goBack();
           }}
           title={isActiveFinish ? 'Finish' : 'Undo finish'}
         />
@@ -721,13 +731,13 @@ class AppointmentDetails extends React.Component {
     );
   };
 
-  render () {
-    const {client, serviceItems, productItems} = this.state;
-    const {queueDetailState: {isLoading, appointment}} = this.props;
-    const badgeData = get (appointment, 'badgeData', []);
+  render() {
+    const { client, serviceItems, productItems } = this.state;
+    const { queueDetailState: { isLoading, appointment } } = this.props;
+    const badgeData = get(appointment, 'badgeData', []);
 
-    const label = this.getLabel ();
-    const groupLeaderName = this.getGroupLeaderName (appointment);
+    const label = this.getLabel();
+    const groupLeaderName = this.getGroupLeaderName(appointment);
     const color = appointment && appointment.groupId
       ? this.props.queueState.groups[appointment.groupId].color
       : null;
@@ -737,161 +747,162 @@ class AppointmentDetails extends React.Component {
         {isLoading || !appointment
           ? <LoadingOverlay />
           : <React.Fragment>
-              <ScrollView style={{marginBottom: 44}}>
-                <View style={styles.infoContainer}>
-                  <View
-                    style={{
-                      paddingBottom: 19,
-                      flex: 1.5,
-                      alignItems: 'flex-start',
-                      justifyContent: 'flex-start',
-                    }}
-                  >
-                    <Text style={styles.infoTitleText}>Queue Appointment</Text>
-                    <QueueTimeNote
-                      type="long"
-                      containerStyles={{marginTop: 3}}
+            <ScrollView style={{ marginBottom: 44 }}>
+              <View style={styles.infoContainer}>
+                <View
+                  style={{
+                    paddingBottom: 19,
+                    flex: 1.5,
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <Text style={styles.infoTitleText}>Queue Appointment</Text>
+                  <QueueTimeNote
+                    type="long"
+                    containerStyles={{ marginTop: 3 }}
+                    item={appointment}
+                  />
+                  <View style={{ alignSelf: 'flex-start' }}>
+                    <ServiceIcons
                       item={appointment}
+                      badgeData={badgeData}
+                      hideInitials
+                      align="flex-start"
+                      direction="column"
+                      groupLeaderName={groupLeaderName}
+                      color={color}
                     />
-                    <View style={{alignSelf: 'flex-start'}}>
-                      <ServiceIcons
-                        item={appointment}
-                        badgeData={badgeData}
-                        hideInitials
-                        align="flex-start"
-                        direction="column"
-                        groupLeaderName={groupLeaderName}
-                        color={color}
-                      />
-                    </View>
                   </View>
+                </View>
 
-                  <View style={styles.itemIcons}>
-                    {label}
-                  </View>
+                <View style={styles.itemIcons}>
+                  {label}
                 </View>
-                <View style={styles.content}>
-                  <Text style={styles.titleText}>Client</Text>
-                  <SalonCard
-                    backgroundColor="white"
-                    containerStyles={styles.clientCardContainer}
-                    bodyStyles={styles.clientCardBody}
-                    bodyChildren={
-                      <ClientInput
-                        label={false}
-                        placeholder="Select Client"
-                        navigate={this.props.navigation.navigate}
-                        selectedClient={client}
-                        style={styles.clientCardInput}
-                        onChange={this.handleChangeClient}
-                        headerProps={{
-                          title: 'Clients',
-                          ...this.cancelButton (),
-                        }}
-                      />
-                    }
-                  />
-                  <Text style={styles.titleText}>Services</Text>
-                  {serviceItems.map (item => (
-                    <ServiceCard
-                      key={item.itemId}
-                      service={item.service}
-                      employee={item.employee}
-                      promotion={item.promotion}
-                      isProviderRequested={item.isProviderRequested}
-                      onPress={() => this.handlePressService (item)}
-                      discount={this.getDiscountAmount (item.promotion)}
-                      price={item.price.toFixed (2)}
-                      withDiscount={this.calculatePriceDiscount (
-                        item.promotion,
-                        'serviceDiscountAmount',
-                        item.price
-                      ).toFixed (2)}
+              </View>
+              <View style={styles.content}>
+                <Text style={styles.titleText}>Client</Text>
+                <SalonCard
+                  backgroundColor="white"
+                  containerStyles={styles.clientCardContainer}
+                  bodyStyles={styles.clientCardBody}
+                  bodyChildren={
+                    <ClientInput
+                      label={false}
+                      placeholder="Select Client"
+                      navigate={this.props.navigation.navigate}
+                      selectedClient={client}
+                      style={styles.clientCardInput}
+                      onChange={this.handleChangeClient}
+                      headerProps={{
+                        title: 'Clients',
+                        ...this.cancelButton(),
+                      }}
                     />
-                  ))}
-                  <AddButton
-                    onPress={this.handleAddService}
-                    title="Add Service"
-                  />
-                  <Text style={styles.titleText}>Products</Text>
-                  {productItems.map ((item, index) => (
-                    <ProductCard
-                      key={item.itemId}
-                      onPress={() => this.handlePressProduct (item)}
-                      product={item.product}
-                      employee={item.employee}
-                      promotion={item.promotion}
-                      isProviderRequested={item.isProviderRequested}
-                      price={this.calculatePriceDiscount (
-                        item.promotion,
-                        'retailDiscountAmount',
-                        item.product.price
-                      ).toFixed (2)}
-                    />
-                  ))}
-                  <AddButton
-                    onPress={this.handleAddProduct}
-                    title="Add Product"
-                  />
-                  {
-                    // <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
-                    // <InputButton
-                    //   style={{
-                    //     paddingTop: 22,
-                    //     paddingRight: 5,
-                    //   }}
-                    //   iconStyle={{
-                    //     fontSize: 22,
-                    //     color: '#727A8F',
-                    //     paddingTop: 12,
-                    //   }}
-                    //   labelStyle={{
-                    //     color: '#4D5067',
-                    //     fontSize: 14,
-                    //     fontWeight: '500',
-                    //   }}
-                    //   label="Recommendations"
-                    //   onPress={() => {
-                    //     this.props.navigation.navigate('Recommendations');
-                    //   }}
-                    // />
-                    // <SectionDivider style={{
-                    //   borderBottomWidth: StyleSheet.hairlineWidth,
-                    //   borderBottomColor: '#C0C1C6',
-                    // }}
-                    // />
-                    // </View>
                   }
-                  <View style={styles.totalContainer}>
-                    <Text style={styles.totalLabel}>TOTAL</Text>
-                    <Text
-                      style={styles.totalAmount}
-                    >{`$ ${this.totalPrice}`}</Text>
-                  </View>
+                />
+                <Text style={styles.titleText}>Services</Text>
+                {serviceItems.map(item => (
+                  <ServiceCard
+                    key={item.itemId}
+                    service={item.service}
+                    employee={item.employee}
+                    promotion={item.promotion}
+                    isProviderRequested={item.isProviderRequested}
+                    onPress={() => this.handlePressService(item)}
+                    discount={this.getDiscountAmount(item.promotion)}
+                    price={item.price.toFixed(2)}
+                    withDiscount={this.calculatePriceDiscount(
+                      item.promotion,
+                      'serviceDiscountAmount',
+                      item.price,
+                    ).toFixed(2)}
+                  />
+                ))}
+                <AddButton
+                  onPress={this.handleAddService}
+                  title="Add Service"
+                />
+                <Text style={styles.titleText}>Products</Text>
+                {productItems.map((item, index) => (
+                  <ProductCard
+                    key={item.itemId}
+                    onPress={() => this.handlePressProduct(item)}
+                    product={item.product}
+                    employee={item.employee}
+                    promotion={item.promotion}
+                    isProviderRequested={item.isProviderRequested}
+                    price={this.calculatePriceDiscount(
+                      item.promotion,
+                      'retailDiscountAmount',
+                      item.product.price,
+                    ).toFixed(2)}
+                  />
+                ))}
+                <AddButton
+                  onPress={this.handleAddProduct}
+                  title="Add Product"
+                />
+                {
+                  // <View style={{ marginTop: 10, alignSelf: 'stretch', paddingHorizontal: 8 }}>
+                  // <InputButton
+                  //   style={{
+                  //     paddingTop: 22,
+                  //     paddingRight: 5,
+                  //   }}
+                  //   iconStyle={{
+                  //     fontSize: 22,
+                  //     color: '#727A8F',
+                  //     paddingTop: 12,
+                  //   }}
+                  //   labelStyle={{
+                  //     color: '#4D5067',
+                  //     fontSize: 14,
+                  //     fontWeight: '500',
+                  //   }}
+                  //   label="Recommendations"
+                  //   onPress={() => {
+                  //     this.props.navigation.navigate('Recommendations');
+                  //   }}
+                  // />
+                  // <SectionDivider style={{
+                  //   borderBottomWidth: StyleSheet.hairlineWidth,
+                  //   borderBottomColor: '#C0C1C6',
+                  // }}
+                  // />
+                  // </View>
+                }
+                <View style={styles.totalContainer}>
+                  <Text style={styles.totalLabel}>TOTAL</Text>
+                  <Text
+                    style={styles.totalAmount}
+                  >{`$ ${this.totalPrice}`}</Text>
                 </View>
-              </ScrollView>
-              <SalonFixedBottom
-                backgroundColor="#727A8F"
-                rootStyle={styles.bottomButtonsRoot}
-                containerStyle={styles.bottomButtonsContainer}
-              >
-                {this.renderBtnContainer ()}
-              </SalonFixedBottom>
-            </React.Fragment>}
+              </View>
+            </ScrollView>
+            <SalonFixedBottom
+              backgroundColor="#727A8F"
+              rootStyle={styles.bottomButtonsRoot}
+              containerStyle={styles.bottomButtonsContainer}
+            >
+              {this.renderBtnContainer()}
+            </SalonFixedBottom>
+          </React.Fragment>}
       </View>
     );
   }
 }
+
 AppointmentDetails.propTypes = {
   navigation: PropTypes.func.isRequired,
   isWaiting: PropTypes.any.isRequired,
   onPressSummary: PropTypes.any.isRequired,
   onChangeClient: PropTypes.func.isRequired,
-  queueDetailState: PropTypes.shape ({
+  queueDetailState: PropTypes.shape({
     isLoading: PropTypes.bool,
-    appointment: PropTypes.oneOfType ([PropTypes.any, null]),
+    appointment: PropTypes.oneOfType([PropTypes.any, null]),
   }).isRequired,
-  queueDetailActions: PropTypes.shape ({
+  queueDetailActions: PropTypes.shape({
     updateAppointment: PropTypes.func,
   }).isRequired,
 };
@@ -901,8 +912,8 @@ const mapStateToProps = state => ({
   queueDetailState: state.queueDetailReducer,
 });
 const mapDispatchToProps = dispatch => ({
-  queueDetailActions: bindActionCreators ({...queueDetailActions}, dispatch),
+  queueDetailActions: bindActionCreators({ ...queueDetailActions }, dispatch),
 });
-export default connect (mapStateToProps, mapDispatchToProps) (
-  AppointmentDetails
+export default connect(mapStateToProps, mapDispatchToProps)(
+  AppointmentDetails,
 );

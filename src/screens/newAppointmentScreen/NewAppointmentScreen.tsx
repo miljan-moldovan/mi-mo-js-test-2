@@ -428,7 +428,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
 
     return updateObject;
-  }
+  };
 
   shouldUpdateClientInfo = async () => {
 
@@ -632,7 +632,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         },
       });
     }
-    this.props.navigation.navigate('ApptBookService', {
+    this.props.checkRestrictionsAddService(() => this.props.navigation.navigate('ApptBookService', {
       dismissOnSelect: true,
       selectExtraServices: true,
       filterByProvider: true,
@@ -641,7 +641,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       onChangeService: service => {
         this.addService(service, mainEmployee);
       },
-    });
+    }));
   };
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime');
@@ -1130,6 +1130,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
             })}
             <AddButton
               style={{ marginVertical: 5, paddingTop: 0 }}
+              disabled={this.props.apptAddServiceIsDisabled}
+              isLoading={this.props.apptAddServiceIsLoading}
               onPress={this.handleAddMainService}
               iconStyle={{ marginLeft: 10, marginRight: 4 }}
               title="add service"

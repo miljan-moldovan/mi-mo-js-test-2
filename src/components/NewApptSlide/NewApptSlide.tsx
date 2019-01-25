@@ -33,7 +33,11 @@ import { UserInfoReducer } from '@/redux/reducers/userInfo';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
 import { connect } from 'react-redux';
-import { checkRestrictionsBlockTime } from '@/redux/actions/restrictions';
+import {
+  checkRestrictionsBlockTime, checkRestrictionsBookAppt,
+  checkRestrictionsEditSchedule,
+  checkRestrictionsRoomAssignment,
+} from '@/redux/actions/restrictions';
 import { Tasks } from '@/constants/Tasks';
 import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
 
@@ -412,7 +416,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
   getBookButtonText = () => {
     const { isLoading, isBooking } = this.props.newApptState;
-    if (isLoading) {
+    if (isLoading || this.props.apptBookIsLoading) {
       return 'LOADING...';
     }
     if (isBooking) {
@@ -546,29 +550,31 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   handleBook = bookAnother => {
-    const { bookedByEmployee } = this.props.newApptState;
-    if (!this.canBook()) {
-      return false;
-    }
-    if (isNull(bookedByEmployee)) {
-      return this.setState({
-        toast: {
-          type: 'error',
-          description: 'Logged in user isn\'t employee\nPlease select booked by employee',
-          btnRightText: 'DISMISS',
-        },
-      });
-    }
-    if (get(bookedByEmployee, 'isFirstAvailable', false)) {
-      return this.setState({
-        toast: {
-          description: 'Booking employee can\'t be first available\nPlease select booked by employee',
-          type: 'error',
-          btnRightText: 'DISMISS',
-        },
-      });
-    }
-    return this.props.handleBook(bookAnother);
+    this.props.checkRestrictionsBookAppt(() => {
+      const { bookedByEmployee } = this.props.newApptState;
+      if (!this.canBook()) {
+        return false;
+      }
+      if (isNull(bookedByEmployee)) {
+        return this.setState({
+          toast: {
+            type: 'error',
+            description: 'Logged in user isn\'t employee\nPlease select booked by employee',
+            btnRightText: 'DISMISS',
+          },
+        });
+      }
+      if (get(bookedByEmployee, 'isFirstAvailable', false)) {
+        return this.setState({
+          toast: {
+            description: 'Booking employee can\'t be first available\nPlease select booked by employee',
+            type: 'error',
+            btnRightText: 'DISMISS',
+          },
+        });
+      }
+      return this.props.handleBook(bookAnother);
+    });
   };
 
   handleTabChange = (ev, activeTab: number) => this.props.onChangeTab(activeTab);
@@ -771,30 +777,52 @@ class NewApptSlide extends React.Component<IProps, IState> {
           icon={false}
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={() => {
+          disabled={this.props.apptEditScheduleIsDisabled}
+          onPress={() => this.props.checkRestrictionsEditSchedule(() => {
             this.hidePanel();
             this.props.navigation.navigate('EditSchedule', {
               date,
               employee,
             });
-          }}
+          })}
           label="Edit Schedule"
         >
-          <View style={styles.iconContainer}>
-            <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
-          </View>
+          {this.props.apptEditScheduleIsLoading ?
+            (
+              <View style={styles.iconContainer}>
+                <ActivityIndicator />
+              </View>
+            )
+            :
+            (
+              <View style={styles.iconContainer}>
+                <Icon name="calendarEdit" size={16} color={Colors.defaultBlue} type="regular" />
+              </View>
+            )
+          }
         </InputButton>
 
         <InputButton
           icon={false}
           style={styles.otherOptionsBtn}
           labelStyle={styles.otherOptionsLabels}
-          onPress={this.goToRoomAssignment}
+          disabled={this.props.apptRoomAssignmentIsDisabled}
+          onPress={() => this.props.checkRestrictionsRoomAssignment(this.goToRoomAssignment)}
           label="Room Assignment"
         >
-          <View style={styles.iconContainer}>
-            <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
-          </View>
+          {this.props.apptRoomAssignmentIsLoading ?
+            (
+              <View style={styles.iconContainer}>
+                <ActivityIndicator />
+              </View>
+            )
+            :
+            (
+              <View style={styles.iconContainer}>
+                <Icon name="streetView" size={16} color={Colors.defaultBlue} type="solid" />
+              </View>
+            )
+          }
         </InputButton>
 
         <InputButton
@@ -1038,7 +1066,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
         <View style={styles.flexColumn}>
           <Button
             onPress={this.handleBook}
-            disabled={!this.canBook()}
+            disabled={!this.canBook() || this.props.apptBookIsDisabled}
             text={this.getBookButtonText()}
           />
           <View style={styles.buttonGroupContainer}>
@@ -1129,11 +1157,21 @@ class NewApptSlide extends React.Component<IProps, IState> {
 
 const mapActionsToProps = dispatch => ({
   checkRestrictionsBlockTime: (callback) => dispatch(checkRestrictionsBlockTime(callback)),
+  checkRestrictionsRoomAssignment: (callback) => dispatch(checkRestrictionsRoomAssignment(callback)),
+  checkRestrictionsEditSchedule: (callback) => dispatch(checkRestrictionsEditSchedule(callback)),
+  checkRestrictionsBookAppt: (callback) => dispatch(checkRestrictionsBookAppt(callback)),
+
 });
 
 const mapStateToProps = state => ({
   apptEnterBlockIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterBlock),
   apptEnterBlockIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_EnterBlock),
+  apptRoomAssignmentIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_RoomAssign),
+  apptRoomAssignmentIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_RoomAssign),
+  apptEditScheduleIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_EmployeeEdit),
+  apptEditScheduleIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_EmployeeEdit),
+  apptBookIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_ApptBook),
+  apptBookIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_ApptBook),
 });
 
 export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);
