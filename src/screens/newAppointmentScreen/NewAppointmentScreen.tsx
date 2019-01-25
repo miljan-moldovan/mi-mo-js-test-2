@@ -832,8 +832,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
     const diffRemarks = remarks !== initialState.remarks;
     const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
-    const diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
-    const diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
+    let diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
+    let diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
     const diffConfirmationType =
       clientConfirmationType !== this.getClientInfo(initialState.client).clientConfirmationType;
     const diffBookedByEmployee = get(bookedByEmployee, 'id', -1) !== get(initialState.bookedByEmployee, 'id', -1);
@@ -841,6 +841,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const diffServices = !deepEqual(serviceItems, initialState.serviceItems, {
       strict: true,
     });
+
+    if (!clientEmail) {
+      diffEmail = false;
+    }
+
+    if (!clientPhone) {
+      diffPhone = false;
+    }
+
     return (
       diffDate ||
       diffEmail ||
