@@ -143,6 +143,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
   componentDidMount() {
     this.getClientDetailed();
+    this.props.getRestrictions();
     this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
     this.setState({
       ...this.getClientInfo(this.props.newAppointmentState.client),
