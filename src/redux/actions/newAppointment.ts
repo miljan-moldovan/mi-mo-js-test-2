@@ -991,6 +991,7 @@ const modifyAppt = (apptId: number, clientUpdateObject:any, successCallback: May
   );
   requestBody.deletedIds = deletedIds.length || idForDel;
   requestBody.clientInfo = clientUpdateObject || requestBody.clientInfo;
+
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
       return dispatch(bookNewApptSuccess(successCallback));
