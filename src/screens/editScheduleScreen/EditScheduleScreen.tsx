@@ -122,7 +122,10 @@ class EditScheduleScreen extends React.Component<any, any> {
       employeeScheduleTwo = { start: employeeSchedules.start2, end: employeeSchedules.end2 };
     } else {
       // normal schedule for that day
-      const employeeSchedules = this.props.employeeScheduleState.employeeSchedule.scheduledIntervals || false;
+      const employeeSchedules = this.props.employeeScheduleState.employeeSchedule &&
+      this.props.employeeScheduleState.employeeSchedule.length > 0 &&
+      this.props.employeeScheduleState.employeeSchedule[0].scheduledIntervals ?
+      this.props.employeeScheduleState.employeeSchedule[0].scheduledIntervals : false;
       [employeeScheduleOne, employeeScheduleTwo] = employeeSchedules;
     }
 
