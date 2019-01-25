@@ -3,6 +3,10 @@ import { View, StyleSheet, Text } from 'react-native';
 import moment from 'moment';
 
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
+import { checkRestrictionsLongPress } from '@/redux/actions/restrictions';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
   textStyle: {
@@ -34,26 +38,28 @@ const styles = StyleSheet.create({
 
 
 const onLongPress = (startTime, startDate, onPress, createAlert, hideAlert) => {
-  const alert = {
-    title: 'Question',
-    description: 'The selected time is in the past. Do you want to book the appointment anyway?',
-    btnLeftText: 'No',
-    btnRightText: 'Yes',
-    onPressRight: () => {
-      onPress(startTime);
-      hideAlert();
-    },
-  };
-  const time = moment(
-    `${startDate.format('YYYY-MM-DD')} ${startTime}`,
-    'YYYY-MM-DD HH:mm',
-  );
+  this.props.checkRestrictionsLongPress(() => {
+    const alert = {
+      title: 'Question',
+      description: 'The selected time is in the past. Do you want to book the appointment anyway?',
+      btnLeftText: 'No',
+      btnRightText: 'Yes',
+      onPressRight: () => {
+        onPress(startTime);
+        hideAlert();
+      },
+    };
+    const time = moment(
+      `${startDate.format('YYYY-MM-DD')} ${startTime}`,
+      'YYYY-MM-DD HH:mm',
+    );
 
-  const showBookingPastAlert = moment().isAfter(time, 'minute');
-  if (showBookingPastAlert) {
-    return createAlert(alert);
-  }
-  return onPress(startTime);
+    const showBookingPastAlert = moment().isAfter(time, 'minute');
+    if (showBookingPastAlert) {
+      return createAlert(alert);
+    }
+    return onPress(startTime);
+  });
 };
 
 const renderItems = (item, index, apptGridSettings, onPress = null, startDate, createAlert, hideAlert) => {
@@ -92,7 +98,7 @@ const renderItems = (item, index, apptGridSettings, onPress = null, startDate, c
       wait={3000}
       key={startTime}
       style={style}
-      disabled={isCellDisabled}
+      disabled={isCellDisabled || this.props.longPressIsDisabled}
       onLongPress={() => onLongPress(item.startTime, startDate, onPress, createAlert, hideAlert)}
     >
       <Text style={styles.disabledTextStyle}>No Availability</Text>
@@ -108,5 +114,12 @@ const availabilityColumn = ({ availability, apptGridSettings, onPress, startDate
     }
   </View>
 );
+const mapStateToProps = state => ({
+  longPressIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterAppt),
+});
 
-export default availabilityColumn;
+const mapActionsToProps = dispatch => ({
+  checkRestrictionsLongPress: (callback) => dispatch(checkRestrictionsLongPress(callback)),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(availabilityColumn);

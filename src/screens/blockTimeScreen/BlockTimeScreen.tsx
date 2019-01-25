@@ -20,7 +20,11 @@ import EditTypes from '../../constants/EditTypes';
 import styles from './styles';
 import SalonHeader from '../../components/SalonHeader';
 import { ScheduleBlocks } from '../../utilities/apiWrapper';
-import { checkRestrictionsCancelBlockTime, checkRestrictionsModifyBlockTime } from '@/redux/actions/restrictions';
+import {
+  checkRestrictionsCancelBlockTime,
+  checkRestrictionsModifyBlockTime,
+  getRestrictions,
+} from '@/redux/actions/restrictions';
 import { connect } from 'react-redux';
 import { Tasks } from '@/constants/Tasks';
 import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
@@ -141,9 +145,13 @@ class BlockTimeScreen extends React.Component {
     }
     if (this.props.doneIsDisabled !== newProps.doneIsDisabled
       || this.props.doneIsLoading !== newProps.doneIsLoading) {
-      this.props.navigation.setParams({ cancelIsDisabled: newProps.doneIsDisabled });
-      this.props.navigation.setParams({ cancelIsLoading: newProps.doneIsLoading });
+      this.props.navigation.setParams({ doneIsDisabled: newProps.doneIsDisabled });
+      this.props.navigation.setParams({ doneIsLoading: newProps.doneIsLoading });
     }
+  }
+
+  componentDidMount() {
+    this.props.getRestrictions();
   }
 
   // componentWillMount () {
@@ -501,6 +509,7 @@ BlockTimeScreen.propTypes = {
 };
 
 const mapActionsToProps = dispatch => ({
+  getRestrictions: () => dispatch(getRestrictions([Tasks.Appt_CancelBlock, Tasks.Appt_ModifyBlock])),
   checkRestrictionsCancelBlockTime: (callback) => dispatch(checkRestrictionsCancelBlockTime(callback)),
   checkRestrictionsModifyBlockTime: (callback) => dispatch(checkRestrictionsModifyBlockTime(callback)),
 });

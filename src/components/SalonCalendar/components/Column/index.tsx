@@ -1,9 +1,13 @@
 import * as React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import moment from 'moment';
 import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
 import styles from './styles';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
+import { checkRestrictionsLongPress } from '@/redux/actions/restrictions';
+import { connect } from 'react-redux';
 
 enum AlertTypes {
   BookingPast = 1,
@@ -11,22 +15,24 @@ enum AlertTypes {
   NotWorkingTime,
 }
 
-export default class Column extends React.Component<ColumnProps, any> {
+class Column extends React.Component<ColumnProps, any> {
   onCellPressed = (cellId, colData, date, showNotWorkingTimeAlert?) => {
-    const time = moment(
-      `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
-      'YYYY-MM-DD HH:mm',
-    );
-    const showBookingPastAlert = moment().isAfter(time, 'minute');
-    const showDayOffAlert = colData && colData.isOff;
-    if (showBookingPastAlert || showDayOffAlert || showNotWorkingTimeAlert) {
-      const type = (showDayOffAlert && AlertTypes.DayOff) ||
-        (showNotWorkingTimeAlert && AlertTypes.NotWorkingTime) ||
-        (showBookingPastAlert && AlertTypes.BookingPast);
-      const needCloseAlert = !(showNotWorkingTimeAlert && showBookingPastAlert);
-      return this.showAlert({ cell: cellId, colData, date, type, needCloseAlert });
-    }
-    return this.props.onCellPressed(cellId, colData);
+    this.props.checkRestrictionsLongPress(() => {
+      const time = moment(
+        `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
+        'YYYY-MM-DD HH:mm',
+      );
+      const showBookingPastAlert = moment().isAfter(time, 'minute');
+      const showDayOffAlert = colData && colData.isOff;
+      if (showBookingPastAlert || showDayOffAlert || showNotWorkingTimeAlert) {
+        const type = (showDayOffAlert && AlertTypes.DayOff) ||
+          (showNotWorkingTimeAlert && AlertTypes.NotWorkingTime) ||
+          (showBookingPastAlert && AlertTypes.BookingPast);
+        const needCloseAlert = !(showNotWorkingTimeAlert && showBookingPastAlert);
+        return this.showAlert({ cell: cellId, colData, date, type, needCloseAlert });
+      }
+      return this.props.onCellPressed(cellId, colData);
+    });
   };
 
   isBetweenTimes = (time, fromTime, toTime) =>
@@ -182,7 +188,7 @@ export default class Column extends React.Component<ColumnProps, any> {
       return (
         <View key={cell.format('HH:mm')}>
           <TouchableOpacity
-            disabled={isCellDisabled}
+            disabled={isCellDisabled || this.props.longPressIsDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
             onLongPress={() => {
               this.onCellPressed(cell, colData, !isDate ? startDate : colData, showNotWorkingTimeAlert);
@@ -223,7 +229,7 @@ export default class Column extends React.Component<ColumnProps, any> {
     );
   };
 
-// render rooms name verticaly if settings is enable
+  // render rooms name verticaly if settings is enable
   renderRooms() {
     const { colData, apptGridSettings, selectedFilter, rooms } = this.props;
     if (
@@ -292,7 +298,9 @@ export default class Column extends React.Component<ColumnProps, any> {
     const assistant = colData.assistantAssignment ?
       colData.assistantAssignment :
       this.getAssistantFromProviderSchedule();
-    if (assistant === null) { return null; }
+    if (assistant === null) {
+      return null;
+    }
 
     const startTime = apptGridSettings.minStartTime;
     const startTimeMoment = this.convertFromTimeToMoment(startTime);
@@ -345,3 +353,13 @@ export default class Column extends React.Component<ColumnProps, any> {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  longPressIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterAppt),
+});
+
+const mapActionsToProps = dispatch => ({
+  checkRestrictionsLongPress: (callback) => dispatch(checkRestrictionsLongPress(callback)),
+});
+
+export default connect(mapStateToProps, mapActionsToProps)(Column);

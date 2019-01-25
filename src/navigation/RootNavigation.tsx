@@ -16,6 +16,10 @@ import LoginStackNavigator from './LoginStackNavigator';
 import AppointmentStackNavigator from './AppointmentStackNavigator';
 import ClientsStackNavigator from './ClientsStackNavigator';
 import SelectStoreStackNavigator from './SelectStoreStackNavigator';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
+import { checkRestrictionsClientMaintenance } from '@/redux/actions/restrictions';
+import { ActivityIndicator } from 'react-native';
 
 const RootBottomTabNavigator = createBottomTabNavigator(
   // RouteConfig
@@ -27,7 +31,18 @@ const RootBottomTabNavigator = createBottomTabNavigator(
     },
     ClientsStack: {
       screen: ClientsStackNavigator,
-      navigationOptions: { title: 'Clients' },
+      navigationOptions: {
+        title: 'Clients',
+        tabBarOnPress: ({ navigation, defaultHandler }) => {
+          if (navigation.state.routeName === 'ClientsStack') {
+            return defaultHandler();
+          }
+          const { checkRestrictionsClientMaintenance, clientMaintainIsDisabled } = navigation.getScreenProps();
+          if (!clientMaintainIsDisabled) {
+            return checkRestrictionsClientMaintenance(defaultHandler);
+          }
+        },
+      },
     },
   },
   // TabNavigatorConfig
@@ -45,6 +60,10 @@ const RootBottomTabNavigator = createBottomTabNavigator(
           iconName = 'signIn';
           type = 'light';
         } else if (routeName === 'ClientsStack') {
+          const { clientMaintainIsLoading } = navigation.getScreenProps();
+          if (clientMaintainIsLoading) {
+            return <ActivityIndicator/>;
+          }
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {
           iconName = 'calendar';
@@ -90,6 +109,7 @@ class RootNavigator extends React.Component<any, any> {
   componentDidMount() {
     this.props.rootDrawerNavigatorAction.changeShowTabBar(true);
   }
+
   render() {
     const { loggedIn, useFingerprintId, fingerprintAuthenticationTime } = this.props.auth;
     const fingerprintTimeout = 60 * 120; // number of minutes before requesting authentication
@@ -108,6 +128,9 @@ class RootNavigator extends React.Component<any, any> {
             isNewApptValid: this.props.isNewApptValid,
             clientsActions: this.props.clientsActions,
             drawerOptions: this.props.drawerOptions,
+            checkRestrictionsClientMaintenance: this.props.checkRestrictionsClientMaintenance,
+            clientMaintainIsDisabled: this.props.clientMaintainIsDisabled,
+            clientMaintainIsLoading: this.props.clientMaintainIsLoading,
           }}
         />
       );
@@ -160,6 +183,8 @@ const mapStateToProps = state => ({
   salonSearchHeaderState: state.salonSearchHeaderReducer,
   drawerOptions: state.rootDrawerNavigator,
   store: state.storeReducer,
+  clientMaintainIsDisabled: restrictionsDisabledSelector(state, Tasks.Clients_Maintain),
+  clientMaintainIsLoading: restrictionsLoadingSelector(state, Tasks.Clients_Maintain),
 });
 const mapActionsToProps = dispatch => ({
   navigationActions: bindActionCreators({ ...navigationActions }, dispatch),
@@ -169,6 +194,7 @@ const mapActionsToProps = dispatch => ({
   appointmentNoteActions: bindActionCreators({ ...appointmentNoteActions }, dispatch),
   salonSearchHeaderActions: bindActionCreators({ ...salonSearchHeaderActions }, dispatch),
   rootDrawerNavigatorAction: bindActionCreators({ ...rootDrawerNavigatorAction }, dispatch),
+  checkRestrictionsClientMaintenance: (callback) => dispatch(checkRestrictionsClientMaintenance(callback)),
 });
 export default connect(
   mapStateToProps,

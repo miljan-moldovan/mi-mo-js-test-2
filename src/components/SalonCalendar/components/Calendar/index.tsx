@@ -2123,7 +2123,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           this.calendar = view;
         }}
       >
-        {!areProviders && !isLoading ? <EmptyScreen/> : null}
+        {!areProviders && !isLoading ? <EmptyScreen /> : null}
         <ScrollView
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -2197,7 +2197,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               { top: showHeader ? headerHeight : 0 },
             ]}
           >
-            <TimeColumn schedule={apptGridSettings.schedule}/>
+            <TimeColumn schedule={apptGridSettings.schedule} />
             <CurrentTime
               apptGridSettings={apptGridSettings}
               startTime={startTime}

@@ -6,6 +6,8 @@ import salonSearchHeaderActions from '../../redux/reducers/searchHeader';
 import clientsSectionSelector from '../../redux/selectors/clientsSelector';
 import * as LoginActions from '../../redux/actions/login';
 import storeActions from '../../redux/actions/store';
+import { restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
 
 const mapStateToProps = state => ({
   walkInState: state.walkInReducer,
@@ -15,6 +17,7 @@ const mapStateToProps = state => ({
   total: state.clientsReducer.total,
   showing: state.clientsReducer.clients.length,
   isLoadingMore: state.clientsReducer.isLoadingMore,
+  clientMaintainIsLoading: restrictionsLoadingSelector(state, Tasks.Clients_Maintain),
 });
 
 const mapActionsToProps = dispatch => ({
