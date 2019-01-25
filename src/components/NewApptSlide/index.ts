@@ -27,14 +27,14 @@ const mapStateToProps = (state: AppStore) => {
     apptRoomAssignmentIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_RoomAssign),
     apptEditScheduleIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_EmployeeEdit),
     apptEditScheduleIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_EmployeeEdit),
-    apptBookIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_ApptBook),
-    apptBookIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_ApptBook),
+    apptBookIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterAppt),
+    apptBookIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_EnterAppt),
   };
 };
 
 const mapActionsToProps = dispatch => ({
   getRestrictions: () => dispatch(getRestrictions([Tasks.Appt_EnterBlock,
-    Tasks.Salon_RoomAssign, Tasks.Salon_EmployeeEdit, Tasks.Appt_ApptBook])),
+    Tasks.Salon_RoomAssign, Tasks.Salon_EmployeeEdit, Tasks.Appt_EnterAppt])),
   apptBookActions: bindActionCreators(
     { ...appointmentCalendarActions },
     dispatch,

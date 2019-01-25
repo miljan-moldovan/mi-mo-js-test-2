@@ -34,9 +34,6 @@ const RootBottomTabNavigator = createBottomTabNavigator(
       navigationOptions: {
         title: 'Clients',
         tabBarOnPress: ({ navigation, defaultHandler }) => {
-          if (navigation.state.routeName === 'ClientsStack') {
-            return defaultHandler();
-          }
           const { checkRestrictionsClientMaintenance, clientMaintainIsDisabled } = navigation.getScreenProps();
           if (!clientMaintainIsDisabled) {
             return checkRestrictionsClientMaintenance(defaultHandler);
@@ -62,7 +59,7 @@ const RootBottomTabNavigator = createBottomTabNavigator(
         } else if (routeName === 'ClientsStack') {
           const { clientMaintainIsLoading } = navigation.getScreenProps();
           if (clientMaintainIsLoading) {
-            return <ActivityIndicator/>;
+            return <ActivityIndicator />;
           }
           iconName = 'addressCard';
         } else if (routeName === 'ApptBook') {

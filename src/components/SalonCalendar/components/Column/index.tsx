@@ -4,10 +4,6 @@ import moment from 'moment';
 import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
 import styles from './styles';
-import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
-import { Tasks } from '@/constants/Tasks';
-import { checkRestrictionsLongPress } from '@/redux/actions/restrictions';
-import { connect } from 'react-redux';
 
 enum AlertTypes {
   BookingPast = 1,
@@ -17,22 +13,20 @@ enum AlertTypes {
 
 class Column extends React.Component<ColumnProps, any> {
   onCellPressed = (cellId, colData, date, showNotWorkingTimeAlert?) => {
-    this.props.checkRestrictionsLongPress(() => {
-      const time = moment(
-        `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
-        'YYYY-MM-DD HH:mm',
-      );
-      const showBookingPastAlert = moment().isAfter(time, 'minute');
-      const showDayOffAlert = colData && colData.isOff;
-      if (showBookingPastAlert || showDayOffAlert || showNotWorkingTimeAlert) {
-        const type = (showDayOffAlert && AlertTypes.DayOff) ||
-          (showNotWorkingTimeAlert && AlertTypes.NotWorkingTime) ||
-          (showBookingPastAlert && AlertTypes.BookingPast);
-        const needCloseAlert = !(showNotWorkingTimeAlert && showBookingPastAlert);
-        return this.showAlert({ cell: cellId, colData, date, type, needCloseAlert });
-      }
-      return this.props.onCellPressed(cellId, colData);
-    });
+    const time = moment(
+      `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
+      'YYYY-MM-DD HH:mm',
+    );
+    const showBookingPastAlert = moment().isAfter(time, 'minute');
+    const showDayOffAlert = colData && colData.isOff;
+    if (showBookingPastAlert || showDayOffAlert || showNotWorkingTimeAlert) {
+      const type = (showDayOffAlert && AlertTypes.DayOff) ||
+        (showNotWorkingTimeAlert && AlertTypes.NotWorkingTime) ||
+        (showBookingPastAlert && AlertTypes.BookingPast);
+      const needCloseAlert = !(showNotWorkingTimeAlert && showBookingPastAlert);
+      return this.showAlert({ cell: cellId, colData, date, type, needCloseAlert });
+    }
+    return this.props.onCellPressed(cellId, colData);
   };
 
   isBetweenTimes = (time, fromTime, toTime) =>
@@ -188,7 +182,7 @@ class Column extends React.Component<ColumnProps, any> {
       return (
         <View key={cell.format('HH:mm')}>
           <TouchableOpacity
-            disabled={isCellDisabled || this.props.longPressIsDisabled}
+            disabled={isCellDisabled}
             style={[style, { width: cellWidth }, styleOclock]}
             onLongPress={() => {
               this.onCellPressed(cell, colData, !isDate ? startDate : colData, showNotWorkingTimeAlert);
@@ -354,12 +348,4 @@ class Column extends React.Component<ColumnProps, any> {
   }
 }
 
-const mapStateToProps = state => ({
-  longPressIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterAppt),
-});
-
-const mapActionsToProps = dispatch => ({
-  checkRestrictionsLongPress: (callback) => dispatch(checkRestrictionsLongPress(callback)),
-});
-
-export default connect(mapStateToProps, mapActionsToProps)(Column);
+export default Column;
