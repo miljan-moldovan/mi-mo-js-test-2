@@ -141,8 +141,8 @@ class BlockTimeScreen extends React.Component {
     }
     if (this.props.doneIsDisabled !== newProps.doneIsDisabled
       || this.props.doneIsLoading !== newProps.doneIsLoading) {
-      this.props.navigation.setParams({ cancelIsDisabled: newProps.doneIsDisabled });
-      this.props.navigation.setParams({ cancelIsLoading: newProps.doneIsLoading });
+      this.props.navigation.setParams({ doneIsDisabled: newProps.doneIsDisabled });
+      this.props.navigation.setParams({ doneIsLoading: newProps.doneIsLoading });
     }
   }
 
