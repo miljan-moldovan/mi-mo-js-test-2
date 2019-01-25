@@ -27,6 +27,10 @@ export const checkRestrictionsModifyAppt = (callback): any => async (dispatch, g
   await restrictionsHelper(Tasks.Appt_ModifyAppt, callback, dispatch, getState);
 };
 
+export const checkRestrictionsCancelAppt = (callback): any => async (dispatch, getState) => {
+  await restrictionsHelper(Tasks.Appt_Cancel, callback, dispatch, getState);
+};
+
 export const checkRestrictionsAddService = (callback): any => async (dispatch, getState) => {
   await restrictionsHelper(Tasks.Appt_MultiServiceAppt, callback, dispatch, getState);
 };
