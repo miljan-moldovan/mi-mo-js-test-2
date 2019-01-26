@@ -34,6 +34,7 @@ import {
   TYPE_FILTTER_REBOOK_APPOINTMENT,
   TYPE_PROVIDER,
 } from '@/constants/filterTypes';
+import DeniedAccessApptBookComponent from '@/components/DeniedAccessApptBook';
 
 class AppointmentScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -45,6 +46,8 @@ class AppointmentScreen extends React.Component<any, any> {
     const onPressEllipsis = navigation.getParam('onPressEllipsis', null);
     const onPressCalendar = navigation.getParam('onPressCalendar', null);
     const filterOptions = navigation.getParam('filterOptions', {});
+    const deniedAccessApptBook = navigation.getParam('deniedAccessApptBook', false);
+
     let subTitleText = null;
     const { company, position } = filterOptions;
     let titleText = 'All Providers';
@@ -133,9 +136,9 @@ class AppointmentScreen extends React.Component<any, any> {
       tabBarVisible,
       header: (
         <SalonHeader
-          title={title}
+          title={!deniedAccessApptBook && title}
           headerRight={
-            <View style={headerStyles.rightContainer}>
+            !deniedAccessApptBook && <View style={headerStyles.rightContainer}>
               <SalonTouchableOpacity
                 onPress={onPressEllipsis}
                 style={headerStyles.btnElipsis}
@@ -204,6 +207,7 @@ class AppointmentScreen extends React.Component<any, any> {
       currentFilter: this.props.appointmentScreenState.selectedProvider,
       filterOptions: this.props.apptGridSettings.filterOptions,
       hideTabBar: false,
+      deniedAccessApptBook: this.props.deniedAccessApptBook,
     });
 
     this.props.appointmentCalendarActions.setGridView();
@@ -282,7 +286,7 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   onPressMenu = () => {
-    if (this.BarsActionSheet) {
+    if (this.BarsActionSheet || this.props.deniedAccessApptBook) {
       this.BarsActionSheet.show();
     }
   };
@@ -969,6 +973,18 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   render() {
+    if (this.props.deniedAccessApptBook) {
+      return (
+        <DeniedAccessApptBookComponent>
+          <BarsActionSheet
+            ref={item => (this.BarsActionSheet = item)}
+            onLogout={this.props.auth.logout}
+            navigation={this.props.navigation}
+            onChangeStore={this.props.storeActions.reselectMainStore}
+          />
+        </DeniedAccessApptBookComponent>
+      );
+    }
     const {
       dates,
       pickerMode,
@@ -1118,28 +1134,28 @@ class AppointmentScreen extends React.Component<any, any> {
           </View>
           : null}
         {isCanBeOnlyUser && selectedProvider !== 'all' &&
-          <ChangeViewFloatingButton
-            bottomDistance={
-              this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
+        <ChangeViewFloatingButton
+          bottomDistance={
+            this.state.bookAnotherEnabled || rebookAppointment ? 60 : 16
+          }
+          pickerMode={pickerMode}
+          handlePress={() => {
+            if (this.state.isResizing) {
+              this.showCancelResizeAlert();
+              return;
             }
-            pickerMode={pickerMode}
-            handlePress={() => {
-              if (this.state.isResizing) {
-                this.showCancelResizeAlert();
-                return;
-              }
-              const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
-              this.props.appointmentCalendarActions.setPickerMode(
-                newPickerMode,
-              );
-              if (
-                startDate.format('YYYY-MM-DD') ===
-                endDate.format('YYYY-MM-DD')
-              ) {
-                this.props.appointmentCalendarActions.setGridView();
-              }
-            }}
-          />}
+            const newPickerMode = pickerMode === 'week' ? 'day' : 'week';
+            this.props.appointmentCalendarActions.setPickerMode(
+              newPickerMode,
+            );
+            if (
+              startDate.format('YYYY-MM-DD') ===
+              endDate.format('YYYY-MM-DD')
+            ) {
+              this.props.appointmentCalendarActions.setGridView();
+            }
+          }}
+        />}
         <NewApptSlide
           navigation={this.props.navigation}
           visible={this.state.visibleNewAppointment}

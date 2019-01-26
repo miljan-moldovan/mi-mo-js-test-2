@@ -6,6 +6,7 @@ import { Login } from '@/utilities/apiWrapper';
 import { JWTKEY } from '@/utilities/apiWrapper/api';
 import { Maybe } from '@/models';
 import * as Session from '@/utilities/apiWrapper/apiServicesResources/session';
+import { getRestrictions } from '@/redux/actions/restrictions';
 
 export type DataError = {
   message: string,
@@ -68,6 +69,7 @@ export const login = (url, username, password, callback) => async dispatch => {
       errObj.response.data.errors = [data.userMessage];
       errObj.response.data.loginError = true;
     } else if (!urlError) {
+      dispatch(getRestrictions([Tasks.Mobile_FullAppointments, Tasks.Mobile_Appointments]));
       if (permission === AccessState.Denied) {
         errObj.response.data.message = permissionMessage;
         errObj.response.data.errors = [permissionMessage];

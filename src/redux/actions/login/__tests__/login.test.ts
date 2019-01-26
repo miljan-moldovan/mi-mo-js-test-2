@@ -4,7 +4,6 @@ import thunk from 'redux-thunk';
 import * as selectActions from '../';
 import axios from 'axios';
 import { AT } from '../';
-import processError from '@/utilities/processError';
 import { Tasks } from '@/constants/Tasks';
 
 const middlewares = [thunk];
