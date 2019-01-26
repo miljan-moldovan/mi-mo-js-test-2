@@ -774,6 +774,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime));
     const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const serviceClientId = get(serviceClient, 'id', null);
 
     const currentService = get(appointment, 'service', null);
     const currentEmployee = get(appointment, 'employee', null);
@@ -785,6 +786,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const roomOrdinal = get(appointment, 'roomOrdinal', null);
     const resource = get(appointment, 'resource', null);
     const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
+    
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -813,13 +815,13 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       isGuest,
     };
 
+    const primaryAppointmentId = appointment.primaryAppointmentId;
     const parentId = get(
-      services.find(item => get(item, 'service.service.id', null) === primaryServiceId
-      && get(item, 'service.client', null) === serviceClient),
+      services.find(item => get(item, 'service.id', null) === primaryAppointmentId
+      && get(item, 'service.client.id', null) === serviceClientId),
       'itemId',
       null,
     );
-
 
     if (service.isAddon && primaryServiceAddons && primaryServiceAddons.some(item => item.id === service.id)) {
       newServiceItem.type = 'addon';
