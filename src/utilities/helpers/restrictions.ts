@@ -83,7 +83,7 @@ const reLoginCallback = (success, allowed) => {
 };
 
 const deniedDefault = () => {
-  Alert.alert('You haven\'t accesse to do this action');
+  Alert.alert('You don\'t have permissions');
 };
 
 export const getRestrictionsHelper = async (tasksArray, dispatch) => {

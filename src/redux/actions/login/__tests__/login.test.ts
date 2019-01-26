@@ -5,6 +5,7 @@ import * as selectActions from '../';
 import axios from 'axios';
 import { AT } from '../';
 import processError from '@/utilities/processError';
+import { Tasks } from '@/constants/Tasks';
 
 const middlewares = [thunk];
 
@@ -39,6 +40,11 @@ const errorMock = { response: { data: { errors: ['test'], loginError: true, mess
 describe('login_actions', () => {
   beforeEach(() => { // Runs before each test in the suite
     store.clearActions();
+    mock.onGet(`Session/Task/${Tasks.Mobile_PosApp}/IsAllowed`).reply(200, {
+      response: {
+        data: 1,
+      },
+    });
   });
 
   afterEach(() => {
@@ -51,7 +57,7 @@ describe('login_actions', () => {
     const expectedActions = [
       {
         type: AT.LOGIN_SUCCESS,
-        data: { jws: response.response, username, url  },
+        data: { jws: response.response, username, url },
 
       },
     ];

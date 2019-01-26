@@ -31,8 +31,11 @@ interface IReduxProps {
 
 const errorWithUndefiend = 'The server has returned an error. undefined';
 const errorPasswordIsRequired = 'The server has returned an error. The Password field is required.';
-const errorUserNaameIsRequired = 'The server has returned an error. The Username field is required.';
+const errorPermissions = 'The server has returned an error. You don\'t have permissions';
+const errorUserNameIsRequired = 'The server has returned an error. The Username field is required.';
 const commonErrorMessage = 'Something went wrong. Check your credentials';
+
+const isPermError = (errMsg) => errorPermissions === errMsg;
 
 interface IProps extends IReduxProps {
   disableFingerprintLogin: () => void,
@@ -194,7 +197,7 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
   };
 
   handleErrorAfterLogin = (err) => {
-    if (this.isItCommonError(err)) {
+    if (this.isItCommonError(err) && !isPermError(err.message)) {
       this.setState({
         waitingLogin: false,
         error: commonErrorMessage,
@@ -215,8 +218,9 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
 
   isItCommonError = (err) => {
     return err && (err.message !== errorWithUndefiend
-    || err.message !== errorPasswordIsRequired || err.message !== errorUserNaameIsRequired)
-    || (err.error && err.error.response && err.error.response.data && err.error.response.data.urlError);
+      || err.message !== errorPasswordIsRequired || err.message !== errorUserNameIsRequired
+      || err.message !== errorPermissions)
+      || (err.error && err.error.response && err.error.response.data && err.error.response.data.urlError);
   };
 
   handleModalConfirmFingerprint = () => {
@@ -356,7 +360,8 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
                     'nw.dev.sg.salondev.net',
                     'frank@zonaprofessional.com',
                     'SevenSlySnakes',
-                    () => {},
+                    () => {
+                    },
                   )}
                 >
                   <Text style={[styles.loginButtonText, { fontSize: 12 }]}>
@@ -372,7 +377,8 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
                     'nw.qa.sg.salondev.net',
                     'olga.filippova@salonultimate.com',
                     'qafirst',
-                    () => {},
+                    () => {
+                    },
                   )}
                 >
                   <Text style={[styles.loginButtonText, { fontSize: 12 }]}>
@@ -429,10 +435,10 @@ export default class LoginScreen extends React.Component<IProps, IState, any> {
             {!loggedIn && this.renderPasswordInput()}
             {
               this.state.loginError && this.state.error &&
-                <ErrorsView
-                  errors={this.state.errors}
-                  error={this.state.error}
-                />
+              <ErrorsView
+                errors={this.state.errors}
+                error={this.state.error}
+              />
             }
             <Button
               bordered
