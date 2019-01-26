@@ -245,6 +245,15 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   }
   const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
   const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
+
+  if (itemData.roomOrdinal === 0) {
+    itemData.roomOrdinal = null;
+  }
+
+  if (itemData.roomId === 0) {
+    itemData.roomId = null;
+  }
+
   if (
     moment.isDuration(gapTimeDuration) &&
     gapTimeDuration.asMilliseconds() > 0 &&

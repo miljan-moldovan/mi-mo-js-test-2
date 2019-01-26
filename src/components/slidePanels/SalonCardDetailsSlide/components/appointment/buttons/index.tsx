@@ -14,7 +14,7 @@ const appointmentButtons = (props) => {
   const {
     isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
     isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-    disabledModify, disabledCancel, appointment, modifyApptIsLoading,
+    disabledModify, disabledCancel, appointment, modifyApptIsLoading, cancelApptIsLoading,
   } = props;
 
   const { badgeData } = appointment;
@@ -59,15 +59,22 @@ const appointmentButtons = (props) => {
           style={disabledCancel ? styles.panelIconBtnDisabled : styles.panelIconBtn}
           onPress={handleCancel}
         >
-          <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-          <View style={styles.plusIconContainer}>
-            <Icon
-              name="times"
-              size={9}
-              color="#FFFFFF"
-              type="solid"
-            />
-          </View>
+          {
+            cancelApptIsLoading ? <ActivityIndicator /> :
+            (
+              <React.Fragment>
+                <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+                <View style={styles.plusIconContainer}>
+                  <Icon
+                    name="times"
+                    size={9}
+                    color="#FFFFFF"
+                    type="solid"
+                  />
+                </View>
+              </React.Fragment>
+            )
+          }
         </SalonTouchableOpacity>
         <Text style={styles.panelIconText}>Cancel Appt.</Text>
       </View>

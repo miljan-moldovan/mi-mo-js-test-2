@@ -99,6 +99,7 @@ const apptPanelBottom = ({
       <InputGroup
         style={styles.otherOptionsGroup}
       >
+      {/*  IP-1113, just hide, we are going to used them in the future
         <InputButton
           noIcon
           style={styles.otherOptionsBtn}
@@ -121,6 +122,7 @@ const apptPanelBottom = ({
             <Icon name="comments" size={18} color="#115ECD" type="solid" />
           </View>
         </InputButton>
+        */}
         <InputButton
           noIcon
           style={styles.otherOptionsBtn}

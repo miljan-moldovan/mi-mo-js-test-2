@@ -1135,7 +1135,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
             && !itemIds.includes(item.id)
             && !resultIds.includes(item.id)
             && !item.isFirstAvailable
-            && item.client.id === appointment.client.id;
+            && item.client && appointment.client && item.client.id === appointment.client.id;
         });
 
         if (!clientAppointments[0]) {
@@ -1596,7 +1596,9 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
     const newToTime = newToTimeMoment.format('h:mma');
     const newTime = newTimeMoment.format('HH:mm');
     const date = dateMoment.format('YYYY-MM-DD');
-    const clientName = `${data.client.name} ${data.client.lastName}`;
+    const clientNameFromData = data && data.client && data.client.name;
+    const clientLastName = data && data.client && data.client.lastName;
+    const clientName = `${clientNameFromData} ${clientLastName}`;
 
     return {
       id,
@@ -2121,7 +2123,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
           this.calendar = view;
         }}
       >
-        {!areProviders && !isLoading ? <EmptyScreen/> : null}
+        {!areProviders && !isLoading ? <EmptyScreen /> : null}
         <ScrollView
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -2195,7 +2197,7 @@ export default class Calendar extends React.Component<CalendarProps, CalendarSta
               { top: showHeader ? headerHeight : 0 },
             ]}
           >
-            <TimeColumn schedule={apptGridSettings.schedule}/>
+            <TimeColumn schedule={apptGridSettings.schedule} />
             <CurrentTime
               apptGridSettings={apptGridSettings}
               startTime={startTime}

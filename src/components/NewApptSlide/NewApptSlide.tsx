@@ -32,14 +32,6 @@ import { NewAppointmentReducer } from '@/redux/reducers/newAppointment';
 import { UserInfoReducer } from '@/redux/reducers/userInfo';
 import { ApptBookActions } from '@/redux/actions/appointmentBook';
 import { ServicesActions } from '@/redux/actions/service';
-import { connect } from 'react-redux';
-import {
-  checkRestrictionsBlockTime, checkRestrictionsBookAppt,
-  checkRestrictionsEditSchedule,
-  checkRestrictionsRoomAssignment,
-} from '@/redux/actions/restrictions';
-import { Tasks } from '@/constants/Tasks';
-import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
 
 const { height: screenHeight } = Dimensions.get('window');
 const MAX_HEIGHT_FOR_CONTENT = screenHeight * 0.8;
@@ -178,6 +170,7 @@ class NewApptSlide extends React.Component<IProps, IState> {
   handelVisiblePanel = (previousVisibleProps, nextVisibleProps) => {
     if (!previousVisibleProps && nextVisibleProps) {
       this.showPanel();
+      this.props.getRestrictions();
     } else if (previousVisibleProps && !nextVisibleProps) {
       this.hidePanel();
     }
@@ -546,7 +539,9 @@ class NewApptSlide extends React.Component<IProps, IState> {
     if (!this.canBook()) {
       return false;
     }
-    return this.props.handleBook(true);
+    this.props.checkRestrictionsBookAppt(() => {
+      return this.props.handleBook(true);
+    });
   };
 
   handleBook = bookAnother => {
@@ -631,9 +626,11 @@ class NewApptSlide extends React.Component<IProps, IState> {
   };
 
   goToFullForm = () => {
-    const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
-    this.props.newApptActions.isBookingQuickAppt(false);
-    return this.hidePanel(navigateCallback);
+    this.props.checkRestrictionsBookAppt(() => {
+      const navigateCallback = () => this.props.navigation.navigate('NewAppointment');
+      this.props.newApptActions.isBookingQuickAppt(false);
+      return this.hidePanel(navigateCallback);
+    });
   };
 
   goToRoomAssignment = () => {
@@ -1074,13 +1071,14 @@ class NewApptSlide extends React.Component<IProps, IState> {
               style={{ flex: 8 / 17 }}
               onPress={this.goToFullForm}
               backgroundColor="white"
+              disabled={this.props.apptBookIsDisabled}
               color={Colors.defaultBlue}
               text="MORE OPTIONS"
             />
             <Button
               style={{ flex: 8 / 17 }}
               onPress={this.handleBookAnother}
-              disabled={!this.canBook()}
+              disabled={!this.canBook() || this.props.apptBookIsDisabled}
               backgroundColor="white"
               color={!this.canBook() ? '#fff' : Colors.defaultBlue}
               text="BOOK ANOTHER"
@@ -1155,23 +1153,4 @@ class NewApptSlide extends React.Component<IProps, IState> {
   }
 }
 
-const mapActionsToProps = dispatch => ({
-  checkRestrictionsBlockTime: (callback) => dispatch(checkRestrictionsBlockTime(callback)),
-  checkRestrictionsRoomAssignment: (callback) => dispatch(checkRestrictionsRoomAssignment(callback)),
-  checkRestrictionsEditSchedule: (callback) => dispatch(checkRestrictionsEditSchedule(callback)),
-  checkRestrictionsBookAppt: (callback) => dispatch(checkRestrictionsBookAppt(callback)),
-
-});
-
-const mapStateToProps = state => ({
-  apptEnterBlockIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_EnterBlock),
-  apptEnterBlockIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_EnterBlock),
-  apptRoomAssignmentIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_RoomAssign),
-  apptRoomAssignmentIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_RoomAssign),
-  apptEditScheduleIsDisabled: restrictionsDisabledSelector(state, Tasks.Salon_EmployeeEdit),
-  apptEditScheduleIsLoading: restrictionsLoadingSelector(state, Tasks.Salon_EmployeeEdit),
-  apptBookIsDisabled: restrictionsDisabledSelector(state, Tasks.Appt_ApptBook),
-  apptBookIsLoading: restrictionsLoadingSelector(state, Tasks.Appt_ApptBook),
-});
-
-export default connect(mapStateToProps, mapActionsToProps)(NewApptSlide);
+export default NewApptSlide;

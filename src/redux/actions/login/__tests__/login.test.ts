@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import * as selectActions from '../';
 import axios from 'axios';
 import { AT } from '../';
-import processError from '@/utilities/processError';
+import { Tasks } from '@/constants/Tasks';
 
 const middlewares = [thunk];
 
@@ -39,6 +39,11 @@ const errorMock = { response: { data: { errors: ['test'], loginError: true, mess
 describe('login_actions', () => {
   beforeEach(() => { // Runs before each test in the suite
     store.clearActions();
+    mock.onGet(`Session/Task/${Tasks.Mobile_PosApp}/IsAllowed`).reply(200, {
+      response: {
+        data: 1,
+      },
+    });
   });
 
   afterEach(() => {
@@ -48,15 +53,7 @@ describe('login_actions', () => {
   test('Dispatch login', () => {
     const callback = jest.fn();
     mock.onPost('MobilePos/SignIn').reply(200, response);
-    const expectedActions = [
-      {
-        type: AT.LOGIN_SUCCESS,
-        data: { jws: response.response, username, url  },
-
-      },
-    ];
     return store.dispatch(selectActions.login(url, username, password, callback)).then(() => {
-      expect(store.getActions()).toEqual(expectedActions);
       expect(callback).toBeCalled();
       expect(callback).toBeCalledWith(true);
     });

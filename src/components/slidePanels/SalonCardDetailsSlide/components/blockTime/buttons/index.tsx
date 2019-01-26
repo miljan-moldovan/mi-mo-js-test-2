@@ -8,7 +8,7 @@ import styles from './styles';
 
 const blockButtons = ({
                         handleNewAppt, handleModify, handleCancel,
-                        modifyApptIsLoading,
+                        modifyApptIsLoading, cancelApptIsLoading,
                       }) => (
   <React.Fragment>
     <View style={styles.panelIcon}>
@@ -25,15 +25,22 @@ const blockButtons = ({
         style={styles.panelIconBtn}
         onPress={handleCancel}
       >
-        <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-        <View style={styles.plusIconContainer}>
-          <Icon
-            name="times"
-            size={9}
-            color="#FFFFFF"
-            type="solid"
-          />
-        </View>
+        {
+          cancelApptIsLoading ? <ActivityIndicator /> :
+          (
+            <React.Fragment>
+              <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+              <View style={styles.plusIconContainer}>
+                <Icon
+                  name="times"
+                  size={9}
+                  color="#FFFFFF"
+                  type="solid"
+                />
+              </View>
+            </React.Fragment>
+          )
+        }
       </SalonTouchableOpacity>
       <Text style={styles.panelIconText}>Cancel</Text>
     </View>
@@ -57,6 +64,7 @@ blockButtons.propTypes = {
   handleCancel: PropTypes.func.isRequired,
   handleNewAppt: PropTypes.func.isRequired,
   modifyApptIsLoading: PropTypes.bool,
+  cancelApptIsLoading: PropTypes.bool,
 };
 
 export default blockButtons;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import moment from 'moment';
 import { get, filter } from 'lodash';
 import { ColumnProps } from '@/models';
@@ -11,7 +11,7 @@ enum AlertTypes {
   NotWorkingTime,
 }
 
-export default class Column extends React.Component<ColumnProps, any> {
+class Column extends React.Component<ColumnProps, any> {
   onCellPressed = (cellId, colData, date, showNotWorkingTimeAlert?) => {
     const time = moment(
       `${date.format('YYYY-MM-DD')} ${cellId.format('HH:mm')}`,
@@ -223,7 +223,7 @@ export default class Column extends React.Component<ColumnProps, any> {
     );
   };
 
-// render rooms name verticaly if settings is enable
+  // render rooms name verticaly if settings is enable
   renderRooms() {
     const { colData, apptGridSettings, selectedFilter, rooms } = this.props;
     if (
@@ -292,7 +292,9 @@ export default class Column extends React.Component<ColumnProps, any> {
     const assistant = colData.assistantAssignment ?
       colData.assistantAssignment :
       this.getAssistantFromProviderSchedule();
-    if (assistant === null) { return null; }
+    if (assistant === null) {
+      return null;
+    }
 
     const startTime = apptGridSettings.minStartTime;
     const startTimeMoment = this.convertFromTimeToMoment(startTime);
@@ -345,3 +347,5 @@ export default class Column extends React.Component<ColumnProps, any> {
     );
   }
 }
+
+export default Column;
