@@ -161,7 +161,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     } = this.props;
     const { canSave } = this.props.navigation.state.params;
 
-    if (prevProps.newAppointmentState.guests.length < guests.length && prevProps.newAppointmentState.guests > 0) {
+    if (prevProps.newAppointmentState.guests.length < guests.length
+      && prevProps.newAppointmentState.guests.length > 0) {
       const guest = guests[guests.length - 1];
       this.handleAddGuestService(guest.guestId);
     }
