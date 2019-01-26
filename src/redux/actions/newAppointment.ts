@@ -764,7 +764,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
   const primaryServiceAddons = fetchedPrimaryService.addons;
   const primaryServiceRequired = fetchedPrimaryService.requiredServices;
   const primaryServiceRecommended = fetchedPrimaryService.recommendedServices;
-
   const serviceItems = groupData.reduce((services, appointment) => {
     const isGuest = isParty && appointment.client.id !== primaryClientId;
     let guest = null;
@@ -815,10 +814,12 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     };
 
     const parentId = get(
-      services.find(item => get(item, 'service.service.id', null) === primaryServiceId),
+      services.find(item => get(item, 'service.service.id', null) === primaryServiceId
+      && get(item, 'service.client', null) === serviceClient),
       'itemId',
       null,
     );
+
 
     if (service.isAddon && primaryServiceAddons && primaryServiceAddons.some(item => item.id === service.id)) {
       newServiceItem.type = 'addon';

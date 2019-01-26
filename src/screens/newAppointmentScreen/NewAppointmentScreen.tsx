@@ -523,7 +523,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   getConflictsForService = serviceId =>
     this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId);
 
-  isMainService = item => !item.isGuest;
+  isMainService = item => !item.isGuest && !item.parentId;
 
   hideToast = () => this.setState({ toast: null });
 
