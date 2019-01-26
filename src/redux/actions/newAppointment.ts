@@ -755,7 +755,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       }
       return [...agg, guest];
     }, []);
-
   const allFetchedServices = await dispatch(servicesActions.getServices({})).then((resp) => {
     return resp.data.services.reduce((resultArr, category) => {
       return [...resultArr, ...category.services];
@@ -787,7 +786,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const roomOrdinal = get(appointment, 'roomOrdinal', null);
     const resource = get(appointment, 'resource', null);
     const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
-
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -813,6 +811,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       hasSelectedRoom: !!room,
       hasSelectedResource: !!resource,
       isRequired: false,
+      isGuest,
     };
 
     const parentId = get(
