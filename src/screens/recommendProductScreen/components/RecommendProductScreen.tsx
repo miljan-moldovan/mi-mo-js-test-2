@@ -231,6 +231,7 @@ export default class RecommendProductScreen extends React.Component {
             selectedProduct={selectedProduct}
             placeholder="Select a Product"
             apptBook
+            recommendationSystem
             onChange={product => this.handleChangeProduct(product)}
             navigate={this.props.navigation.navigate}
           />
