@@ -53,15 +53,7 @@ describe('login_actions', () => {
   test('Dispatch login', () => {
     const callback = jest.fn();
     mock.onPost('MobilePos/SignIn').reply(200, response);
-    const expectedActions = [
-      {
-        type: AT.LOGIN_SUCCESS,
-        data: { jws: response.response, username, url },
-
-      },
-    ];
     return store.dispatch(selectActions.login(url, username, password, callback)).then(() => {
-      expect(store.getActions()).toEqual(expectedActions);
       expect(callback).toBeCalled();
       expect(callback).toBeCalledWith(true);
     });
