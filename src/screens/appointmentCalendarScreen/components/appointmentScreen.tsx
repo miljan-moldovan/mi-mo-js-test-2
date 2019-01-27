@@ -210,8 +210,15 @@ class AppointmentScreen extends React.Component<any, any> {
       filterOptions: this.props.apptGridSettings.filterOptions,
       hideTabBar: false,
       deniedAccessApptBook: this.props.deniedAccessApptBook,
-      onlyOwnAppt: this.props.onlyOwnAppt,
     });
+
+    if (this.props.onlyOwnAppt && this.props.userInfoEmployeeId) {
+      this.props.navigation.setParams({
+        onlyOwnAppt: this.props.onlyOwnAppt,
+      });
+      this.props.appointmentCalendarActions.setSelectedProviderById(this.props.userInfoEmployeeId,
+        this.setOwnProviderCallback);
+    }
 
     this.props.appointmentCalendarActions.setGridView();
 
@@ -222,14 +229,30 @@ class AppointmentScreen extends React.Component<any, any> {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.deniedAccessApptBook !== this.props.deniedAccessApptBook
-      || newProps.onlyOwnAppt !== this.props.onlyOwnAppt) {
+    if (newProps.deniedAccessApptBook !== this.props.deniedAccessApptBook) {
       this.props.navigation.setParams({
         deniedAccessApptBook: newProps.deniedAccessApptBook,
-        onlyOwnAppt: newProps.onlyOwnAppt,
       });
     }
+    if (newProps.onlyOwnAppt !== this.props.onlyOwnAppt
+      || this.props.userInfoEmployeeId !== newProps.userInfoEmployeeId) {
+      this.props.navigation.setParams({
+        onlyOwnAppt: newProps.onlyOwnAppt,
+      });
+      if (newProps.onlyOwnAppt && newProps.userInfoEmployeeId) {
+        this.props.appointmentCalendarActions.setSelectedProviderById(newProps.userInfoEmployeeId,
+          this.setOwnProviderCallback);
+      }
+    }
   }
+
+  setOwnProviderCallback = (filterProvider) => {
+    this.props.navigation.setParams({
+      filterProvider,
+      currentFilter: 'providers',
+    });
+    this.props.appointmentCalendarActions.setSelectedFilter('providers');
+  };
 
   showCancelResizeAlert = (customLogic) => {
     const onPressRight = customLogic ? customLogic : () => {

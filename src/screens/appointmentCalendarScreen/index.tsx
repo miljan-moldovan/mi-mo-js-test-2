@@ -34,6 +34,7 @@ const mapStateToProps = state => ({
   newAppointmentState: state.newAppointmentReducer,
   modifyApptState: state.modifyApptReducer,
   userInfoIsLoading: state.userInfoReducer.isLoading,
+  userInfoEmployeeId: state.userInfoReducer.employeeId,
   blockTimes: visbleBlocksSelector(state),
   appointments: getVisibleAppointmentsDataSource(state),
   availability: getAvailabilityWithGaps(state),

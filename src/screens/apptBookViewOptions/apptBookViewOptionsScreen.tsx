@@ -250,7 +250,7 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
       dataArray.push(employeeOptions);
     }
     dataArray.push(displayOptions);
-    
+
     return dataArray;
   };
 
