@@ -6,6 +6,7 @@ import { Login } from '@/utilities/apiWrapper';
 import { JWTKEY } from '@/utilities/apiWrapper/api';
 import { Maybe } from '@/models';
 import * as Session from '@/utilities/apiWrapper/apiServicesResources/session';
+import { getRestrictions } from '@/redux/actions/restrictions';
 
 export type DataError = {
   message: string,
@@ -57,7 +58,6 @@ export const login = (url, username, password, callback) => async dispatch => {
     };
 
     const data = await Login.signIn(url, username, password);
-    const permission = await Session.getSessionTaskIsAllowed(Tasks.Mobile_PosApp);
 
     if (data && data.message === 'Network Error') {
       urlError = true;
@@ -68,6 +68,10 @@ export const login = (url, username, password, callback) => async dispatch => {
       errObj.response.data.errors = [data.userMessage];
       errObj.response.data.loginError = true;
     } else if (!urlError) {
+      await AsyncStorage.setItem(JWTKEY, data.response);
+
+      const permission = await Session.getSessionTaskIsAllowed(Tasks.Mobile_PosApp);
+      dispatch(getRestrictions([Tasks.Mobile_FullAppointments, Tasks.Mobile_Appointments]));
       if (permission === AccessState.Denied) {
         errObj.response.data.message = permissionMessage;
         errObj.response.data.errors = [permissionMessage];
@@ -75,7 +79,7 @@ export const login = (url, username, password, callback) => async dispatch => {
         throw errObj;
       }
       const userToken = { jws: data.response };
-      await AsyncStorage.setItem(JWTKEY, data.response);
+
       dispatch({
         type: AT.LOGIN_SUCCESS,
         data: { ...userToken, username, url },
