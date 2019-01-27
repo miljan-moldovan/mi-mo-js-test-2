@@ -47,6 +47,8 @@ class AppointmentScreen extends React.Component<any, any> {
     const onPressCalendar = navigation.getParam('onPressCalendar', null);
     const filterOptions = navigation.getParam('filterOptions', {});
     const deniedAccessApptBook = navigation.getParam('deniedAccessApptBook', false);
+    const onlyOwnAppt = navigation.getParam('onlyOwnAppt', false);
+
 
     let subTitleText = null;
     const { company, position } = filterOptions;
@@ -126,7 +128,7 @@ class AppointmentScreen extends React.Component<any, any> {
         />
       );
     const title = (
-      <SalonTouchableOpacity style={titleStyle} onPress={onPressTitle}>
+      <SalonTouchableOpacity style={titleStyle} disabled={onlyOwnAppt} onPress={onPressTitle}>
         {titleComponent}
         {subTitle && !filterProvider ? subTitle : caretIcon}
       </SalonTouchableOpacity>
@@ -208,6 +210,7 @@ class AppointmentScreen extends React.Component<any, any> {
       filterOptions: this.props.apptGridSettings.filterOptions,
       hideTabBar: false,
       deniedAccessApptBook: this.props.deniedAccessApptBook,
+      onlyOwnAppt: this.props.onlyOwnAppt,
     });
 
     this.props.appointmentCalendarActions.setGridView();
@@ -216,6 +219,16 @@ class AppointmentScreen extends React.Component<any, any> {
       'willFocus',
       this.loadRebookData,
     );
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.deniedAccessApptBook !== this.props.deniedAccessApptBook
+      || newProps.onlyOwnAppt !== this.props.onlyOwnAppt) {
+      this.props.navigation.setParams({
+        deniedAccessApptBook: newProps.deniedAccessApptBook,
+        onlyOwnAppt: newProps.onlyOwnAppt,
+      });
+    }
   }
 
   showCancelResizeAlert = (customLogic) => {
@@ -973,7 +986,7 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   render() {
-    if (this.props.deniedAccessApptBook) {
+    if (this.props.deniedAccessApptBook && !this.props.userInfoIsLoading) {
       return (
         <DeniedAccessApptBookComponent>
           <BarsActionSheet
