@@ -783,10 +783,11 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const service = { ...currentService, ...missingProperties };
 
     const room = get(appointment, 'room', null);
-    const roomOrdinal = get(appointment, 'roomOrdinal', null);
+    let roomOrdinal = get(appointment, 'roomOrdinal', null);
+    roomOrdinal = service.requireRoom === RoomType.NULL
+    || service.requireRoom === RoomType.Nothing ? null : roomOrdinal;
     const resource = get(appointment, 'resource', null);
     const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
-    
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -814,7 +815,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       isRequired: false,
       isGuest,
     };
-
     const primaryAppointmentId = appointment.primaryAppointmentId;
     const parentId = get(
       services.find(item => get(item, 'service.id', null) === primaryAppointmentId
