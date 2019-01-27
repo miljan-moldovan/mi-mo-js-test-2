@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { get, reject } from 'lodash';
+import { get, reject, clone } from 'lodash';
 import {
   CLEAN_FORM,
   IS_BOOKING_QUICK_APPT,
@@ -162,7 +162,7 @@ export default function newAppointmentReducer(
           bookedByEmployee: data.newState.bookedByEmployee,
           mainEmployee: data.newState.mainEmployee,
           guests: data.newState.guests,
-          serviceItems: data.newState.serviceItems,
+          serviceItems: clone(data.newState.serviceItems),
           remarks: data.newState.remarks,
         },
       };

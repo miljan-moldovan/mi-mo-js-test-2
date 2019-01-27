@@ -103,9 +103,10 @@ const newAppointmentInfoSelector = createSelector(
 );
 
 const getGuestServices = (guestId, serviceItems) =>
-  serviceItems.filter(item => item.guestId === guestId && !item.parentId);
+  serviceItems.filter(item => item.guestId === guestId && item.isGuest);
 
 const validateGuests = (guests, serviceItems) => {
+
   if (guests.length) {
     for (let i = 0; i < guests.length; i += 1) {
       const guest = guests[i];
@@ -245,6 +246,15 @@ const serializeApptItem = (appointment, serviceItem, isQuick = false) => {
   }
   const gapTimeDuration = moment.duration(get(service, 'gapTime', 0));
   const afterTimeDuration = moment.duration(get(service, 'afterTime', 0));
+
+  if (itemData.roomOrdinal === 0) {
+    itemData.roomOrdinal = null;
+  }
+
+  if (itemData.roomId === 0) {
+    itemData.roomId = null;
+  }
+
   if (
     moment.isDuration(gapTimeDuration) &&
     gapTimeDuration.asMilliseconds() > 0 &&

@@ -3,6 +3,10 @@ import { View, StyleSheet, Text } from 'react-native';
 import moment from 'moment';
 
 import SalonTouchableOpacity from '@/components/SalonTouchableOpacity';
+import { restrictionsDisabledSelector, restrictionsLoadingSelector } from '@/redux/selectors/restrictions';
+import { Tasks } from '@/constants/Tasks';
+import { checkRestrictionsLongPress } from '@/redux/actions/restrictions';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
   textStyle: {

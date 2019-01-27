@@ -14,12 +14,12 @@ const appointmentButtons = (props) => {
   const {
     isCheckInDisabled, isCheckOutDisabled, isCheckingIn,
     isCheckingOut, handleCheckin, handleCheckout, handleModify, handleCancel,
-    disabledModify, disabledCancel, appointment,
+    disabledModify, disabledCancel, appointment, modifyApptIsLoading, cancelApptIsLoading,
   } = props;
 
   const { badgeData } = appointment;
 
-  const  { isWaiting } =  badgeData;
+  const { isWaiting } = badgeData;
 
   const checkOut = isWaiting ? alertStartServiceFirst : handleCheckout;
 
@@ -59,15 +59,22 @@ const appointmentButtons = (props) => {
           style={disabledCancel ? styles.panelIconBtnDisabled : styles.panelIconBtn}
           onPress={handleCancel}
         >
-          <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
-          <View style={styles.plusIconContainer}>
-            <Icon
-              name="times"
-              size={9}
-              color="#FFFFFF"
-              type="solid"
-            />
-          </View>
+          {
+            cancelApptIsLoading ? <ActivityIndicator /> :
+            (
+              <React.Fragment>
+                <Icon name="calendarO" size={18} color="#FFFFFF" type="solid" />
+                <View style={styles.plusIconContainer}>
+                  <Icon
+                    name="times"
+                    size={9}
+                    color="#FFFFFF"
+                    type="solid"
+                  />
+                </View>
+              </React.Fragment>
+            )
+          }
         </SalonTouchableOpacity>
         <Text style={styles.panelIconText}>Cancel Appt.</Text>
       </View>
@@ -77,7 +84,10 @@ const appointmentButtons = (props) => {
           style={disabledModify ? styles.panelIconBtnDisabled : styles.panelIconBtn}
           onPress={handleModify}
         >
-          <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+          {
+            modifyApptIsLoading ? <ActivityIndicator /> :
+              <Icon name="penAlt" size={18} color="#FFFFFF" type="solid" />
+          }
         </SalonTouchableOpacity>
         <Text style={styles.panelIconText}>Modifiy</Text>
       </View>

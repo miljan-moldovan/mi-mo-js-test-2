@@ -667,7 +667,7 @@ class ModifyApptServiceScreen extends React.Component<ModifyApptServiceScreenPro
                       <InputButton
                         onPress={this.selectRoom}
                         label="Assigned Room"
-                        value={room ? `${room.name} #${roomOrdinal || 1}` : 'None'}
+                        value={room ? `${room.name}` : 'None'}
                       />
                       <InputDivider/>
                     </React.Fragment>

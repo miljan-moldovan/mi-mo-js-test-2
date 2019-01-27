@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   View,
   StyleSheet,
-  TouchableHighlight,
+  TouchableHighlight, ActivityIndicator,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { debounce, throttle } from 'lodash';
@@ -11,6 +11,7 @@ import { debounce, throttle } from 'lodash';
 import { connect } from 'react-redux';
 import WordHighlighter from '../../../../components/wordHighlighter';
 import SalonTouchableHighlight from '../../../../components/SalonTouchableHighlight';
+import absoluteFill = StyleSheet.absoluteFill;
 
 const styles = StyleSheet.create({
   phoneIconLeft: {
@@ -88,6 +89,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'column',
   },
+  infoIsLoadingIcon: {
+    width: 20,
+    height: 20,
+    marginTop: 2,
+    marginLeft: 5,
+    position: 'absolute',
+    right: 20,
+  }
 });
 
 class ClientListItem extends React.PureComponent {
@@ -112,6 +121,7 @@ class ClientListItem extends React.PureComponent {
     const phone = phones.length > 0 ? phones : null;
     const email = this.props.client.email ? this.props.client.email : null;
     const store = this.props.client.visit ? this.props.client.visit : null;
+    const clientInfoIsLoading = this.props.clientInfoIsLoading;
 
     return (
       <TouchableHighlight
@@ -121,6 +131,12 @@ class ClientListItem extends React.PureComponent {
       >
         <View style={styles.container}>
           <View style={styles.dataContainer}>
+            {
+              clientInfoIsLoading &&
+              <View style={styles.infoIsLoadingIcon}>
+                <ActivityIndicator />
+              </View>
+            }
             <View style={styles.topContainer}>
               <View style={styles.clientNameContainer}>
                 <WordHighlighter
@@ -134,7 +150,6 @@ class ClientListItem extends React.PureComponent {
                 </WordHighlighter>
               </View>
             </View>
-
             <View style={[styles.bottomContainer, { paddingTop: 5 }]}>
               {store &&
               <FontAwesome style={styles.homeIconLeft}>{Icons.home}</FontAwesome>}

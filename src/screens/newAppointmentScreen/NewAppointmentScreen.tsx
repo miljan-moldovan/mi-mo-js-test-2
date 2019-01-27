@@ -140,6 +140,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   }
 
   componentDidMount() {
+    this.getClientDetailed();
+    this.props.getRestrictions();
     this.props.newAppointmentActions.checkIsBookedByFieldEnabled();
     if (this.props.newAppointmentState.client) {
       this.setState({
@@ -159,7 +161,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     } = this.props;
     const { canSave } = this.props.navigation.state.params;
 
-    if (prevProps.newAppointmentState.guests.length < guests.length) {
+    if (prevProps.newAppointmentState.guests.length < guests.length
+      && prevProps.newAppointmentState.guests.length > 0) {
       const guest = guests[guests.length - 1];
       this.handleAddGuestService(guest.guestId);
     }
@@ -195,7 +198,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       });
     }
   };
-  addService = (service, provider = null, guestId: string = undefined) => {
+  addService = (service, provider = null, guestId: string = undefined, isGuest: boolean = false) => {
     const {
       client,
       startTime,
@@ -225,6 +228,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       itemId: uuid(),
       guestId,
       service: newService,
+      isGuest,
     };
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
     setTimeout(() => this.selectExtraServices(newServiceItem));
@@ -434,7 +438,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
 
     return updateObject;
-  }
+  };
 
   shouldUpdateClientInfo = async () => {
 
@@ -496,7 +500,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   };
 
   getGuestServices = guestId =>
-    this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && !item.parentId);
+    this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && item.isGuest);
 
   getGuest = guestId => this.props.newAppointmentState.guests.find(item => item.guestId === guestId);
 
@@ -526,7 +530,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   getConflictsForService = serviceId =>
     this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId);
 
-  isMainService = item => !item.guestId && !item.parentId;
+  isMainService = item => !item.isGuest && !item.parentId;
 
   hideToast = () => this.setState({ toast: null });
 
@@ -638,7 +642,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         },
       });
     }
-    this.props.navigation.navigate('ApptBookService', {
+    this.props.checkRestrictionsAddService(() => this.props.navigation.navigate('ApptBookService', {
       dismissOnSelect: true,
       selectExtraServices: true,
       filterByProvider: true,
@@ -647,7 +651,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       onChangeService: service => {
         this.addService(service, mainEmployee);
       },
-    });
+    }));
   };
 
   changeDateTime = () => this.props.navigation.navigate('ChangeNewApptDateTime');
@@ -676,7 +680,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         selectedProvider: mainEmployee,
         employeeId: mainEmployee.id,
         onChangeService: service => {
-          this.addService(service, mainEmployee, guestId);
+          this.addService(service, mainEmployee, guestId, true);
         },
       });
     }
@@ -838,9 +842,9 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const diffTime = !startTime.isSame(initialState.startTime);
     const initialClientInfo = this.getClientInfo(initialApptClient as ClientDetailed);
     const diffRemarks = remarks !== initialState.remarks;
-    const diffClient = get(client, 'id', -1) !== get(initialApptClient, 'id', -1);
-    const diffEmail = clientEmail !== initialClientInfo.clientEmail;
-    const diffPhone = clientPhone !== initialClientInfo.clientPhone;
+    const diffClient = get(client, 'id', -1) !== get(initialState.client, 'id', -1);
+    let diffEmail = clientEmail !== this.getClientInfo(initialState.client).clientEmail;
+    let diffPhone = clientPhone !== this.getClientInfo(initialState.client).clientPhone;
     const diffConfirmationType =
       clientConfirmationType !== initialClientInfo.clientConfirmationType;
     const diffBookedByEmployee = get(bookedByEmployee, 'id', -1) !== get(initialState.bookedByEmployee, 'id', -1);
@@ -848,6 +852,15 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     const diffServices = !deepEqual(serviceItems, initialState.serviceItems, {
       strict: true,
     });
+
+    if (!clientEmail) {
+      diffEmail = false;
+    }
+
+    if (!clientPhone) {
+      diffPhone = false;
+    }
+
     return (
       diffDate ||
       diffEmail ||
@@ -1052,29 +1065,39 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
               }
             />
             <InputDivider />
-            <ValidatableInput
-              label="Email"
-              value={clientEmail}
-              isValid={isValidEmail || !client}
-              validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
-              onValidated={this.onValidateEmail}
-              onChangeText={this.onChangeEmail}
-            />
-            <InputDivider
-              style={isValidEmail || !client ? {} : dividerWithErrorStyle}
-            />
-            <ValidatableInput
-              label="Phone"
-              mask="[000]-[000]-[0000]"
-              isValid={isValidPhone || !client}
-              value={clientPhone}
-              validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
-              onValidated={this.onValidatePhone}
-              onChangeText={this.onChangePhone}
-            />
-            <InputDivider
-              style={isValidPhone || !client ? {} : dividerWithErrorStyle}
-            />
+            {
+              !this.props.apptViewContactInfoIsDisabled &&
+              <React.Fragment>
+                <ValidatableInput
+                  label="Email"
+                  value={clientEmail}
+                  isValid={isValidEmail || !client}
+                  validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
+                  onValidated={this.onValidateEmail}
+                  onChangeText={this.onChangeEmail}
+                />
+                < InputDivider
+                  style={isValidEmail || !client ? {} : dividerWithErrorStyle}
+                />
+              </React.Fragment>
+            }
+            {
+              !this.props.apptViewContactInfoIsDisabled &&
+              <React.Fragment>
+                <ValidatableInput
+                  label="Phone"
+                  mask="[000]-[000]-[0000]"
+                  isValid={isValidPhone || !client}
+                  value={clientPhone}
+                  validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
+                  onValidated={this.onValidatePhone}
+                  onChangeText={this.onChangePhone}
+                />
+                < InputDivider
+                  style={isValidPhone || !client ? {} : dividerWithErrorStyle}
+                />
+              </React.Fragment>
+            }
             <SalonPicker
               label="Confirmation Type"
               isOpen={confirmationTypePickerOpen}
@@ -1137,6 +1160,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
             })}
             <AddButton
               style={{ marginVertical: 5, paddingTop: 0 }}
+              disabled={this.props.apptAddServiceIsDisabled}
+              isLoading={this.props.apptAddServiceIsLoading}
               onPress={this.handleAddMainService}
               iconStyle={{ marginLeft: 10, marginRight: 4 }}
               title="add service"

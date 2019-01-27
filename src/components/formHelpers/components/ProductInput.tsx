@@ -12,6 +12,7 @@ const ProductInput = (props) => {
     icon = 'default',
     label = 'Product',
     selectedProduct,
+    recommendationSystem,
   } = props;
   const value = get(selectedProduct, 'name', '');
   const onPress = () => {
@@ -19,6 +20,7 @@ const ProductInput = (props) => {
       selectedProduct,
       actionType: 'update',
       dismissOnSelect: true,
+      recommendationSystem,
       onChangeProduct: product => onChange(product),
     });
   };

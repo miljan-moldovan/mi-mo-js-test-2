@@ -9,12 +9,11 @@ export const restrictionsHelper = async (taskType, allowed, dispatch, getState,
                                          denied = deniedDefault) => {
   try {
     let taskStatus;
-    // not send request if data already exist in store
-    // taskStatus = getState().restrictionsReducer[Tasks.Appt_EnterBlock];
+    taskStatus = getState().restrictionsReducer[taskType];
 
-    // if (taskStatus === null) {
-    taskStatus = await sendRequestSessionTaskIsAllowed(dispatch, taskType);
-    // }
+    if (taskStatus === null) {
+      taskStatus = await sendRequestSessionTaskIsAllowed(dispatch, taskType);
+    }
 
     switch (taskStatus) {
       case AccessState.Allowed: {
@@ -84,5 +83,11 @@ const reLoginCallback = (success, allowed) => {
 };
 
 const deniedDefault = () => {
-  Alert.alert('You haven\'t accesse to do this action');
+  Alert.alert('You don\'t have permissions');
+};
+
+export const getRestrictionsHelper = async (tasksArray, dispatch) => {
+  return tasksArray.forEach(async (task) => {
+    await sendRequestSessionTaskIsAllowed(dispatch, task);
+  });
 };

@@ -11,6 +11,7 @@ import StoreActions from './store';
 import { PureProvider, Maybe, StoreCompany, ProviderPosition, StoreScheduleException } from '@/models';
 import { dateTimeConstants } from '@/constants';
 import { setSettings } from './settings';
+import { getEmployee } from '@/utilities/apiWrapper/apiServicesResources/employees';
 
 export const SET_FILTER_OPTION_COMPANY =
   'appointmentScreen/SET_FILTER_OPTION_COMPANY';
@@ -420,6 +421,21 @@ const setPickerMode = pickerMode => dispatch => {
   return dispatch(setScheduleDateRange());
 };
 
+const setSelectedProviderById = (selectedProviderId, callback) => async dispatch => {
+  try {
+    const selectedProvider = await getEmployee(selectedProviderId);
+    if (selectedProvider) {
+      dispatch({
+        type: SET_SELECTED_PROVIDER,
+        data: { selectedProvider },
+      });
+      callback(selectedProvider);
+    }
+  } catch (e) {
+   // need handle error
+  }
+};
+
 const setSelectedProvider = selectedProvider => ({
   type: SET_SELECTED_PROVIDER,
   data: { selectedProvider },
@@ -456,6 +472,7 @@ export const appointmentCalendarActions = {
   setSelectedProvider,
   setSelectedProviders,
   setSelectedFilter,
+  setSelectedProviderById,
   setFilterOptionCompany,
   setFilterOptionPosition,
   setFilterOptionShowMultiBlock,

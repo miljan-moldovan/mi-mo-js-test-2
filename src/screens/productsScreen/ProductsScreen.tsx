@@ -54,8 +54,17 @@ class ProductsScreen extends React.Component {
   }
 
   componentDidMount () {
-    const {productsActions: {getProducts}} = this.props;
-    getProducts ();
+    const { productsActions: { getProducts, getRecommendationSystemProducts } } = this.props;
+
+    const {
+      recommendationSystem,
+    } = this.params;
+
+    if (recommendationSystem) {
+      getRecommendationSystemProducts();
+    } else {
+      getProducts();
+    }
   }
 
   shouldComponentUpdate (nextProps) {
@@ -129,16 +138,18 @@ class ProductsScreen extends React.Component {
   }
 
   get params () {
-    const {getParam} = this.props.navigation;
-    const selectedProduct = getParam ('selectedProduct', null);
-    const onChangeProduct = getParam ('onChangeProduct', null);
-    const onChangeWithNavigation = getParam ('onChangeWithNavigation', null);
-    const dismissOnSelect = getParam ('dismissOnSelect', true);
+    const { getParam } = this.props.navigation;
+    const selectedProduct = getParam('selectedProduct', null);
+    const onChangeProduct = getParam('onChangeProduct', null);
+    const onChangeWithNavigation = getParam('onChangeWithNavigation', null);
+    const dismissOnSelect = getParam('dismissOnSelect', true);
+    const recommendationSystem = getParam('recommendationSystem', false);
     return {
       dismissOnSelect,
       selectedProduct,
       onChangeProduct,
       onChangeWithNavigation,
+      recommendationSystem,
     };
   }
 

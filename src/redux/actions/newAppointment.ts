@@ -130,33 +130,6 @@ const setGuestClient = (guestId: Maybe<string>, client: Maybe<ClientModel>): any
   });
 };
 
-const resetTimeForServices = (
-  items: ServiceItem[],
-  index: Maybe<number>,
-  initialFromTime: Maybe<string | moment.Moment>,
-): any => {
-  const itemsToReturn: ServiceItem[] = [];
-  items.map((item, i) => {
-    if (i > index) {
-      const prevItem = itemsToReturn[i - 1];
-      let fromTime = moment(initialFromTime);
-      if (prevItem) {
-        fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
-      }
-      itemsToReturn.push({
-        ...item,
-        service: {
-          ...item.service,
-          fromTime,
-          toTime: fromTime.clone().add(
-            item.service.length,
-          ),
-        },
-      });
-    }
-  });
-  return itemsToReturn;
-};
 
 const isBookingQuickAppt = (isBookingQuickAppt: boolean): any => async (dispatch, getState: () => AppStore) => {
   dispatch({
@@ -789,7 +762,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       }
       return [...agg, guest];
     }, []);
-
   const allFetchedServices = await dispatch(servicesActions.getServices({})).then((resp) => {
     return resp.data.services.reduce((resultArr, category) => {
       return [...resultArr, ...category.services];
@@ -799,7 +771,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
   const primaryServiceAddons = fetchedPrimaryService.addons;
   const primaryServiceRequired = fetchedPrimaryService.requiredServices;
   const primaryServiceRecommended = fetchedPrimaryService.recommendedServices;
-
   const serviceItems = groupData.reduce((services, appointment) => {
     const isGuest = isParty && appointment.client.id !== primaryClientId;
     let guest = null;
@@ -810,6 +781,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime));
     const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const serviceClientId = get(serviceClient, 'id', null);
 
     const currentService = get(appointment, 'service', null);
     const currentEmployee = get(appointment, 'employee', null);
@@ -818,10 +790,11 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const service = { ...currentService, ...missingProperties };
 
     const room = get(appointment, 'room', null);
-    const roomOrdinal = get(appointment, 'roomOrdinal', null);
+    let roomOrdinal = get(appointment, 'roomOrdinal', null);
+    roomOrdinal = service.requireRoom === RoomType.NULL
+    || service.requireRoom === RoomType.Nothing ? null : roomOrdinal;
     const resource = get(appointment, 'resource', null);
     const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
-
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -847,10 +820,12 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       hasSelectedRoom: !!room,
       hasSelectedResource: !!resource,
       isRequired: false,
+      isGuest,
     };
-
+    const primaryAppointmentId = appointment.primaryAppointmentId;
     const parentId = get(
-      services.find(item => get(item, 'service.service.id', null) === primaryServiceId),
+      services.find(item => get(item, 'service.id', null) === primaryAppointmentId
+      && get(item, 'service.client.id', null) === serviceClientId),
       'itemId',
       null,
     );
@@ -1025,6 +1000,7 @@ const modifyAppt = (apptId: number, clientUpdateObject:any, successCallback: May
   );
   requestBody.deletedIds = deletedIds.length || idForDel;
   requestBody.clientInfo = clientUpdateObject || requestBody.clientInfo;
+
   return Appointment.putAppointment(apptId, requestBody)
     .then(res => {
       return dispatch(bookNewApptSuccess(successCallback));
@@ -1049,6 +1025,38 @@ const setOrdinalIdAndResourcesId = (ordinalId, id) => ({
 const clearOrdinalIdAndResourcesId = () => ({
   type: CLEAR_RESOURCES_ORDINAL_ID_AND_RESOURCES_ID,
 });
+
+const resetTimeForServices = (
+  items: ServiceItem[],
+  index: Maybe<number>,
+  initialFromTime: Maybe<string | moment.Moment>,
+): any => {
+  const itemsToReturn: ServiceItem[] = [];
+  items.map((item, i) => {
+    if (i > index) {
+      const prevItem = itemsToReturn[i - 1];
+      let fromTime = moment(initialFromTime);
+      if (prevItem) {
+        fromTime = moment(get(prevItem.service, 'toTime', initialFromTime));
+      }
+      itemsToReturn.push({
+        ...item,
+        service: {
+          ...item.service,
+          fromTime,
+          toTime: fromTime.clone().add(
+            item.service.length,
+          ),
+        },
+      });
+    } else {
+      itemsToReturn.push({
+        ...item,
+      });
+    }
+  });
+  return itemsToReturn;
+};
 
 const newAppointmentActions = {
   cleanForm,
@@ -1077,6 +1085,7 @@ const newAppointmentActions = {
   setApptInitialClient,
   populateStateFromRebookAppt,
   modifyAppt,
+  resetTimeForServices,
   setMainEmployee,
   getConflictsForService,
   checkIsBookedByFieldEnabled,

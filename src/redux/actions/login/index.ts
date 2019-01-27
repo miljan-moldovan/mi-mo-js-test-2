@@ -1,9 +1,12 @@
 import { AsyncStorage } from 'react-native';
+import { AccessState, Tasks } from '@/constants/Tasks';
 
 import processError from '@//utilities/processError';
 import { Login } from '@/utilities/apiWrapper';
 import { JWTKEY } from '@/utilities/apiWrapper/api';
 import { Maybe } from '@/models';
+import * as Session from '@/utilities/apiWrapper/apiServicesResources/session';
+import { getRestrictions } from '@/redux/actions/restrictions';
 
 export type DataError = {
   message: string,
@@ -11,7 +14,7 @@ export type DataError = {
   loginError: boolean,
   urlError: boolean,
 };
-
+const permissionMessage = 'You don\'t have permissions';
 export type ErrorObj =
   {
     response: {
@@ -55,6 +58,7 @@ export const login = (url, username, password, callback) => async dispatch => {
     };
 
     const data = await Login.signIn(url, username, password);
+
     if (data && data.message === 'Network Error') {
       urlError = true;
       errObj.response.data.urlError = urlError;
@@ -64,8 +68,18 @@ export const login = (url, username, password, callback) => async dispatch => {
       errObj.response.data.errors = [data.userMessage];
       errObj.response.data.loginError = true;
     } else if (!urlError) {
-      const userToken = { jws: data.response };
       await AsyncStorage.setItem(JWTKEY, data.response);
+
+      const permission = await Session.getSessionTaskIsAllowed(Tasks.Mobile_PosApp);
+      dispatch(getRestrictions([Tasks.Mobile_FullAppointments, Tasks.Mobile_Appointments]));
+      if (permission === AccessState.Denied) {
+        errObj.response.data.message = permissionMessage;
+        errObj.response.data.errors = [permissionMessage];
+        errObj.response.data.loginError = true;
+        throw errObj;
+      }
+      const userToken = { jws: data.response };
+
       dispatch({
         type: AT.LOGIN_SUCCESS,
         data: { ...userToken, username, url },

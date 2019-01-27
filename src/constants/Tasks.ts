@@ -88,9 +88,11 @@ export enum Tasks {
   Market_ReferGC = 'Market_ReferGC',
   Market_Rewards = 'Market_Rewards',
   MobileWeb_ProviderView = 'MobileWeb_ProviderView',
-  Mobile_Appointments = 'Mobile_Appointments',
   Mobile_Manager = 'Mobile_Manager',
   Mobile_Scorecard = 'Mobile_Scorecard',
+  Mobile_PosApp = 'Mobile_PosApp',  // Mobile App - POS App” => ability to use new app at all
+  Mobile_Appointments = 'Mobile_Appointments', // “Mobile App - My Appointment Book” => ability to access own appointments in app
+  Mobile_FullAppointments = 'Mobile_FullAppointments', // “Mobile App - Full Appointment Book” => ability to access entire appointment book in app
   Pay_BonusWorksheet = 'Pay_BonusWorksheet',
   Pay_Gross = 'Pay_Gross',
   Pay_PayStubs = 'Pay_PayStubs',
