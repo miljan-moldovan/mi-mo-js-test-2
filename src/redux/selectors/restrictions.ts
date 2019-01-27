@@ -10,7 +10,7 @@ const getRestrictionForAppBook = (state) => {
   return {
     apptBookRestriction: state.restrictionsReducer[Tasks.Mobile_FullAppointments],
     ownApptBookRestriction: state.restrictionsReducer[Tasks.Mobile_Appointments],
-    haveLinkedEmployee: !!(state.userInfo && state.userInfo.employeeId),
+    haveLinkedEmployee: !!(state.userInfoReducer && state.userInfoReducer.employeeId),
   };
 };
 
@@ -27,5 +27,12 @@ export const deniedAccessApptBookSelector = createSelector(getRestrictionForAppB
     return restriction.apptBookRestriction === AccessState.Denied
       && restriction.ownApptBookRestriction === AccessState.Denied ||
       (restriction.ownApptBookRestriction === AccessState.Allowed && !restriction.haveLinkedEmployee);
+  },
+);
+
+export const onlyOwnApptSelector = createSelector(getRestrictionForAppBook,
+  restriction => {
+    return restriction.apptBookRestriction === AccessState.Denied
+      && restriction.ownApptBookRestriction === AccessState.Allowed;
   },
 );

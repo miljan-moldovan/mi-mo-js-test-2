@@ -50,7 +50,7 @@ const getClients = (
     'nameFilter.FilterRule': 3,
     'NameFilter.SortOrder': 1,
     'NameFilter.SortField': 'FirstName,LastName',
-  }
+  },
 ) => dispatch => {
   dispatch({ type: GET_CLIENTS });
   const newParams = {
@@ -70,7 +70,7 @@ const getMoreClients = (
     'nameFilter.FilterRule': 3,
     'NameFilter.SortOrder': 1,
     'NameFilter.SortField': 'FirstName,LastName',
-  }
+  },
 ) => dispatch => {
   dispatch({ type: GET_MORE_CLIENTS });
   const newParams = {
@@ -82,7 +82,7 @@ const getMoreClients = (
     .then(response => dispatch(getMoreCliensSuccess(response)))
     .catch(
       error =>
-        !axios.isCancel(error) && dispatch(getMoreClientsFailed(error))
+        !axios.isCancel(error) && dispatch(getMoreClientsFailed(error)),
     );
 };
 
@@ -153,7 +153,7 @@ const mergeClientsFailed = error => ({
 const mergeClients = (
   mainClientId: string,
   mergeClientsId: Array<String>,
-  callback
+  callback,
 ) => dispatch => {
   dispatch({ type: MERGE_CLIENTS });
 
