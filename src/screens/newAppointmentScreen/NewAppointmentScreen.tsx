@@ -429,10 +429,12 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         ]
         : client.phones.filter(phone => phone.value && this.isValidPhoneNumberRegExp.test(phone.value));
 
+
+
     const updateObject = {
       id: client.id,
       phones,
-      confirmationType: +confirmationType,
+      confirmationType: +clientConfirmationType,
       email: isValidEmail ? clientEmail : client.email,
     };
 
@@ -444,11 +446,19 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
 
     const { client } = this.props.newAppointmentState;
 
-    try {
-      const updateObject = this.getClientUpdateObject();
-      return await Client.putContactInformation(client.id, updateObject);
-    } catch (error) {
-      console.warn('Error updating client info:', error);
+    const {
+      isValidEmail,
+      isValidPhone,
+      clientConfirmationType,
+    } = this.state;
+
+    if (isValidEmail && isValidPhone && clientConfirmationType && client) {
+      try {
+        const updateObject = this.getClientUpdateObject();
+        return await Client.putContactInformation(client.id, updateObject);
+      } catch (error) {
+        console.warn('Error updating client info:', error);
+      }
     }
   };
 
