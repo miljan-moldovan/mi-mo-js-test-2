@@ -1046,29 +1046,39 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
               }
             />
             <InputDivider />
-            <ValidatableInput
-              label="Email"
-              value={clientEmail}
-              isValid={isValidEmail || !client}
-              validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
-              onValidated={this.onValidateEmail}
-              onChangeText={this.onChangeEmail}
-            />
-            <InputDivider
-              style={isValidEmail || !client ? {} : dividerWithErrorStyle}
-            />
-            <ValidatableInput
-              label="Phone"
-              mask="[000]-[000]-[0000]"
-              isValid={isValidPhone || !client}
-              value={clientPhone}
-              validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
-              onValidated={this.onValidatePhone}
-              onChangeText={this.onChangePhone}
-            />
-            <InputDivider
-              style={isValidPhone || !client ? {} : dividerWithErrorStyle}
-            />
+            {
+              !this.props.apptViewContactInfoIsDisabled &&
+              <React.Fragment>
+                <ValidatableInput
+                  label="Email"
+                  value={clientEmail}
+                  isValid={isValidEmail || !client}
+                  validation={() => this.validationWithUpdate('clientEmail', 'isValidEmailRegExp', true)}
+                  onValidated={this.onValidateEmail}
+                  onChangeText={this.onChangeEmail}
+                />
+                < InputDivider
+                  style={isValidEmail || !client ? {} : dividerWithErrorStyle}
+                />
+              </React.Fragment>
+            }
+            {
+              !this.props.apptViewContactInfoIsDisabled &&
+              <React.Fragment>
+                <ValidatableInput
+                  label="Phone"
+                  mask="[000]-[000]-[0000]"
+                  isValid={isValidPhone || !client}
+                  value={clientPhone}
+                  validation={() => this.validationWithUpdate('clientPhone', 'isValidPhoneNumberRegExp', true)}
+                  onValidated={this.onValidatePhone}
+                  onChangeText={this.onChangePhone}
+                />
+                < InputDivider
+                  style={isValidPhone || !client ? {} : dividerWithErrorStyle}
+                />
+              </React.Fragment>
+            }
             <SalonPicker
               label="Confirmation Type"
               isOpen={confirmationTypePickerOpen}
