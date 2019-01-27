@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorView renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "flex-start",
+      "backgroundColor": "rgba(255, 255, 255, 0.5)",
+      "borderRadius": 4,
+      "flexDirection": "row",
+      "justifyContent": "space-between",
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "marginTop": 2,
+      "paddingLeft": 30,
+      "paddingRight": 20,
+      "width": 311,
+    }
+  }
+>
+  <Icon
+    style={
+      Object {
+        "alignSelf": "center",
+        "color": "rgba(209, 36, 41, 1)",
+        "fontSize": 12,
+        "height": 12,
+        "left": 15,
+        "position": "absolute",
+        "resizeMode": "contain",
+        "top": 13,
+        "width": 12,
+        "zIndex": 300,
+      }
+    }
+  >
+    
+  </Icon>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
+        "justifyContent": "space-around",
+        "marginBottom": 10,
+        "marginLeft": 15,
+        "marginTop": 10,
+      }
+    }
+  />
+</View>
+`;
