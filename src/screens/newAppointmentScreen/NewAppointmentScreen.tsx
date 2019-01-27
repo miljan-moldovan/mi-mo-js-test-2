@@ -780,7 +780,10 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       return true;
     }
 
-    const isValid = this[nameValidation].test(target);
+    let isValid = this[nameValidation].test(target);
+    if (nameValidation === 'isValidEmailRegExp') {
+      isValid = isValid || target === 'will-not-provide'
+    }
     return isValid;
   };
 
