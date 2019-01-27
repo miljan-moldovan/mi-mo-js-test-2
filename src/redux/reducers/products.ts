@@ -8,6 +8,9 @@ import productsActions, {
   SET_CATEGORY_PRODUCTS,
   GET_CATEGORY_PRODUCTS,
   SET_SELECTED_PRODUCT,
+  GET_RECOMMENDATION_SYSTEM_PRODUCTS,
+  GET_RECOMMENDATION_SYSTEM_PRODUCTS_FAILED,
+  GET_RECOMMENDATION_SYSTEM_PRODUCTS_SUCCESS,
 } from '../actions/products';
 import { ProductCategories, ProductBase, Maybe } from '@/models';
 
@@ -76,6 +79,32 @@ export default function productsReducer(state: ProductsReducer = initialState, a
         error: null,
         products: data.products,
       };
+    case GET_RECOMMENDATION_SYSTEM_PRODUCTS:
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case GET_RECOMMENDATION_SYSTEM_PRODUCTS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        products: data.products,
+        error: null,
+      };
+    case GET_RECOMMENDATION_SYSTEM_PRODUCTS_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: data.error,
+        products: [],
+      };
+    case SET_PRODUCTS:
+      return {
+        ...state,
+        error: null,
+        products: data.products,
+      };
+      
     case SET_FILTERED_PRODUCTS:
       return {
         ...state,
