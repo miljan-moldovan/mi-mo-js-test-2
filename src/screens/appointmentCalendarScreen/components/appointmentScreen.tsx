@@ -47,6 +47,8 @@ class AppointmentScreen extends React.Component<any, any> {
     const onPressCalendar = navigation.getParam('onPressCalendar', null);
     const filterOptions = navigation.getParam('filterOptions', {});
     const deniedAccessApptBook = navigation.getParam('deniedAccessApptBook', false);
+    const onlyOwnAppt = navigation.getParam('onlyOwnAppt', false);
+
 
     let subTitleText = null;
     const { company, position } = filterOptions;
@@ -126,7 +128,7 @@ class AppointmentScreen extends React.Component<any, any> {
         />
       );
     const title = (
-      <SalonTouchableOpacity style={titleStyle} onPress={onPressTitle}>
+      <SalonTouchableOpacity style={titleStyle} disabled={onlyOwnAppt} onPress={onPressTitle}>
         {titleComponent}
         {subTitle && !filterProvider ? subTitle : caretIcon}
       </SalonTouchableOpacity>
@@ -210,6 +212,14 @@ class AppointmentScreen extends React.Component<any, any> {
       deniedAccessApptBook: this.props.deniedAccessApptBook,
     });
 
+    if (this.props.onlyOwnAppt && this.props.userInfoEmployeeId) {
+      this.props.navigation.setParams({
+        onlyOwnAppt: this.props.onlyOwnAppt,
+      });
+      this.props.appointmentCalendarActions.setSelectedProviderById(this.props.userInfoEmployeeId,
+        this.setOwnProviderCallback);
+    }
+
     this.props.appointmentCalendarActions.setGridView();
 
     this.props.navigation.addListener(
@@ -217,6 +227,32 @@ class AppointmentScreen extends React.Component<any, any> {
       this.loadRebookData,
     );
   }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.deniedAccessApptBook !== this.props.deniedAccessApptBook) {
+      this.props.navigation.setParams({
+        deniedAccessApptBook: newProps.deniedAccessApptBook,
+      });
+    }
+    if (newProps.onlyOwnAppt !== this.props.onlyOwnAppt
+      || this.props.userInfoEmployeeId !== newProps.userInfoEmployeeId) {
+      this.props.navigation.setParams({
+        onlyOwnAppt: newProps.onlyOwnAppt,
+      });
+      if (newProps.onlyOwnAppt && newProps.userInfoEmployeeId) {
+        this.props.appointmentCalendarActions.setSelectedProviderById(newProps.userInfoEmployeeId,
+          this.setOwnProviderCallback);
+      }
+    }
+  }
+
+  setOwnProviderCallback = (filterProvider) => {
+    this.props.navigation.setParams({
+      filterProvider,
+      currentFilter: 'providers',
+    });
+    this.props.appointmentCalendarActions.setSelectedFilter('providers');
+  };
 
   showCancelResizeAlert = (customLogic) => {
     const onPressRight = customLogic ? customLogic : () => {
@@ -973,7 +1009,7 @@ class AppointmentScreen extends React.Component<any, any> {
   };
 
   render() {
-    if (this.props.deniedAccessApptBook) {
+    if (this.props.deniedAccessApptBook && !this.props.userInfoIsLoading) {
       return (
         <DeniedAccessApptBookComponent>
           <BarsActionSheet

@@ -41,7 +41,6 @@ const persistConf: PersistorConfig = {
     'newAppointmentReducer',
     'apptBookSetEmployeeOrderReducer',
     'modifyApptReducer',
-    'userInfoReducer',
     'productsReducer',
     'queueDetailReducer',
     'navigationReducer',

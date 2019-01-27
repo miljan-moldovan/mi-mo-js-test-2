@@ -44,7 +44,8 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
           <SalonTouchableOpacity
             wait={300}
             style={styles.rightButton}
-            onPress={navigation.getParam('handlePress', () => {})}
+            onPress={navigation.getParam('handlePress', () => {
+            })}
           >
             <Text style={styles.rightButtonText}>Done</Text>
           </SalonTouchableOpacity>
@@ -55,7 +56,7 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
 
   private shouldSave: boolean;
 
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     const { filterOptions } = this.props.apptBookState;
@@ -72,7 +73,8 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
     });
   }
 
-  componentDidUpdate (prevProps, prevState) {}
+  componentDidUpdate(prevProps, prevState) {
+  }
 
   saveOptions = () => {
     const {
@@ -123,121 +125,133 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
   getData = () => {
     const { position, company } = this.state.options;
 
-    return [
+    const dataArray = [];
+    const employeeOptions = {
+      title: 'EMPLOYEE OPTIONS',
+      data: [
+        {
+          impolyeeOption: true,
+          dataForRender: [
+            {
+              label: 'Filter By Position',
+              onPress: () => {
+                this.props.navigation.navigate('FilterByPosition', {
+                  transition: 'SlideFromBottom',
+                  onChangePosition: this.handleChangePosition,
+                  dismissOnSelect: true,
+                  selectedPosition: position,
+                });
+              },
+              value: position === null
+                ? null
+                : (
+                  <SelectedWithRemove
+                    onPressRemove={this.handleRemovePosition}
+                    value={position.name}
+                  />
+                ),
+            },
+            {
+              label: 'Filter By Company',
+              onPress: () => {
+                this.props.navigation.navigate('FilterByCompany', {
+                  transition: 'SlideFromBottom',
+                  onChangeCompany: this.handleChangeCompany,
+                  dismissOnSelect: true,
+                  selectedCompany: company,
+                });
+              },
+              value: company === null
+                ? null
+                : (
+                  <SelectedWithRemove
+                    onPressRemove={this.handleRemoveCompany}
+                    value={company.name}
+                  />
+                ),
+            },
+            {
+              label: 'Set Employee Order',
+              onPress: () => this.goToEmployeesOrder(),
+              value: this.props.employeeOrderState.orderInitials,
+            },
+            {
+              label: 'Service Check',
+              onPress: () => {
+                this.props.navigation.navigate('ServiceCheck', {
+                  transition: 'SlideFromBottom',
+                  dismissOnSelect: true,
+                });
+              },
+              value: this.state.options.serviceCheck,
+            },
+          ],
+        },
+      ],
+    };
+
+
+    const displayOptionsDataForRender = [
       {
-        title: 'EMPLOYEE OPTIONS',
-        data: [
-          {
-            impolyeeOption: true,
-            dataForRender: [
-              {
-                label: 'Filter By Position',
-                onPress: () => {
-                  this.props.navigation.navigate('FilterByPosition', {
-                    transition: 'SlideFromBottom',
-                    onChangePosition: this.handleChangePosition,
-                    dismissOnSelect: true,
-                    selectedPosition: position,
-                  });
-                },
-                value: position === null
-                  ? null
-                  : (
-                    <SelectedWithRemove
-                      onPressRemove={this.handleRemovePosition}
-                      value={position.name}
-                    />
-                  ),
-              },
-              {
-                label: 'Filter By Company',
-                onPress: () => {
-                  this.props.navigation.navigate('FilterByCompany', {
-                    transition: 'SlideFromBottom',
-                    onChangeCompany: this.handleChangeCompany,
-                    dismissOnSelect: true,
-                    selectedCompany: company,
-                  });
-                },
-                value: company === null
-                  ? null
-                  : (
-                    <SelectedWithRemove
-                      onPressRemove={this.handleRemoveCompany}
-                      value={company.name}
-                    />
-                  ),
-              },
-              {
-                label: 'Set Employee Order',
-                onPress: () => this.goToEmployeesOrder(),
-                value: this.props.employeeOrderState.orderInitials,
-              },
-              {
-                label: 'Service Check',
-                onPress: () => {
-                  this.props.navigation.navigate('ServiceCheck', {
-                    transition: 'SlideFromBottom',
-                    dismissOnSelect: true,
-                  });
-                },
-                value: this.state.options.serviceCheck,
-              },
-            ],
-          },
-        ],
+        text: 'Room Assigments',
+        value: this.state.options.showRoomAssignments,
+        onChange: (state) => {
+          const { options } = this.state;
+          options.showRoomAssignments = !options.showRoomAssignments;
+          this.shouldSave = true;
+          this.setState({ options });
+        },
       },
       {
-        title: 'DISPLAY OPTIONS',
-        data: [
-          {
-            impolyeeOption: false,
-            dataForRender: [
-              {
-                text: 'Room Assigments',
-                value: this.state.options.showRoomAssignments,
-                onChange: (state) => {
-                  const { options } = this.state;
-                  options.showRoomAssignments = !options.showRoomAssignments;
-                  this.shouldSave = true;
-                  this.setState({ options });
-                },
-              },
-              {
-                text: 'Assistant Assigments',
-                value: this.state.options.showAssistantAssignments,
-                onChange: (state) => {
-                  const { options } = this.state;
-                  options.showAssistantAssignments = !options.showAssistantAssignments;
-                  this.shouldSave = true;
-                  this.setState({ options });
-                },
-              },
-              {
-                text: 'Client name in every blocks',
-                value: this.state.options.showMultiBlock,
-                onChange: (state) => {
-                  const { options } = this.state;
-                  options.showMultiBlock = !options.showMultiBlock;
-                  this.shouldSave = true;
-                  this.setState({ options });
-                },
-              },
-              {
-                text: 'Show employees that are off',
-                value: this.state.options.showOffEmployees,
-                onChange: (state) => {
-                  const { options } = this.state;
-                  options.showOffEmployees = !options.showOffEmployees;
-                  this.shouldSave = true;
-                  this.setState({ options });
-                },
-              },
-            ],
-          },
-        ],
+        text: 'Assistant Assigments',
+        value: this.state.options.showAssistantAssignments,
+        onChange: (state) => {
+          const { options } = this.state;
+          options.showAssistantAssignments = !options.showAssistantAssignments;
+          this.shouldSave = true;
+          this.setState({ options });
+        },
+      },
+      {
+        text: 'Client name in every blocks',
+        value: this.state.options.showMultiBlock,
+        onChange: (state) => {
+          const { options } = this.state;
+          options.showMultiBlock = !options.showMultiBlock;
+          this.shouldSave = true;
+          this.setState({ options });
+        },
       },
     ];
+
+    if (!this.props.onlyOwnAppt) {
+      displayOptionsDataForRender.push({
+        text: 'Show employees that are off',
+        value: this.state.options.showOffEmployees,
+        onChange: (state) => {
+          const { options } = this.state;
+          options.showOffEmployees = !options.showOffEmployees;
+          this.shouldSave = true;
+          this.setState({ options });
+        },
+      });
+    }
+    const displayOptions = {
+      title: 'DISPLAY OPTIONS',
+      data: [
+        {
+          impolyeeOption: false,
+          dataForRender: displayOptionsDataForRender,
+        },
+      ],
+    };
+
+    if (!this.props.onlyOwnAppt) {
+      dataArray.push(employeeOptions);
+    }
+    dataArray.push(displayOptions);
+
+    return dataArray;
   };
 
   keyExtractor = (item, index) => item + index;
@@ -293,7 +307,7 @@ class ApptBookViewOptionsScreen extends React.Component<any, any> {
     );
   };
 
-  render () {
+  render() {
     const sections = this.getData();
     return (
       <SectionList

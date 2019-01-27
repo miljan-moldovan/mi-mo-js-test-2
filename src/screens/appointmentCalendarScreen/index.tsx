@@ -21,17 +21,20 @@ import {
 import { getConflicts, getConflictsBlocks } from '../../redux/actions/conflicts';
 import * as LoginActions from '../../redux/actions/login';
 import storeActions from '../../redux/actions/store';
-import { deniedAccessApptBookSelector } from '@/redux/selectors/restrictions';
+import { deniedAccessApptBookSelector, onlyOwnApptSelector } from '@/redux/selectors/restrictions';
 
 const mapStateToProps = state => ({
   appointmentScreenState: {
     ...state.appointmentBookReducer,
   },
   deniedAccessApptBook: deniedAccessApptBookSelector(state),
+  onlyOwnAppt : onlyOwnApptSelector(state),
   appointmentState: state.appointmentReducer,
   providersState: state.providersReducer,
   newAppointmentState: state.newAppointmentReducer,
   modifyApptState: state.modifyApptReducer,
+  userInfoIsLoading: state.userInfoReducer.isLoading,
+  userInfoEmployeeId: state.userInfoReducer.employeeId,
   blockTimes: visbleBlocksSelector(state),
   appointments: getVisibleAppointmentsDataSource(state),
   availability: getAvailabilityWithGaps(state),

@@ -10,36 +10,42 @@ const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 2;
 
 const options = [
-  <View style={styles.actionItemContainer}>
-    <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>Select Store</Text>
+  // hide change store
+ /* (
+    /*<View style={styles.actionItemContainer}>
+      <View style={styles.actionItemLeft}>
+        <Text style={styles.actionItemTitle}>Select Store</Text>
+      </View>
+      <View style={styles.actionItemRight}>
+        <FontAwesome
+          style={[styles.loginIconStyle, styles.selectStoreIconStyle]}
+        >{Icons.chevronRight}
+        </FontAwesome>
+      </View>
     </View>
-    <View style={styles.actionItemRight}>
-      <FontAwesome
-        style={[styles.loginIconStyle, styles.selectStoreIconStyle]}
-      >{Icons.chevronRight}
-      </FontAwesome>
-    </View>
-  </View>,
-  <View style={styles.actionItemContainer}>
-    <View style={styles.actionItemLeft}>
-      <Text style={styles.actionItemTitle}>Logout</Text>
-    </View>
-    <View style={styles.actionItemRight}>
-      <FontAwesome style={styles.loginIconStyle}>{Icons.signOut}</FontAwesome>
-    </View>
-  </View>,
-  <Text style={styles.cancelTitle}>Cancel
-  </Text>,
+  ), */
+  (
+    <View style={styles.actionItemContainer}>
+      <View style={styles.actionItemLeft}>
+        <Text style={styles.actionItemTitle}>Logout</Text>
+      </View>
+      <View style={styles.actionItemRight}>
+        <FontAwesome style={styles.loginIconStyle}>{Icons.signOut}</FontAwesome>
+      </View>
+    </View>),
+  (
+    <Text style={styles.cancelTitle}>Cancel
+    </Text>
+  ),
 ];
 
 class BarsActionSheet extends React.Component {
   handlePressAction(i) {
     switch (i) {
-      case 0:
+     /* case 0:
         this.props.onChangeStore();
-        break;
-      case 1:
+        break; */
+      case 0:
         this.props.onLogout();
         break;
       default:
@@ -54,7 +60,7 @@ class BarsActionSheet extends React.Component {
       this.handlePressAction(i);
     }, 500);
     return false;
-  }
+  };
 
   show = () => {
     this.SalonActionSheet.show();
@@ -62,7 +68,7 @@ class BarsActionSheet extends React.Component {
 
   assignSalonActionsSheet = (item) => {
     this.SalonActionSheet = item;
-  }
+  };
 
   render() {
     return (
