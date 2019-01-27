@@ -161,7 +161,8 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
     } = this.props;
     const { canSave } = this.props.navigation.state.params;
 
-    if (prevProps.newAppointmentState.guests.length < guests.length) {
+    if (prevProps.newAppointmentState.guests.length < guests.length
+      && prevProps.newAppointmentState.guests.length > 0) {
       const guest = guests[guests.length - 1];
       this.handleAddGuestService(guest.guestId);
     }
@@ -190,7 +191,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       });
     }
   };
-  addService = (service, provider = null, guestId: string = undefined) => {
+  addService = (service, provider = null, guestId: string = undefined, isGuest: boolean = false) => {
     const {
       client,
       startTime,
@@ -220,6 +221,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
       itemId: uuid(),
       guestId,
       service: newService,
+      isGuest,
     };
     this.props.newAppointmentActions.addServiceItem(newServiceItem);
     setTimeout(() => this.selectExtraServices(newServiceItem));
@@ -491,7 +493,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   };
 
   getGuestServices = guestId =>
-    this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && !item.parentId);
+    this.props.newAppointmentState.serviceItems.filter(item => item.guestId === guestId && item.isGuest);
 
   getGuest = guestId => this.props.newAppointmentState.guests.find(item => item.guestId === guestId);
 
@@ -521,7 +523,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
   getConflictsForService = serviceId =>
     this.props.newAppointmentState.conflicts.filter(conf => conf.associativeKey === serviceId);
 
-  isMainService = item => !item.guestId && !item.parentId;
+  isMainService = item => !item.isGuest && !item.parentId;
 
   hideToast = () => this.setState({ toast: null });
 
@@ -671,7 +673,7 @@ class NewAppointmentScreen extends React.Component<NewAppointmentScreenProps, Ne
         selectedProvider: mainEmployee,
         employeeId: mainEmployee.id,
         onChangeService: service => {
-          this.addService(service, mainEmployee, guestId);
+          this.addService(service, mainEmployee, guestId, true);
         },
       });
     }

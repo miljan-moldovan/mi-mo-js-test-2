@@ -755,7 +755,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       }
       return [...agg, guest];
     }, []);
-
   const allFetchedServices = await dispatch(servicesActions.getServices({})).then((resp) => {
     return resp.data.services.reduce((resultArr, category) => {
       return [...resultArr, ...category.services];
@@ -765,7 +764,6 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
   const primaryServiceAddons = fetchedPrimaryService.addons;
   const primaryServiceRequired = fetchedPrimaryService.requiredServices;
   const primaryServiceRecommended = fetchedPrimaryService.recommendedServices;
-
   const serviceItems = groupData.reduce((services, appointment) => {
     const isGuest = isParty && appointment.client.id !== primaryClientId;
     let guest = null;
@@ -776,6 +774,7 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const toTime = moment(appointment.toTime, 'HH:mm:ss');
     const length = moment.duration(toTime.diff(fromTime));
     const serviceClient = guest ? get(guest, 'client', null) : mainClient;
+    const serviceClientId = get(serviceClient, 'id', null);
 
     const currentService = get(appointment, 'service', null);
     const currentEmployee = get(appointment, 'employee', null);
@@ -784,10 +783,11 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
     const service = { ...currentService, ...missingProperties };
 
     const room = get(appointment, 'room', null);
-    const roomOrdinal = get(appointment, 'roomOrdinal', null);
+    let roomOrdinal = get(appointment, 'roomOrdinal', null);
+    roomOrdinal = service.requireRoom === RoomType.NULL
+    || service.requireRoom === RoomType.Nothing ? null : roomOrdinal;
     const resource = get(appointment, 'resource', null);
     const resourceOrdinal = (service.requireResource) ? get(appointment, 'resourceOrdinal', null) : null;
-
     const newService = {
       id: get(appointment, 'id', null),
       length,
@@ -813,10 +813,12 @@ const populateStateFromAppt = (appt: Maybe<AppointmentCard>, groupData: any): an
       hasSelectedRoom: !!room,
       hasSelectedResource: !!resource,
       isRequired: false,
+      isGuest,
     };
-
+    const primaryAppointmentId = appointment.primaryAppointmentId;
     const parentId = get(
-      services.find(item => get(item, 'service.service.id', null) === primaryServiceId),
+      services.find(item => get(item, 'service.id', null) === primaryAppointmentId
+      && get(item, 'service.client.id', null) === serviceClientId),
       'itemId',
       null,
     );

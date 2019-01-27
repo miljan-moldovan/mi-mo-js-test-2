@@ -103,9 +103,10 @@ const newAppointmentInfoSelector = createSelector(
 );
 
 const getGuestServices = (guestId, serviceItems) =>
-  serviceItems.filter(item => item.guestId === guestId && !item.parentId);
+  serviceItems.filter(item => item.guestId === guestId && item.isGuest);
 
 const validateGuests = (guests, serviceItems) => {
+
   if (guests.length) {
     for (let i = 0; i < guests.length; i += 1) {
       const guest = guests[i];
