@@ -25,7 +25,7 @@
     "axios": "^0.18.0",
     "babel": "^6.23.0",
     "deep-equal": "^1.0.1",
-    "lodash": "4.17.5",
+    "lodash": "4.17.15",
     "lodash.debounce": "^4.0.8",
     "mkp-react-native-picker": "https://github.com/aprados/react-native-picker.git",
     "moment": "^2.20.1",
