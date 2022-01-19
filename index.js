@@ -11,3 +11,8 @@ import App from './src/App';
 const codePushApp = codePush(App);
 
 AppRegistry.registerComponent ('SalonUltimateRN', () => codePushApp);
+
+let newVar;
+const newVar2 = newVar;
+
+
